@@ -1,0 +1,11 @@
+run:
+  skip-dirs-use-default: false
+
+linters:
+  enable:
+    - golint
+    - gofmt
+
+issues:
+  include:
+    - EXC0002
