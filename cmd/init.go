@@ -40,15 +40,23 @@ var initCmd = &cobra.Command{
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
+		cmd.SilenceUsage = true
+
 		backendType := args[0]
 		backendName := args[1]
 
 		b := backend.Backends[backendType](backendName)
 
 		if b.Exists() {
-			overwrite, err := ask.Boolf("%s store already exists at %s. Do you want to overwrite it?", backendType, backendName).
-				Default(false).
-				Ask()
+			var overwrite bool
+			var err error
+			if cmd.Flags().Changed("overwrite") {
+				overwrite, err = cmd.Flags().GetBool("overwrite")
+			} else {
+				overwrite, err = ask.Boolf("%s store already exists at %s. Do you want to overwrite it?", backendType, backendName).
+					Default(false).
+					Ask()
+			}
 			if err != nil {
 				return err
 			}
@@ -74,4 +82,8 @@ var initCmd = &cobra.Command{
 
 		return nil
 	},
+}
+
+func init() {
+	initCmd.Flags().Bool("overwrite", false, "overwrite store if it exists")
 }

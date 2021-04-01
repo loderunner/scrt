@@ -74,6 +74,10 @@ func ReadStore(password []byte, data []byte) (Store, error) {
 // encrypt the Store and returns the encrypted data, or an error if the Store
 // could not be encoded to JSON or could not be encrypted.
 func WriteStore(password []byte, store Store) ([]byte, error) {
+	if store.data == nil {
+		return nil, fmt.Errorf("store data is nil")
+	}
+
 	plaintext, err := json.Marshal(store.data)
 	if err != nil {
 		return nil, fmt.Errorf("failed to write store: %w", err)

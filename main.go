@@ -23,12 +23,7 @@ import (
 )
 
 func main() {
-	err := cmd.Init()
-	if err != nil {
-		handleError(err)
-	}
-
-	err = cmd.Execute()
+	err := cmd.Execute()
 	if err != nil {
 		handleError(err)
 	}

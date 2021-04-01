@@ -20,24 +20,22 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "scrt",
-	Short: "A secret manager for the command-line",
+	Use:     "scrt",
+	Short:   "A secret manager for the command-line",
+	Version: "0.0.0",
 }
 
-// Init initializes the root cobra command
-func Init() error {
+func init() {
 	rootCmd.AddCommand(initCmd)
-	rootCmd.AddCommand(versionCmd)
 	rootCmd.PersistentFlags().StringP("password", "p", "", "master password to unlock the store")
 	err := rootCmd.MarkPersistentFlagRequired("password")
 	if err != nil {
-		return err
+		panic(err)
 	}
 	err = viper.BindPFlag("password", rootCmd.PersistentFlags().Lookup("password"))
 	if err != nil {
-		return err
+		panic(err)
 	}
-	return nil
 }
 
 // Execute executes the root cobra command

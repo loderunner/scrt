@@ -21,8 +21,7 @@ import (
 	"testing"
 )
 
-func testStore(t *testing.T, store Store) Store {
-
+func makePassword(t *testing.T) []byte {
 	passwordLength, err := rand.Int(rand.Reader, big.NewInt(256))
 	if err != nil {
 		t.Fatal(err)
@@ -35,6 +34,12 @@ func testStore(t *testing.T, store Store) Store {
 	if n != int(passwordLength.Int64()) {
 		t.Fatalf("unexpected password length: %d", n)
 	}
+	return password
+}
+
+func testStore(t *testing.T, store Store) Store {
+
+	password := makePassword(t)
 
 	data, err := WriteStore(password, store)
 	if err != nil {
@@ -69,4 +74,49 @@ func TestTwice(t *testing.T) {
 
 	store = testStore(t, store)
 	testStore(t, store)
+}
+
+func TestWriteNilData(t *testing.T) {
+	store := Store{}
+	password := makePassword(t)
+
+	_, err := WriteStore(password, store)
+	if err == nil {
+		t.Fatalf("expected error")
+	}
+}
+
+func TestReadInvalidPassword(t *testing.T) {
+	store := NewStore()
+
+	store.data["hello"] = []byte("world")
+
+	password := makePassword(t)
+
+	data, err := WriteStore(password, store)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	password = []byte("toto")
+	_, err = ReadStore(password, data)
+	if err == nil {
+		t.Fatalf("expected error")
+	}
+}
+
+func TestReadInvalidData(t *testing.T) {
+	// Random data for invalid store
+	data := make([]byte, 32)
+	_, err := rand.Read(data)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	password := makePassword(t)
+
+	_, err = ReadStore(password, data)
+	if err == nil {
+		t.Fatalf("expected error")
+	}
 }
