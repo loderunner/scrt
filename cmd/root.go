@@ -25,12 +25,19 @@ var rootCmd = &cobra.Command{
 }
 
 // Init initializes the root cobra command
-func Init() {
+func Init() error {
 	rootCmd.AddCommand(initCmd)
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.PersistentFlags().StringP("password", "p", "", "master password to unlock the store")
-	rootCmd.MarkPersistentFlagRequired("password")
-	viper.BindPFlag("password", rootCmd.PersistentFlags().Lookup("password"))
+	err := rootCmd.MarkPersistentFlagRequired("password")
+	if err != nil {
+		return err
+	}
+	err = viper.BindPFlag("password", rootCmd.PersistentFlags().Lookup("password"))
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // Execute executes the root cobra command

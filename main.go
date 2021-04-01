@@ -23,13 +23,21 @@ import (
 )
 
 func main() {
-	cmd.Init()
-	err := cmd.Execute()
+	err := cmd.Init()
 	if err != nil {
-		var posixErr syscall.Errno
-		if errors.As(err, &posixErr) {
-			os.Exit(int(posixErr))
-		}
-		os.Exit(-1)
+		handleError(err)
 	}
+
+	err = cmd.Execute()
+	if err != nil {
+		handleError(err)
+	}
+}
+
+func handleError(err error) {
+	var posixErr syscall.Errno
+	if errors.As(err, &posixErr) {
+		os.Exit(int(posixErr))
+	}
+	os.Exit(-1)
 }

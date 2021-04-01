@@ -14,8 +14,10 @@
 
 package backend
 
+// Backends associates backend type names to constructor functions
 var Backends = map[string]constructor{}
 
+// Backend implements the common backend operations
 type Backend interface {
 	Exists() bool
 	Save(data []byte) error
