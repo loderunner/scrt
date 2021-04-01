@@ -1,0 +1,40 @@
+name: Go
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+
+  lint:
+    runs-on: ubuntu-latest
+    container: golangci/golangci-lint:v1.39-alpine
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.3.4
+      - name: Run linters
+        run: golangci-lint run
+        
+  test:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.16
+      - name: Test
+        run: go test -race -v ./...
+        
+  build:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.16
+      - name: Test
+        run: go build -v .
