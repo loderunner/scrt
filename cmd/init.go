@@ -15,14 +15,63 @@
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"gitlab.com/loderunner/ask"
+
+	"github.com/loderunner/scrt/backend"
+	"github.com/loderunner/scrt/store"
 )
 
 var initCmd = &cobra.Command{
-	Use:   "init [flags] storage [location]",
+	Use:   "init [flags] storage location",
 	Short: "Initializes a new repository",
-	Args:  cobra.MinimumNArgs(1),
+	Args: func(cmd *cobra.Command, args []string) error {
+		err := cobra.ExactArgs(2)(cmd, args)
+		if err != nil {
+			return err
+		}
+		backendType := args[0]
+		if _, ok := backend.Backends[backendType]; !ok {
+			return fmt.Errorf("unknown backend: %s", backendType)
+		}
+		return nil
+	},
 	RunE: func(cmd *cobra.Command, args []string) error {
+		backendType := args[0]
+		backendName := args[1]
+
+		b := backend.Backends[backendType](backendName)
+
+		if b.Exists() {
+			overwrite, err := ask.Boolf("%s store already exists at %s. Do you want to overwrite it?", backendType, backendName).
+				Default(false).
+				Ask()
+			if err != nil {
+				return err
+			}
+			if !overwrite {
+				return fmt.Errorf("aborted")
+			}
+		}
+
+		s := store.NewStore()
+		password := []byte(viper.GetString("password"))
+
+		data, err := store.WriteStore(password, s)
+		if err != nil {
+			return err
+		}
+
+		err = b.Save(data)
+		if err != nil {
+			return err
+		}
+
+		fmt.Printf("%s store initialized at %s\n", backendType, backendName)
+
 		return nil
 	},
 }

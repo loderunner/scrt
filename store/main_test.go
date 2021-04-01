@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package store
 
 import (
 	"crypto/rand"
@@ -21,8 +21,7 @@ import (
 	"testing"
 )
 
-func TestStore(t *testing.T) {
-	expect := NewStore()
+func testStore(t *testing.T, store Store) Store {
 
 	passwordLength, err := rand.Int(rand.Reader, big.NewInt(256))
 	if err != nil {
@@ -37,7 +36,7 @@ func TestStore(t *testing.T) {
 		t.Fatalf("unexpected password length: %d", n)
 	}
 
-	data, err := WriteStore(password, expect)
+	data, err := WriteStore(password, store)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -46,7 +45,28 @@ func TestStore(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !reflect.DeepEqual(expect.data, got.data) {
-		t.Fatalf("expected %#v, got %#v", expect.data, got.data)
+	if !reflect.DeepEqual(store.data, got.data) {
+		t.Fatalf("expected %#v, got %#v", store.data, got.data)
 	}
+
+	return got
+}
+
+func TestEmptyStore(t *testing.T) {
+	testStore(t, NewStore())
+}
+
+func TestBasicStore(t *testing.T) {
+	store := NewStore()
+
+	store.data["hello"] = []byte("world")
+
+	testStore(t, store)
+}
+
+func TestTwice(t *testing.T) {
+	store := NewStore()
+
+	store = testStore(t, store)
+	testStore(t, store)
 }

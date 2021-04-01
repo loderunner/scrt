@@ -15,10 +15,21 @@
 package main
 
 import (
+	"errors"
+	"os"
+	"syscall"
+
 	"github.com/loderunner/scrt/cmd"
 )
 
 func main() {
 	cmd.Init()
-	cmd.Execute()
+	err := cmd.Execute()
+	if err != nil {
+		var posixErr syscall.Errno
+		if errors.As(err, &posixErr) {
+			os.Exit(int(posixErr))
+		}
+		os.Exit(-1)
+	}
 }

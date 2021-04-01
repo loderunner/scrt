@@ -12,28 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package cmd
+package backend
 
 import (
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
+	"errors"
+	"os"
 )
 
-var rootCmd = &cobra.Command{
-	Use:   "scrt",
-	Short: "A secret manager for the command-line",
+type local struct {
+	path string
 }
 
-// Init initializes the root cobra command
-func Init() {
-	rootCmd.AddCommand(initCmd)
-	rootCmd.AddCommand(versionCmd)
-	rootCmd.PersistentFlags().StringP("password", "p", "", "master password to unlock the store")
-	rootCmd.MarkPersistentFlagRequired("password")
-	viper.BindPFlag("password", rootCmd.PersistentFlags().Lookup("password"))
+func init() {
+	Backends["local"] = newLocal
 }
 
-// Execute executes the root cobra command
-func Execute() error {
-	return rootCmd.Execute()
+func newLocal(path string) Backend {
+	return local{path: path}
+}
+
+func (l local) Exists() bool {
+	_, err := os.Stat(l.path)
+	return !errors.Is(err, os.ErrNotExist)
+}
+
+func (l local) Save(data []byte) error {
+	return os.WriteFile(l.path, data, 0600)
 }

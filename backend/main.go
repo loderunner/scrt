@@ -17,7 +17,8 @@ package backend
 var Backends = map[string]constructor{}
 
 type Backend interface {
-	Init(args ...interface{})
+	Exists() bool
+	Save(data []byte) error
 }
 
 type constructor func(name string) Backend
