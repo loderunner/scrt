@@ -15,12 +15,12 @@
 package backend
 
 import (
-	"errors"
-	"os"
+	"github.com/spf13/afero"
 )
 
 type local struct {
 	path string
+	fs   afero.Fs
 }
 
 func init() {
@@ -28,14 +28,14 @@ func init() {
 }
 
 func newLocal(path string) Backend {
-	return local{path: path}
+	return local{path: path, fs: afero.NewOsFs()}
 }
 
 func (l local) Exists() bool {
-	_, err := os.Stat(l.path)
-	return !errors.Is(err, os.ErrNotExist)
+	exists, _ := afero.Exists(l.fs, l.path)
+	return exists
 }
 
 func (l local) Save(data []byte) error {
-	return os.WriteFile(l.path, data, 0600)
+	return afero.WriteFile(l.fs, l.path, data, 0600)
 }
