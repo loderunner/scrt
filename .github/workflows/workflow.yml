@@ -39,5 +39,5 @@ jobs:
           go-version: 1.16
       - name: Checkout
         uses: actions/checkout@v2.3.4
-      - name: Test
+      - name: Build
         run: go build -v .
