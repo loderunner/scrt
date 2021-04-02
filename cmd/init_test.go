@@ -49,8 +49,12 @@ func TestInitOverWrite(t *testing.T) {
 	mockBackend.EXPECT().Exists().Return(true)
 	mockBackend.EXPECT().Save(gomock.Any())
 
-	initCmd.Flags().Set("overwrite", "true")
-	err := initCmd.RunE(initCmd, []string{"mock", "path"})
+	err := initCmd.Flags().Set("overwrite", "true")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = initCmd.RunE(initCmd, []string{"mock", "path"})
 	if err != nil {
 		t.Fatal(err)
 	}
