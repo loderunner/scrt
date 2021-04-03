@@ -47,6 +47,21 @@ func (mr *MockBackendMockRecorder) Exists() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Exists", reflect.TypeOf((*MockBackend)(nil).Exists))
 }
 
+// Load mocks base method.
+func (m *MockBackend) Load() ([]byte, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Load")
+	ret0, _ := ret[0].([]byte)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Load indicates an expected call of Load.
+func (mr *MockBackendMockRecorder) Load() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Load", reflect.TypeOf((*MockBackend)(nil).Load))
+}
+
 // Save mocks base method.
 func (m *MockBackend) Save(arg0 []byte) error {
 	m.ctrl.T.Helper()

@@ -39,3 +39,7 @@ func (l local) Exists() bool {
 func (l local) Save(data []byte) error {
 	return afero.WriteFile(l.fs, l.path, data, 0600)
 }
+
+func (l local) Load() ([]byte, error) {
+	return afero.ReadFile(l.fs, l.path)
+}

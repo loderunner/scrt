@@ -21,6 +21,7 @@ var Backends = map[string]constructor{}
 type Backend interface {
 	Exists() bool
 	Save(data []byte) error
+	Load() ([]byte, error)
 }
 
 type constructor func(name string) Backend

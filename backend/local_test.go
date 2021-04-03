@@ -16,6 +16,7 @@ package backend
 
 import (
 	"os"
+	"reflect"
 	"testing"
 
 	"github.com/loderunner/scrt/store"
@@ -42,7 +43,7 @@ func TestExists(t *testing.T) {
 	}
 }
 
-func TestSave(t *testing.T) {
+func TestSaveLoad(t *testing.T) {
 	path := "/tmp/store.scrt"
 	fs := afero.NewMemMapFs()
 
@@ -57,5 +58,14 @@ func TestSave(t *testing.T) {
 
 	if !b.Exists() {
 		t.Fatal("expected store to exist")
+	}
+
+	got, err := b.Load()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if !reflect.DeepEqual(data, got) {
+		t.Fatalf("expected %#v, got %#v", data, got)
 	}
 }
