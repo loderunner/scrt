@@ -114,3 +114,33 @@ func WriteStore(password []byte, store Store) ([]byte, error) {
 
 	return append(salt, append(iv, ciphertext...)...), nil
 }
+
+// Has returns true if a value is associated to key in the Store.
+func (s Store) Has(key string) bool {
+	_, ok := s.data[key]
+	return ok
+}
+
+// Get returns the value associated to key in the Store, or an error if none is
+// associated.
+func (s Store) Get(key string) ([]byte, error) {
+	if val, ok := s.data[key]; ok {
+		return val, nil
+	}
+	return nil, fmt.Errorf("no value for \"%s\"", key)
+}
+
+// Set associates the value to key in the Store, or an error if val is
+// invalid.
+func (s Store) Set(key string, val []byte) error {
+	if val == nil {
+		return fmt.Errorf("cannot set value")
+	}
+	s.data[key] = val
+	return nil
+}
+
+// Unset removes any value associated to key in the Store.
+func (s Store) Unset(key string) {
+	delete(s.data, key)
+}

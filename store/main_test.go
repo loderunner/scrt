@@ -21,6 +21,11 @@ import (
 	"testing"
 )
 
+const testKey = "hello"
+const testBadKey = "toto"
+
+var testVal = []byte("world")
+
 func makePassword(t *testing.T) []byte {
 	passwordLength, err := rand.Int(rand.Reader, big.NewInt(256))
 	if err != nil {
@@ -37,8 +42,7 @@ func makePassword(t *testing.T) []byte {
 	return password
 }
 
-func testStore(t *testing.T, store Store) Store {
-
+func testWriteReadStore(t *testing.T, store Store) Store {
 	password := makePassword(t)
 
 	data, err := WriteStore(password, store)
@@ -58,22 +62,22 @@ func testStore(t *testing.T, store Store) Store {
 }
 
 func TestEmptyStore(t *testing.T) {
-	testStore(t, NewStore())
+	testWriteReadStore(t, NewStore())
 }
 
 func TestBasicStore(t *testing.T) {
 	store := NewStore()
 
-	store.data["hello"] = []byte("world")
+	store.Set(testKey, testVal)
 
-	testStore(t, store)
+	testWriteReadStore(t, store)
 }
 
 func TestTwice(t *testing.T) {
 	store := NewStore()
 
-	store = testStore(t, store)
-	testStore(t, store)
+	store = testWriteReadStore(t, store)
+	testWriteReadStore(t, store)
 }
 
 func TestWriteNilData(t *testing.T) {
@@ -89,7 +93,7 @@ func TestWriteNilData(t *testing.T) {
 func TestReadInvalidPassword(t *testing.T) {
 	store := NewStore()
 
-	store.data["hello"] = []byte("world")
+	store.data[testKey] = testVal
 
 	password := makePassword(t)
 
@@ -118,5 +122,80 @@ func TestReadInvalidData(t *testing.T) {
 	_, err = ReadStore(password, data)
 	if err == nil {
 		t.Fatalf("expected error")
+	}
+}
+
+func TestHasFail(t *testing.T) {
+	s := NewStore()
+
+	if s.Has(testKey) {
+		t.Fatalf("expected s.Has(%#v) to return false", testKey)
+	}
+}
+
+func TestSetHas(t *testing.T) {
+	s := NewStore()
+
+	err := s.Set(testKey, testVal)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if !s.Has(testKey) {
+		t.Fatalf("expected s.Has(%#v) to return true", testKey)
+	}
+
+	if s.Has(testBadKey) {
+		t.Fatalf("expected s.Has(%#v) to return false", testKey)
+	}
+}
+
+func TestGetFail(t *testing.T) {
+	s := NewStore()
+
+	_, err := s.Get(testKey)
+	if err == nil {
+		t.Fatalf("expected s.Get(%#v) to return error", testKey)
+	}
+}
+
+func TestSetGet(t *testing.T) {
+	s := NewStore()
+
+	err := s.Set(testKey, testVal)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	val, err := s.Get(testKey)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(val, testVal) {
+		t.Fatalf("expected %#v, got %#v", testVal, val)
+	}
+
+	_, err = s.Get(testBadKey)
+	if err == nil {
+		t.Fatalf("expected s.Get(%#v) to return error", testBadKey)
+	}
+}
+
+func TestSetUnsetHasGet(t *testing.T) {
+	s := NewStore()
+
+	err := s.Set(testKey, testVal)
+	if err != nil {
+		t.Fatal(err)
+	}
+	s.Unset(testKey)
+
+	if s.Has(testKey) {
+		t.Fatalf("expected s.Has(%#v) to return false", testKey)
+	}
+
+	_, err = s.Get(testKey)
+	if err == nil {
+		t.Fatalf("expected s.Get(%#v) to return error", testKey)
 	}
 }
