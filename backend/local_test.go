@@ -23,7 +23,7 @@ import (
 	"github.com/spf13/afero"
 )
 
-func TestExists(t *testing.T) {
+func TestLocalExists(t *testing.T) {
 	path := "/tmp/store.scrt"
 	fs := afero.NewMemMapFs()
 	f, err := fs.OpenFile(path, os.O_CREATE, 0600)
@@ -43,7 +43,7 @@ func TestExists(t *testing.T) {
 	}
 }
 
-func TestSaveLoad(t *testing.T) {
+func TestLocalSaveLoad(t *testing.T) {
 	path := "/tmp/store.scrt"
 	fs := afero.NewMemMapFs()
 
