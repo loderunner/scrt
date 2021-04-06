@@ -44,6 +44,9 @@ func NewStore() Store {
 // decrypted of parsed. A json.Unmarshal error can mean either that the wrong
 // password was supplied, or that the Store is corrupted.
 func ReadStore(password []byte, data []byte) (Store, error) {
+	if len(data) < saltLength+aes.BlockSize {
+		return Store{}, fmt.Errorf("invalid length")
+	}
 	salt := data[:saltLength]
 	iv := data[saltLength : saltLength+aes.BlockSize]
 	ciphertext := data[saltLength+aes.BlockSize:]
@@ -52,7 +55,7 @@ func ReadStore(password []byte, data []byte) (Store, error) {
 
 	block, err := aes.NewCipher(key)
 	if err != nil {
-		return Store{}, fmt.Errorf("failed to read store: %w", err)
+		return Store{}, err
 	}
 
 	stream := cipher.NewCTR(block, iv)
@@ -64,7 +67,7 @@ func ReadStore(password []byte, data []byte) (Store, error) {
 	}
 	err = json.Unmarshal(plaintext, &store.data)
 	if err != nil {
-		return Store{}, fmt.Errorf("failed to read store: %w", err)
+		return Store{}, err
 	}
 
 	return store, nil
@@ -80,16 +83,16 @@ func WriteStore(password []byte, store Store) ([]byte, error) {
 
 	plaintext, err := json.Marshal(store.data)
 	if err != nil {
-		return nil, fmt.Errorf("failed to write store: %w", err)
+		return nil, err
 	}
 
 	salt := make([]byte, saltLength)
 	n, err := rand.Read(salt)
 	if err != nil {
-		return nil, fmt.Errorf("failed to write store: %w", err)
+		return nil, err
 	}
 	if n != saltLength {
-		return nil, fmt.Errorf("failed to write store: unexpected salt length: %d", n)
+		return nil, fmt.Errorf("unexpected salt length: %d", n)
 	}
 
 	key := argon2.IDKey(password, salt, 1, 64*1024, 4, 32)
@@ -97,15 +100,15 @@ func WriteStore(password []byte, store Store) ([]byte, error) {
 	iv := make([]byte, aes.BlockSize)
 	n, err = rand.Read(iv)
 	if err != nil {
-		return nil, fmt.Errorf("failed to write store: %w", err)
+		return nil, err
 	}
 	if n != aes.BlockSize {
-		return nil, fmt.Errorf("failed to write store: unexpected IV length: %d", n)
+		return nil, fmt.Errorf("unexpected IV length: %d", n)
 	}
 
 	block, err := aes.NewCipher(key)
 	if err != nil {
-		return nil, fmt.Errorf("failed to write store: %w", err)
+		return nil, err
 	}
 
 	stream := cipher.NewCTR(block, iv)
