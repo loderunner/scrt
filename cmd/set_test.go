@@ -17,6 +17,7 @@
 package cmd
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -48,5 +49,140 @@ func TestSetCmd(t *testing.T) {
 	err = setCmd.RunE(setCmd, []string{"mock", "path", "hello", "world"})
 	if err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestSetCmdNotExists(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockBackend := NewMockBackend(ctrl)
+	backend.Backends["mock"] = func(name string) backend.Backend { return mockBackend }
+
+	mockBackend.EXPECT().Exists().Return(false)
+
+	err := setCmd.RunE(setCmd, []string{"mock", "path", "hello", "world"})
+	if err == nil {
+		t.Fatal("expected error")
+	}
+}
+
+func TestSetCmdFailedLoad(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockBackend := NewMockBackend(ctrl)
+	backend.Backends["mock"] = func(name string) backend.Backend { return mockBackend }
+
+	mockBackend.EXPECT().Exists().Return(true)
+	mockBackend.EXPECT().Load().Return(nil, fmt.Errorf("error"))
+
+	err := setCmd.RunE(setCmd, []string{"mock", "path", "hello", "world"})
+	if err == nil {
+		t.Fatal("expected error")
+	}
+}
+
+func TestSetCmdFailedInvalidData(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockBackend := NewMockBackend(ctrl)
+	backend.Backends["mock"] = func(name string) backend.Backend { return mockBackend }
+
+	data := []byte("toto")
+
+	mockBackend.EXPECT().Exists().Return(true)
+	mockBackend.EXPECT().Load().Return(data, nil)
+
+	err := setCmd.RunE(setCmd, []string{"mock", "path", "hello", "world"})
+	if err == nil {
+		t.Fatal("expected error")
+	}
+}
+
+func TestSetCmdFailedNoOverwrite(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockBackend := NewMockBackend(ctrl)
+	backend.Backends["mock"] = func(name string) backend.Backend { return mockBackend }
+
+	password := "toto"
+	viper.Set("password", password)
+	s := store.NewStore()
+	err := s.Set("hello", []byte("world"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	data, err := store.WriteStore([]byte(password), s)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	mockBackend.EXPECT().Exists().Return(true)
+	mockBackend.EXPECT().Load().Return(data, nil)
+
+	err = setCmd.RunE(setCmd, []string{"mock", "path", "hello", "world"})
+	if err == nil {
+		t.Fatal("expected error")
+	}
+}
+
+func TestSetCmdOverwrite(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockBackend := NewMockBackend(ctrl)
+	backend.Backends["mock"] = func(name string) backend.Backend { return mockBackend }
+
+	password := "toto"
+	viper.Set("password", password)
+	s := store.NewStore()
+	err := s.Set("hello", []byte("world"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	data, err := store.WriteStore([]byte(password), s)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	mockBackend.EXPECT().Exists().Return(true)
+	mockBackend.EXPECT().Load().Return(data, nil)
+	mockBackend.EXPECT().Save(gomock.Any())
+
+	err = setCmd.Flags().Set("overwrite", "true")
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = setCmd.RunE(setCmd, []string{"mock", "path", "hello", "world"})
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestSetCmdFailedSave(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockBackend := NewMockBackend(ctrl)
+	backend.Backends["mock"] = func(name string) backend.Backend { return mockBackend }
+
+	password := "toto"
+	viper.Set("password", password)
+	s := store.NewStore()
+	data, err := store.WriteStore([]byte(password), s)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	mockBackend.EXPECT().Exists().Return(true)
+	mockBackend.EXPECT().Load().Return(data, nil)
+	mockBackend.EXPECT().Save(gomock.Any()).Return(fmt.Errorf("error"))
+
+	err = setCmd.RunE(setCmd, []string{"mock", "path", "hello", "world"})
+	if err == nil {
+		t.Fatal("expected error")
 	}
 }
