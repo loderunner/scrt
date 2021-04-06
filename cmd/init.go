@@ -27,7 +27,7 @@ import (
 
 var initCmd = &cobra.Command{
 	Use:   "init [flags] storage location",
-	Short: "Initializes a new repository",
+	Short: "Initialize a new store",
 	Args: func(cmd *cobra.Command, args []string) error {
 		err := cobra.ExactArgs(2)(cmd, args)
 		if err != nil {
@@ -58,7 +58,7 @@ var initCmd = &cobra.Command{
 					Ask()
 			}
 			if err != nil {
-				return err
+				return fmt.Errorf("could not read options: %w", err)
 			}
 			if !overwrite {
 				return fmt.Errorf("aborted")
@@ -70,12 +70,12 @@ var initCmd = &cobra.Command{
 
 		data, err := store.WriteStore(password, s)
 		if err != nil {
-			return err
+			return fmt.Errorf("could not write store to data: %w", err)
 		}
 
 		err = b.Save(data)
 		if err != nil {
-			return err
+			return fmt.Errorf("could not save data to %s: %w", backendName, err)
 		}
 
 		fmt.Printf("%s store initialized at %s\n", backendType, backendName)
