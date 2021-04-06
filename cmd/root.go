@@ -27,6 +27,7 @@ var rootCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(initCmd)
+	rootCmd.AddCommand(setCmd)
 	rootCmd.PersistentFlags().StringP("password", "p", "", "master password to unlock the store")
 	err := rootCmd.MarkPersistentFlagRequired("password")
 	if err != nil {
