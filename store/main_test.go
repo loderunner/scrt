@@ -68,7 +68,10 @@ func TestEmptyStore(t *testing.T) {
 func TestBasicStore(t *testing.T) {
 	store := NewStore()
 
-	store.Set(testKey, testVal)
+	err := store.Set(testKey, testVal)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	testWriteReadStore(t, store)
 }
