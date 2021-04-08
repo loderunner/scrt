@@ -32,6 +32,8 @@ func init() {
 	rootCmd.AddCommand(initCmd)
 	rootCmd.AddCommand(setCmd)
 	rootCmd.AddCommand(getCmd)
+	rootCmd.AddCommand(unsetCmd)
+
 	rootCmd.PersistentFlags().StringP("password", "p", "", "master password to unlock the store")
 	err := rootCmd.MarkPersistentFlagRequired("password")
 	if err != nil {
