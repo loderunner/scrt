@@ -23,11 +23,15 @@ var rootCmd = &cobra.Command{
 	Use:     "scrt",
 	Short:   "A secret manager for the command-line",
 	Version: "0.0.0",
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		cmd.SilenceUsage = true
+	},
 }
 
 func init() {
 	rootCmd.AddCommand(initCmd)
 	rootCmd.AddCommand(setCmd)
+	rootCmd.AddCommand(getCmd)
 	rootCmd.PersistentFlags().StringP("password", "p", "", "master password to unlock the store")
 	err := rootCmd.MarkPersistentFlagRequired("password")
 	if err != nil {
