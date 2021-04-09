@@ -28,7 +28,7 @@ import (
 
 var getCmd = &cobra.Command{
 	Use:   "get [flags] storage location key",
-	Short: "Retrieve the value associated to a key from a store",
+	Short: "Retrieve the value associated to key from a store",
 	Args: func(cmd *cobra.Command, args []string) error {
 		err := cobra.ExactArgs(3)(cmd, args)
 		if err != nil {
