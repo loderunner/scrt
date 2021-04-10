@@ -75,7 +75,10 @@ func TestSetCmdStdin(t *testing.T) {
 	mockBackend.EXPECT().Load().Return(data, nil)
 	mockBackend.EXPECT().Save(gomock.Any())
 
-	hijackStdin.WriteString("world")
+	_, err = hijackStdin.WriteString("world")
+	if err != nil {
+		t.Fatal(err)
+	}
 	hijackStdin.Close()
 
 	err = setCmd.RunE(setCmd, []string{"mock", "path", "hello"})
