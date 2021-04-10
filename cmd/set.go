@@ -16,6 +16,8 @@ package cmd
 
 import (
 	"fmt"
+	"io"
+	"os"
 
 	"github.com/loderunner/scrt/backend"
 	"github.com/loderunner/scrt/store"
@@ -24,10 +26,16 @@ import (
 )
 
 var setCmd = &cobra.Command{
-	Use:   "set [flags] storage location key value",
+	Use:   "set [flags] storage location key [value]",
 	Short: "Associate a key to a value in a store",
+	Long: `Associate a key to a value in a store. If value is omitted from the command
+line, it will be read from standard input.`,
 	Args: func(cmd *cobra.Command, args []string) error {
-		err := cobra.ExactArgs(4)(cmd, args)
+		err := cobra.MinimumNArgs(3)(cmd, args)
+		if err != nil {
+			return err
+		}
+		err = cobra.MaximumNArgs(4)(cmd, args)
 		if err != nil {
 			return err
 		}
@@ -41,7 +49,17 @@ var setCmd = &cobra.Command{
 		backendType := args[0]
 		backendName := args[1]
 		key := args[2]
-		val := []byte(args[3])
+
+		var val []byte
+		var err error
+		if len(args) == 3 {
+			val, err = io.ReadAll(os.Stdin)
+			if err != nil {
+				return fmt.Errorf("could not read from stdin %w", err)
+			}
+		} else {
+			val = []byte(args[3])
+		}
 
 		b := backend.Backends[backendType](backendName)
 		if !b.Exists() {

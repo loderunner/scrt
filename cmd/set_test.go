@@ -52,6 +52,38 @@ func TestSetCmd(t *testing.T) {
 	}
 }
 
+func TestSetCmdStdin(t *testing.T) {
+	// Hijack standard input
+	hijack()
+	defer restore()
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockBackend := NewMockBackend(ctrl)
+	backend.Backends["mock"] = func(name string) backend.Backend { return mockBackend }
+
+	password := "toto"
+	viper.Set("password", password)
+	s := store.NewStore()
+	data, err := store.WriteStore([]byte(password), s)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	mockBackend.EXPECT().Exists().Return(true)
+	mockBackend.EXPECT().Load().Return(data, nil)
+	mockBackend.EXPECT().Save(gomock.Any())
+
+	hijackStdin.WriteString("world")
+	hijackStdin.Close()
+
+	err = setCmd.RunE(setCmd, []string{"mock", "path", "hello"})
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestSetCmdNotExists(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
