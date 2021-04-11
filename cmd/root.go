@@ -15,7 +15,6 @@
 package cmd
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -32,48 +31,23 @@ var rootCmd = &cobra.Command{
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		// Read configuration from .scrt file if exists, recursively searching
 		// for .scrt file in parent directories until root is reached
+		viper.SetConfigName(".scrt")
 		viper.SetConfigType("yaml")
 		dir, err := os.Getwd()
 		if err != nil {
 			return err
 		}
-		for {
-			configPath := filepath.Join(dir, ".scrt")
-			fileInfo, err := os.Stat(configPath)
-			if err == nil {
-				// .scrt exists at path
+		viper.AddConfigPath(dir)
+		for dir != "/" {
+			dir = filepath.Dir(dir)
+			viper.AddConfigPath(dir)
+		}
 
-				if fileInfo.IsDir() {
-					return fmt.Errorf("%s is a directory", configPath)
-				}
-
-				f, err := os.Open(configPath)
-				if err != nil {
-					return err
-				}
-				defer f.Close()
-
-				err = viper.ReadConfig(f)
-				if err != nil {
-					return fmt.Errorf("could not read %s: %w", configPath, err)
-				}
-
-				// config loaded, break out of loop
-				break
-			}
-
-			// .scrt does not exist at path
-
-			if !errors.Is(err, os.ErrNotExist) {
+		err = viper.ReadInConfig()
+		if err != nil {
+			if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
 				return err
 			}
-
-			if dir == "/" {
-				// reached root path, no .scrt to load, break out of loop
-				break
-			}
-
-			dir = filepath.Dir(dir)
 		}
 
 		// Validate configuration
