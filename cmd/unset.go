@@ -24,32 +24,32 @@ import (
 )
 
 var unsetCmd = &cobra.Command{
-	Use:   "unset [flags] storage location key",
+	Use:   "unset [flags] key",
 	Short: "Remove the value associated to key in a store",
 	Args: func(cmd *cobra.Command, args []string) error {
-		err := cobra.ExactArgs(3)(cmd, args)
+		err := cobra.ExactArgs(1)(cmd, args)
 		if err != nil {
 			return err
 		}
-		backendType := args[0]
-		if _, ok := backend.Backends[backendType]; !ok {
-			return fmt.Errorf("unknown backend: %s", backendType)
+		storage := viper.GetString(configKeyStorage)
+		if _, ok := backend.Backends[storage]; !ok {
+			return fmt.Errorf("unknown backend: %s", storage)
 		}
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		backendType := args[0]
-		backendName := args[1]
-		key := args[2]
+		storage := viper.GetString(configKeyStorage)
+		location := viper.GetString(configKeyLocation)
+		key := args[0]
 
-		b := backend.Backends[backendType](backendName)
+		b := backend.Backends[storage](location)
 		if !b.Exists() {
-			return fmt.Errorf("%s store at %s does not exist", backendType, backendName)
+			return fmt.Errorf("%s store at %s does not exist", storage, location)
 		}
 
 		data, err := b.Load()
 		if err != nil {
-			return fmt.Errorf("could not load data from %s: %w", backendName, err)
+			return fmt.Errorf("could not load data from %s: %w", location, err)
 		}
 
 		password := []byte(viper.GetString(configKeyPassword))
@@ -67,7 +67,7 @@ var unsetCmd = &cobra.Command{
 
 		err = b.Save(data)
 		if err != nil {
-			return fmt.Errorf("could not save data to %s: %w", backendName, err)
+			return fmt.Errorf("could not save data to %s: %w", location, err)
 		}
 
 		return nil

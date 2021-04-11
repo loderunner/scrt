@@ -26,49 +26,49 @@ import (
 )
 
 var setCmd = &cobra.Command{
-	Use:   "set [flags] storage location key [value]",
+	Use:   "set [flags] key [value]",
 	Short: "Associate a key to a value in a store",
 	Long: `Associate a key to a value in a store. If value is omitted from the command
 line, it will be read from standard input.`,
 	Args: func(cmd *cobra.Command, args []string) error {
-		err := cobra.MinimumNArgs(3)(cmd, args)
+		err := cobra.MinimumNArgs(1)(cmd, args)
 		if err != nil {
 			return err
 		}
-		err = cobra.MaximumNArgs(4)(cmd, args)
+		err = cobra.MaximumNArgs(2)(cmd, args)
 		if err != nil {
 			return err
 		}
-		backendType := args[0]
-		if _, ok := backend.Backends[backendType]; !ok {
-			return fmt.Errorf("unknown backend: %s", backendType)
+		storage := viper.GetString(configKeyStorage)
+		if _, ok := backend.Backends[storage]; !ok {
+			return fmt.Errorf("unknown backend: %s", storage)
 		}
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		backendType := args[0]
-		backendName := args[1]
-		key := args[2]
+		storage := viper.GetString(configKeyStorage)
+		location := viper.GetString(configKeyLocation)
+		key := args[0]
 
 		var val []byte
 		var err error
-		if len(args) == 3 {
+		if len(args) == 1 {
 			val, err = io.ReadAll(os.Stdin)
 			if err != nil {
 				return fmt.Errorf("could not read from stdin %w", err)
 			}
 		} else {
-			val = []byte(args[3])
+			val = []byte(args[1])
 		}
 
-		b := backend.Backends[backendType](backendName)
+		b := backend.Backends[storage](location)
 		if !b.Exists() {
-			return fmt.Errorf("%s store at %s does not exist", backendType, backendName)
+			return fmt.Errorf("%s store at %s does not exist", storage, location)
 		}
 
 		data, err := b.Load()
 		if err != nil {
-			return fmt.Errorf("could not load data from %s: %w", backendName, err)
+			return fmt.Errorf("could not load data from %s: %w", location, err)
 		}
 
 		password := []byte(viper.GetString(configKeyPassword))
@@ -101,7 +101,7 @@ line, it will be read from standard input.`,
 
 		err = b.Save(data)
 		if err != nil {
-			return fmt.Errorf("could not save data to %s: %w", backendName, err)
+			return fmt.Errorf("could not save data to %s: %w", location, err)
 		}
 
 		return nil

@@ -35,7 +35,11 @@ func TestSetCmd(t *testing.T) {
 	backend.Backends["mock"] = func(name string) backend.Backend { return mockBackend }
 
 	password := "toto"
-	viper.Set("password", password)
+
+	viper.Set(configKeyPassword, password)
+	viper.Set(configKeyStorage, "mock")
+	viper.Set(configKeyLocation, "location")
+
 	s := store.NewStore()
 	data, err := store.WriteStore([]byte(password), s)
 	if err != nil {
@@ -46,7 +50,7 @@ func TestSetCmd(t *testing.T) {
 	mockBackend.EXPECT().Load().Return(data, nil)
 	mockBackend.EXPECT().Save(gomock.Any())
 
-	args := []string{"mock", "path", "hello", "world"}
+	args := []string{"hello", "world"}
 	err = setCmd.Args(setCmd, args)
 	if err != nil {
 		t.Fatal(err)
@@ -69,7 +73,11 @@ func TestSetCmdStdin(t *testing.T) {
 	backend.Backends["mock"] = func(name string) backend.Backend { return mockBackend }
 
 	password := "toto"
-	viper.Set("password", password)
+
+	viper.Set(configKeyPassword, password)
+	viper.Set(configKeyStorage, "mock")
+	viper.Set(configKeyLocation, "location")
+
 	s := store.NewStore()
 	data, err := store.WriteStore([]byte(password), s)
 	if err != nil {
@@ -86,7 +94,7 @@ func TestSetCmdStdin(t *testing.T) {
 	}
 	hijackStdin.Close()
 
-	args := []string{"mock", "path", "hello"}
+	args := []string{"hello"}
 	err = setCmd.Args(setCmd, args)
 	if err != nil {
 		t.Fatal(err)
@@ -104,9 +112,13 @@ func TestSetCmdNotExists(t *testing.T) {
 	mockBackend := NewMockBackend(ctrl)
 	backend.Backends["mock"] = func(name string) backend.Backend { return mockBackend }
 
+	viper.Set(configKeyPassword, "toto")
+	viper.Set(configKeyStorage, "mock")
+	viper.Set(configKeyLocation, "location")
+
 	mockBackend.EXPECT().Exists().Return(false)
 
-	args := []string{"mock", "path", "hello", "world"}
+	args := []string{"hello", "world"}
 	err := setCmd.Args(setCmd, args)
 	if err != nil {
 		t.Fatal(err)
@@ -124,10 +136,14 @@ func TestSetCmdFailedLoad(t *testing.T) {
 	mockBackend := NewMockBackend(ctrl)
 	backend.Backends["mock"] = func(name string) backend.Backend { return mockBackend }
 
+	viper.Set(configKeyPassword, "toto")
+	viper.Set(configKeyStorage, "mock")
+	viper.Set(configKeyLocation, "location")
+
 	mockBackend.EXPECT().Exists().Return(true)
 	mockBackend.EXPECT().Load().Return(nil, fmt.Errorf("error"))
 
-	args := []string{"mock", "path", "hello", "world"}
+	args := []string{"hello", "world"}
 	err := setCmd.Args(setCmd, args)
 	if err != nil {
 		t.Fatal(err)
@@ -145,12 +161,16 @@ func TestSetCmdFailedInvalidData(t *testing.T) {
 	mockBackend := NewMockBackend(ctrl)
 	backend.Backends["mock"] = func(name string) backend.Backend { return mockBackend }
 
+	viper.Set(configKeyPassword, "toto")
+	viper.Set(configKeyStorage, "mock")
+	viper.Set(configKeyLocation, "location")
+
 	data := []byte("toto")
 
 	mockBackend.EXPECT().Exists().Return(true)
 	mockBackend.EXPECT().Load().Return(data, nil)
 
-	args := []string{"mock", "path", "hello", "world"}
+	args := []string{"hello", "world"}
 	err := setCmd.Args(setCmd, args)
 	if err != nil {
 		t.Fatal(err)
@@ -169,7 +189,11 @@ func TestSetCmdFailedNoOverwrite(t *testing.T) {
 	backend.Backends["mock"] = func(name string) backend.Backend { return mockBackend }
 
 	password := "toto"
-	viper.Set("password", password)
+
+	viper.Set(configKeyPassword, password)
+	viper.Set(configKeyStorage, "mock")
+	viper.Set(configKeyLocation, "location")
+
 	s := store.NewStore()
 	err := s.Set("hello", []byte("world"))
 	if err != nil {
@@ -183,7 +207,7 @@ func TestSetCmdFailedNoOverwrite(t *testing.T) {
 	mockBackend.EXPECT().Exists().Return(true)
 	mockBackend.EXPECT().Load().Return(data, nil)
 
-	args := []string{"mock", "path", "hello", "world"}
+	args := []string{"hello", "world"}
 	err = setCmd.Args(setCmd, args)
 	if err != nil {
 		t.Fatal(err)
@@ -202,7 +226,11 @@ func TestSetCmdOverwrite(t *testing.T) {
 	backend.Backends["mock"] = func(name string) backend.Backend { return mockBackend }
 
 	password := "toto"
-	viper.Set("password", password)
+
+	viper.Set(configKeyPassword, password)
+	viper.Set(configKeyStorage, "mock")
+	viper.Set(configKeyLocation, "location")
+
 	s := store.NewStore()
 	err := s.Set("hello", []byte("world"))
 	if err != nil {
@@ -221,7 +249,7 @@ func TestSetCmdOverwrite(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	args := []string{"mock", "path", "hello", "world"}
+	args := []string{"hello", "world"}
 	err = setCmd.Args(setCmd, args)
 	if err != nil {
 		t.Fatal(err)
@@ -240,7 +268,11 @@ func TestSetCmdFailedSave(t *testing.T) {
 	backend.Backends["mock"] = func(name string) backend.Backend { return mockBackend }
 
 	password := "toto"
-	viper.Set("password", password)
+
+	viper.Set(configKeyPassword, password)
+	viper.Set(configKeyStorage, "mock")
+	viper.Set(configKeyLocation, "location")
+
 	s := store.NewStore()
 	data, err := store.WriteStore([]byte(password), s)
 	if err != nil {
@@ -251,7 +283,7 @@ func TestSetCmdFailedSave(t *testing.T) {
 	mockBackend.EXPECT().Load().Return(data, nil)
 	mockBackend.EXPECT().Save(gomock.Any()).Return(fmt.Errorf("error"))
 
-	args := []string{"mock", "path", "hello", "world"}
+	args := []string{"hello", "world"}
 	err = setCmd.Args(setCmd, args)
 	if err != nil {
 		t.Fatal(err)

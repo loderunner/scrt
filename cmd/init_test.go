@@ -20,6 +20,7 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"github.com/spf13/viper"
 
 	"github.com/loderunner/scrt/backend"
 )
@@ -31,10 +32,14 @@ func TestInitCmd(t *testing.T) {
 	mockBackend := NewMockBackend(ctrl)
 	backend.Backends["mock"] = func(name string) backend.Backend { return mockBackend }
 
+	viper.Set(configKeyPassword, "toto")
+	viper.Set(configKeyStorage, "mock")
+	viper.Set(configKeyLocation, "location")
+
 	mockBackend.EXPECT().Exists().Return(false)
 	mockBackend.EXPECT().Save(gomock.Any())
 
-	args := []string{"mock", "path"}
+	args := []string{"path"}
 	err := initCmd.Args(initCmd, args)
 	if err != nil {
 		t.Fatal(err)
@@ -52,6 +57,10 @@ func TestInitOverWrite(t *testing.T) {
 	mockBackend := NewMockBackend(ctrl)
 	backend.Backends["mock"] = func(name string) backend.Backend { return mockBackend }
 
+	viper.Set(configKeyPassword, "toto")
+	viper.Set(configKeyStorage, "mock")
+	viper.Set(configKeyLocation, "location")
+
 	mockBackend.EXPECT().Exists().Return(true)
 	mockBackend.EXPECT().Save(gomock.Any())
 
@@ -60,7 +69,7 @@ func TestInitOverWrite(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	args := []string{"mock", "path"}
+	args := []string{"path"}
 	err = initCmd.Args(initCmd, args)
 	if err != nil {
 		t.Fatal(err)

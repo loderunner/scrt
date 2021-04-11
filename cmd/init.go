@@ -26,26 +26,20 @@ import (
 )
 
 var initCmd = &cobra.Command{
-	Use:   "init [flags] storage location",
+	Use:   "init",
 	Short: "Initialize a new store",
 	Args: func(cmd *cobra.Command, args []string) error {
-		err := cobra.ExactArgs(2)(cmd, args)
-		if err != nil {
-			return err
-		}
-		backendType := args[0]
-		if _, ok := backend.Backends[backendType]; !ok {
-			return fmt.Errorf("unknown backend: %s", backendType)
+		storage := viper.GetString(configKeyStorage)
+		if _, ok := backend.Backends[storage]; !ok {
+			return fmt.Errorf("unknown backend: %s", storage)
 		}
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		cmd.SilenceUsage = true
+		storage := viper.GetString(configKeyStorage)
+		location := viper.GetString(configKeyLocation)
 
-		backendType := args[0]
-		backendName := args[1]
-
-		b := backend.Backends[backendType](backendName)
+		b := backend.Backends[storage](location)
 
 		if b.Exists() {
 			var overwrite bool
@@ -53,7 +47,7 @@ var initCmd = &cobra.Command{
 			if cmd.Flags().Changed("overwrite") {
 				overwrite, err = cmd.Flags().GetBool("overwrite")
 			} else {
-				overwrite, err = ask.Boolf("%s store already exists at %s. Do you want to overwrite it?", backendType, backendName).
+				overwrite, err = ask.Boolf("%s store already exists at %s. Do you want to overwrite it?", storage, location).
 					Default(false).
 					Ask()
 			}
@@ -75,10 +69,10 @@ var initCmd = &cobra.Command{
 
 		err = b.Save(data)
 		if err != nil {
-			return fmt.Errorf("could not save data to %s: %w", backendName, err)
+			return fmt.Errorf("could not save data to %s: %w", location, err)
 		}
 
-		fmt.Printf("%s store initialized at %s\n", backendType, backendName)
+		fmt.Printf("%s store initialized at %s\n", storage, location)
 
 		return nil
 	},

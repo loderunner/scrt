@@ -35,7 +35,11 @@ func TestUnsetCmd(t *testing.T) {
 	backend.Backends["mock"] = func(name string) backend.Backend { return mockBackend }
 
 	password := "toto"
-	viper.Set("password", password)
+
+	viper.Set(configKeyPassword, password)
+	viper.Set(configKeyStorage, "mock")
+	viper.Set(configKeyLocation, "location")
+
 	s := store.NewStore()
 	err := s.Set("hello", []byte("world"))
 	if err != nil {
@@ -50,7 +54,7 @@ func TestUnsetCmd(t *testing.T) {
 	mockBackend.EXPECT().Load().Return(data, nil)
 	mockBackend.EXPECT().Save(gomock.Any())
 
-	args := []string{"mock", "path", "hello"}
+	args := []string{"hello"}
 	err = unsetCmd.Args(unsetCmd, args)
 	if err != nil {
 		t.Fatal(err)
@@ -69,7 +73,11 @@ func TestUnsetCmdNoValue(t *testing.T) {
 	backend.Backends["mock"] = func(name string) backend.Backend { return mockBackend }
 
 	password := "toto"
-	viper.Set("password", password)
+
+	viper.Set(configKeyPassword, password)
+	viper.Set(configKeyStorage, "mock")
+	viper.Set(configKeyLocation, "location")
+
 	s := store.NewStore()
 	data, err := store.WriteStore([]byte(password), s)
 	if err != nil {
@@ -80,7 +88,7 @@ func TestUnsetCmdNoValue(t *testing.T) {
 	mockBackend.EXPECT().Load().Return(data, nil)
 	mockBackend.EXPECT().Save(gomock.Any())
 
-	args := []string{"mock", "path", "hello"}
+	args := []string{"hello"}
 	err = unsetCmd.Args(unsetCmd, args)
 	if err != nil {
 		t.Fatal(err)
@@ -98,9 +106,13 @@ func TestUnsetCmdNotExists(t *testing.T) {
 	mockBackend := NewMockBackend(ctrl)
 	backend.Backends["mock"] = func(name string) backend.Backend { return mockBackend }
 
+	viper.Set(configKeyPassword, "toto")
+	viper.Set(configKeyStorage, "mock")
+	viper.Set(configKeyLocation, "location")
+
 	mockBackend.EXPECT().Exists().Return(false)
 
-	args := []string{"mock", "path", "hello"}
+	args := []string{"hello"}
 	err := unsetCmd.Args(unsetCmd, args)
 	if err != nil {
 		t.Fatal(err)
@@ -118,10 +130,14 @@ func TestUnsetCmdFailedLoad(t *testing.T) {
 	mockBackend := NewMockBackend(ctrl)
 	backend.Backends["mock"] = func(name string) backend.Backend { return mockBackend }
 
+	viper.Set(configKeyPassword, "toto")
+	viper.Set(configKeyStorage, "mock")
+	viper.Set(configKeyLocation, "location")
+
 	mockBackend.EXPECT().Exists().Return(true)
 	mockBackend.EXPECT().Load().Return(nil, fmt.Errorf("error"))
 
-	args := []string{"mock", "path", "hello"}
+	args := []string{"hello"}
 	err := unsetCmd.Args(unsetCmd, args)
 	if err != nil {
 		t.Fatal(err)
@@ -140,7 +156,11 @@ func TestUnsetCmdFailedSave(t *testing.T) {
 	backend.Backends["mock"] = func(name string) backend.Backend { return mockBackend }
 
 	password := "toto"
-	viper.Set("password", password)
+
+	viper.Set(configKeyPassword, password)
+	viper.Set(configKeyStorage, "mock")
+	viper.Set(configKeyLocation, "location")
+
 	s := store.NewStore()
 	data, err := store.WriteStore([]byte(password), s)
 	if err != nil {
@@ -151,7 +171,7 @@ func TestUnsetCmdFailedSave(t *testing.T) {
 	mockBackend.EXPECT().Load().Return(data, nil)
 	mockBackend.EXPECT().Save(gomock.Any()).Return(fmt.Errorf("error"))
 
-	args := []string{"mock", "path", "hello"}
+	args := []string{"hello"}
 	err = unsetCmd.Args(unsetCmd, args)
 	if err != nil {
 		t.Fatal(err)

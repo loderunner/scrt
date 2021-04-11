@@ -26,9 +26,15 @@ var rootCmd = &cobra.Command{
 	Short:   "A secret manager for the command-line",
 	Version: "0.0.0",
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-		// Look for password in arguments or environment variable
+		// Validate configuration
 		if !viper.IsSet(configKeyPassword) {
 			return fmt.Errorf("missing password")
+		}
+		if !viper.IsSet(configKeyStorage) {
+			return fmt.Errorf("missing store type")
+		}
+		if !viper.IsSet(configKeyLocation) {
+			return fmt.Errorf("missing store location")
 		}
 
 		// Silence usage on error, since errors are runtime, not config, from
@@ -46,7 +52,17 @@ func init() {
 	rootCmd.AddCommand(unsetCmd)
 
 	rootCmd.PersistentFlags().StringP("password", "p", "", "master password to unlock the store")
-	err := viper.BindPFlag("password", rootCmd.PersistentFlags().Lookup("password"))
+	err := viper.BindPFlag(configKeyPassword, rootCmd.PersistentFlags().Lookup("password"))
+	if err != nil {
+		panic(err)
+	}
+	rootCmd.PersistentFlags().String("storage", "", "storage type")
+	err = viper.BindPFlag(configKeyStorage, rootCmd.PersistentFlags().Lookup("storage"))
+	if err != nil {
+		panic(err)
+	}
+	rootCmd.PersistentFlags().String("location", "", "storage location")
+	err = viper.BindPFlag(configKeyLocation, rootCmd.PersistentFlags().Lookup("location"))
 	if err != nil {
 		panic(err)
 	}
