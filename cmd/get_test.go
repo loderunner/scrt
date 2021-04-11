@@ -54,7 +54,12 @@ func TestGetCmd(t *testing.T) {
 	mockBackend.EXPECT().Exists().Return(true)
 	mockBackend.EXPECT().Load().Return(data, nil)
 
-	err = getCmd.RunE(getCmd, []string{"mock", "path", "hello"})
+	args := []string{"mock", "path", "hello"}
+	err = getCmd.Args(getCmd, args)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = getCmd.RunE(getCmd, args)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -78,7 +83,12 @@ func TestGetCmdNotExists(t *testing.T) {
 
 	mockBackend.EXPECT().Exists().Return(false)
 
-	err := getCmd.RunE(getCmd, []string{"mock", "path", "hello"})
+	args := []string{"mock", "path", "hello"}
+	err := getCmd.Args(getCmd, args)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = getCmd.RunE(getCmd, args)
 	if err == nil {
 		t.Fatal("expected error")
 	}
@@ -94,7 +104,12 @@ func TestGetCmdFailedLoad(t *testing.T) {
 	mockBackend.EXPECT().Exists().Return(true)
 	mockBackend.EXPECT().Load().Return(nil, fmt.Errorf("error"))
 
-	err := getCmd.RunE(getCmd, []string{"mock", "path", "hello"})
+	args := []string{"mock", "path", "hello"}
+	err := getCmd.Args(getCmd, args)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = getCmd.RunE(getCmd, args)
 	if err == nil {
 		t.Fatal("expected error")
 	}
@@ -112,7 +127,12 @@ func TestGetCmdFailedInvalidData(t *testing.T) {
 	mockBackend.EXPECT().Exists().Return(true)
 	mockBackend.EXPECT().Load().Return(data, nil)
 
-	err := getCmd.RunE(getCmd, []string{"mock", "path", "hello"})
+	args := []string{"mock", "path", "hello"}
+	err := getCmd.Args(getCmd, args)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = getCmd.RunE(getCmd, args)
 	if err == nil {
 		t.Fatal("expected error")
 	}
@@ -136,7 +156,12 @@ func TestGetCmdFailedNoValue(t *testing.T) {
 	mockBackend.EXPECT().Exists().Return(true)
 	mockBackend.EXPECT().Load().Return(data, nil)
 
-	err = getCmd.RunE(getCmd, []string{"mock", "path", "hello"})
+	args := []string{"mock", "path", "hello"}
+	err = getCmd.Args(getCmd, args)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = getCmd.RunE(getCmd, args)
 	if err == nil {
 		t.Fatal("expected error")
 	}

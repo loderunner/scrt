@@ -34,7 +34,12 @@ func TestInitCmd(t *testing.T) {
 	mockBackend.EXPECT().Exists().Return(false)
 	mockBackend.EXPECT().Save(gomock.Any())
 
-	err := initCmd.RunE(initCmd, []string{"mock", "path"})
+	args := []string{"mock", "path"}
+	err := initCmd.Args(initCmd, args)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = initCmd.RunE(initCmd, args)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -55,7 +60,12 @@ func TestInitOverWrite(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	err = initCmd.RunE(initCmd, []string{"mock", "path"})
+	args := []string{"mock", "path"}
+	err = initCmd.Args(initCmd, args)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = initCmd.RunE(initCmd, args)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -50,7 +50,12 @@ func TestUnsetCmd(t *testing.T) {
 	mockBackend.EXPECT().Load().Return(data, nil)
 	mockBackend.EXPECT().Save(gomock.Any())
 
-	err = unsetCmd.RunE(unsetCmd, []string{"mock", "path", "hello"})
+	args := []string{"mock", "path", "hello"}
+	err = unsetCmd.Args(unsetCmd, args)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = unsetCmd.RunE(unsetCmd, args)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -75,7 +80,12 @@ func TestUnsetCmdNoValue(t *testing.T) {
 	mockBackend.EXPECT().Load().Return(data, nil)
 	mockBackend.EXPECT().Save(gomock.Any())
 
-	err = unsetCmd.RunE(unsetCmd, []string{"mock", "path", "hello"})
+	args := []string{"mock", "path", "hello"}
+	err = unsetCmd.Args(unsetCmd, args)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = unsetCmd.RunE(unsetCmd, args)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -90,7 +100,12 @@ func TestUnsetCmdNotExists(t *testing.T) {
 
 	mockBackend.EXPECT().Exists().Return(false)
 
-	err := unsetCmd.RunE(unsetCmd, []string{"mock", "path", "hello"})
+	args := []string{"mock", "path", "hello"}
+	err := unsetCmd.Args(unsetCmd, args)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = unsetCmd.RunE(unsetCmd, args)
 	if err == nil {
 		t.Fatal("expected error")
 	}
@@ -106,7 +121,12 @@ func TestUnsetCmdFailedLoad(t *testing.T) {
 	mockBackend.EXPECT().Exists().Return(true)
 	mockBackend.EXPECT().Load().Return(nil, fmt.Errorf("error"))
 
-	err := unsetCmd.RunE(unsetCmd, []string{"mock", "path", "hello"})
+	args := []string{"mock", "path", "hello"}
+	err := unsetCmd.Args(unsetCmd, args)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = unsetCmd.RunE(unsetCmd, args)
 	if err == nil {
 		t.Fatal("expected error")
 	}
@@ -131,7 +151,12 @@ func TestUnsetCmdFailedSave(t *testing.T) {
 	mockBackend.EXPECT().Load().Return(data, nil)
 	mockBackend.EXPECT().Save(gomock.Any()).Return(fmt.Errorf("error"))
 
-	err = unsetCmd.RunE(unsetCmd, []string{"mock", "path", "hello"})
+	args := []string{"mock", "path", "hello"}
+	err = unsetCmd.Args(unsetCmd, args)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = unsetCmd.RunE(unsetCmd, args)
 	if err == nil {
 		t.Fatal("expected error")
 	}

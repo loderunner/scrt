@@ -46,7 +46,12 @@ func TestSetCmd(t *testing.T) {
 	mockBackend.EXPECT().Load().Return(data, nil)
 	mockBackend.EXPECT().Save(gomock.Any())
 
-	err = setCmd.RunE(setCmd, []string{"mock", "path", "hello", "world"})
+	args := []string{"mock", "path", "hello", "world"}
+	err = setCmd.Args(setCmd, args)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = setCmd.RunE(setCmd, args)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -81,7 +86,12 @@ func TestSetCmdStdin(t *testing.T) {
 	}
 	hijackStdin.Close()
 
-	err = setCmd.RunE(setCmd, []string{"mock", "path", "hello"})
+	args := []string{"mock", "path", "hello"}
+	err = setCmd.Args(setCmd, args)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = setCmd.RunE(setCmd, args)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -96,7 +106,12 @@ func TestSetCmdNotExists(t *testing.T) {
 
 	mockBackend.EXPECT().Exists().Return(false)
 
-	err := setCmd.RunE(setCmd, []string{"mock", "path", "hello", "world"})
+	args := []string{"mock", "path", "hello", "world"}
+	err := setCmd.Args(setCmd, args)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = setCmd.RunE(setCmd, args)
 	if err == nil {
 		t.Fatal("expected error")
 	}
@@ -112,7 +127,12 @@ func TestSetCmdFailedLoad(t *testing.T) {
 	mockBackend.EXPECT().Exists().Return(true)
 	mockBackend.EXPECT().Load().Return(nil, fmt.Errorf("error"))
 
-	err := setCmd.RunE(setCmd, []string{"mock", "path", "hello", "world"})
+	args := []string{"mock", "path", "hello", "world"}
+	err := setCmd.Args(setCmd, args)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = setCmd.RunE(setCmd, args)
 	if err == nil {
 		t.Fatal("expected error")
 	}
@@ -130,7 +150,12 @@ func TestSetCmdFailedInvalidData(t *testing.T) {
 	mockBackend.EXPECT().Exists().Return(true)
 	mockBackend.EXPECT().Load().Return(data, nil)
 
-	err := setCmd.RunE(setCmd, []string{"mock", "path", "hello", "world"})
+	args := []string{"mock", "path", "hello", "world"}
+	err := setCmd.Args(setCmd, args)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = setCmd.RunE(setCmd, args)
 	if err == nil {
 		t.Fatal("expected error")
 	}
@@ -158,7 +183,12 @@ func TestSetCmdFailedNoOverwrite(t *testing.T) {
 	mockBackend.EXPECT().Exists().Return(true)
 	mockBackend.EXPECT().Load().Return(data, nil)
 
-	err = setCmd.RunE(setCmd, []string{"mock", "path", "hello", "world"})
+	args := []string{"mock", "path", "hello", "world"}
+	err = setCmd.Args(setCmd, args)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = setCmd.RunE(setCmd, args)
 	if err == nil {
 		t.Fatal("expected error")
 	}
@@ -191,7 +221,12 @@ func TestSetCmdOverwrite(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	err = setCmd.RunE(setCmd, []string{"mock", "path", "hello", "world"})
+	args := []string{"mock", "path", "hello", "world"}
+	err = setCmd.Args(setCmd, args)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = setCmd.RunE(setCmd, args)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -216,7 +251,12 @@ func TestSetCmdFailedSave(t *testing.T) {
 	mockBackend.EXPECT().Load().Return(data, nil)
 	mockBackend.EXPECT().Save(gomock.Any()).Return(fmt.Errorf("error"))
 
-	err = setCmd.RunE(setCmd, []string{"mock", "path", "hello", "world"})
+	args := []string{"mock", "path", "hello", "world"}
+	err = setCmd.Args(setCmd, args)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = setCmd.RunE(setCmd, args)
 	if err == nil {
 		t.Fatal("expected error")
 	}
