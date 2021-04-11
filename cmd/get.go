@@ -55,7 +55,7 @@ var getCmd = &cobra.Command{
 			return fmt.Errorf("could not load data from %s: %w", backendName, err)
 		}
 
-		password := []byte(viper.GetString("password"))
+		password := []byte(viper.GetString(configKeyPassword))
 		s, err := store.ReadStore(password, data)
 		if err != nil {
 			return fmt.Errorf("could not read store from data: %w", err)

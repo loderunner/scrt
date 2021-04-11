@@ -66,7 +66,7 @@ var initCmd = &cobra.Command{
 		}
 
 		s := store.NewStore()
-		password := []byte(viper.GetString("password"))
+		password := []byte(viper.GetString(configKeyPassword))
 
 		data, err := store.WriteStore(password, s)
 		if err != nil {

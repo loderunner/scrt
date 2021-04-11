@@ -26,10 +26,13 @@ var rootCmd = &cobra.Command{
 	Short:   "A secret manager for the command-line",
 	Version: "0.0.0",
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-		if !viper.IsSet("password") {
+		// Look for password in arguments or environment variable
+		if !viper.IsSet(configKeyPassword) {
 			return fmt.Errorf("missing password")
 		}
 
+		// Silence usage on error, since errors are runtime, not config, from
+		// this point onwards
 		cmd.SilenceUsage = true
 
 		return nil
