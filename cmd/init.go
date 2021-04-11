@@ -28,13 +28,6 @@ import (
 var initCmd = &cobra.Command{
 	Use:   "init",
 	Short: "Initialize a new store",
-	Args: func(cmd *cobra.Command, args []string) error {
-		storage := viper.GetString(configKeyStorage)
-		if _, ok := backend.Backends[storage]; !ok {
-			return fmt.Errorf("unknown backend: %s", storage)
-		}
-		return nil
-	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		storage := viper.GetString(configKeyStorage)
 		location := viper.GetString(configKeyLocation)

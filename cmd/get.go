@@ -34,10 +34,6 @@ var getCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		storage := viper.GetString(configKeyStorage)
-		if _, ok := backend.Backends[storage]; !ok {
-			return fmt.Errorf("unknown backend: %s", storage)
-		}
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {

@@ -15,8 +15,12 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
+	"os"
+	"path/filepath"
 
+	"github.com/loderunner/scrt/backend"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -26,6 +30,52 @@ var rootCmd = &cobra.Command{
 	Short:   "A secret manager for the command-line",
 	Version: "0.0.0",
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+		// Read configuration from .scrt file if exists, recursively searching
+		// for .scrt file in parent directories until root is reached
+		viper.SetConfigType("yaml")
+		dir, err := os.Getwd()
+		if err != nil {
+			return err
+		}
+		for {
+			configPath := filepath.Join(dir, ".scrt")
+			fileInfo, err := os.Stat(configPath)
+			if err == nil {
+				// .scrt exists at path
+
+				if fileInfo.IsDir() {
+					return fmt.Errorf("%s is a directory", configPath)
+				}
+
+				f, err := os.Open(configPath)
+				if err != nil {
+					return err
+				}
+				defer f.Close()
+
+				err = viper.ReadConfig(f)
+				if err != nil {
+					return fmt.Errorf("could not read %s: %w", configPath, err)
+				}
+
+				// config loaded, break out of loop
+				break
+			}
+
+			// .scrt does not exist at path
+
+			if !errors.Is(err, os.ErrNotExist) {
+				return err
+			}
+
+			if dir == "/" {
+				// reached root path, no .scrt to load, break out of loop
+				break
+			}
+
+			dir = filepath.Dir(dir)
+		}
+
 		// Validate configuration
 		if !viper.IsSet(configKeyPassword) {
 			return fmt.Errorf("missing password")
@@ -35,6 +85,11 @@ var rootCmd = &cobra.Command{
 		}
 		if !viper.IsSet(configKeyLocation) {
 			return fmt.Errorf("missing store location")
+		}
+
+		storage := viper.GetString(configKeyStorage)
+		if _, ok := backend.Backends[storage]; !ok {
+			return fmt.Errorf("unknown storage type: %s", storage)
 		}
 
 		// Silence usage on error, since errors are runtime, not config, from
