@@ -15,6 +15,8 @@
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -23,8 +25,14 @@ var rootCmd = &cobra.Command{
 	Use:     "scrt",
 	Short:   "A secret manager for the command-line",
 	Version: "0.0.0",
-	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+		if !viper.IsSet("password") {
+			return fmt.Errorf("missing password")
+		}
+
 		cmd.SilenceUsage = true
+
+		return nil
 	},
 }
 
@@ -35,14 +43,13 @@ func init() {
 	rootCmd.AddCommand(unsetCmd)
 
 	rootCmd.PersistentFlags().StringP("password", "p", "", "master password to unlock the store")
-	err := rootCmd.MarkPersistentFlagRequired("password")
+	err := viper.BindPFlag("password", rootCmd.PersistentFlags().Lookup("password"))
 	if err != nil {
 		panic(err)
 	}
-	err = viper.BindPFlag("password", rootCmd.PersistentFlags().Lookup("password"))
-	if err != nil {
-		panic(err)
-	}
+
+	viper.SetEnvPrefix("scrt")
+	viper.AutomaticEnv()
 }
 
 // Execute executes the root cobra command
