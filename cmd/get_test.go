@@ -18,6 +18,7 @@ package cmd
 
 import (
 	"fmt"
+	"reflect"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -28,6 +29,9 @@ import (
 )
 
 func TestGetCmd(t *testing.T) {
+	hijack()
+	defer restore()
+
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -37,7 +41,8 @@ func TestGetCmd(t *testing.T) {
 	password := "toto"
 	viper.Set("password", password)
 	s := store.NewStore()
-	err := s.Set("hello", []byte("world"))
+	testVal := []byte("world")
+	err := s.Set("hello", testVal)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -52,6 +57,15 @@ func TestGetCmd(t *testing.T) {
 	err = getCmd.RunE(getCmd, []string{"mock", "path", "hello"})
 	if err != nil {
 		t.Fatal(err)
+	}
+
+	n, err := hijackStdout.Read(data)
+	if err != nil {
+		t.Fatal(err)
+	}
+	data = data[:n]
+	if !reflect.DeepEqual(data, testVal) {
+		t.Fatalf("expected %#v, got %#v", testVal, data)
 	}
 }
 
