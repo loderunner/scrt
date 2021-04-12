@@ -16,6 +16,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"syscall"
 
@@ -23,6 +24,12 @@ import (
 )
 
 func main() {
+	defer func() {
+		if r := recover(); r != nil {
+			handlePanic(r)
+		}
+	}()
+
 	err := cmd.Execute()
 	if err != nil {
 		handleError(err)
@@ -34,5 +41,10 @@ func handleError(err error) {
 	if errors.As(err, &posixErr) {
 		os.Exit(int(posixErr))
 	}
+	os.Exit(-1)
+}
+
+func handlePanic(err interface{}) {
+	fmt.Println(err)
 	os.Exit(-1)
 }
