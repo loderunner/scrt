@@ -1,0 +1,96 @@
+// Copyright 2021 Charles Francoise
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// 	http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package backend
+
+import (
+	"bytes"
+	"fmt"
+	"io/ioutil"
+	"net/url"
+
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
+)
+
+type s3Backend struct {
+	bucket, key string
+	client      *s3.S3
+}
+
+func init() {
+	Backends["s3"] = newS3
+}
+
+func newS3(location string) (Backend, error) {
+	sess, err := session.NewSessionWithOptions(session.Options{
+		SharedConfigState: session.SharedConfigEnable,
+	})
+	if err != nil {
+		return nil, err
+	}
+	client := s3.New(sess)
+
+	s3URL, err := url.Parse(location)
+	if err != nil ||
+		s3URL.Scheme != "s3" ||
+		s3URL.Path == "" ||
+		s3URL.Path == "/" ||
+		s3URL.User != nil ||
+		s3URL.RawQuery != "" ||
+		s3URL.Fragment != "" {
+		return nil, fmt.Errorf("S3 URI is not written in the form: s3://mybucket/mykey")
+	}
+
+	return s3Backend{
+		bucket: s3URL.Host,
+		key:    s3URL.Path,
+		client: client,
+	}, nil
+}
+
+func (s s3Backend) Exists() bool {
+	req := (&s3.HeadObjectInput{}).
+		SetBucket(s.bucket).
+		SetKey(s.key)
+	_, err := s.client.HeadObject(req)
+	return err == nil
+}
+
+func (s s3Backend) Save(data []byte) error {
+	req := (&s3.PutObjectInput{}).
+		SetBucket(s.bucket).
+		SetKey(s.key).
+		SetBody(bytes.NewReader(data))
+	_, err := s.client.PutObject(req)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s s3Backend) Load() ([]byte, error) {
+	req := (&s3.GetObjectInput{}).
+		SetBucket(s.bucket).
+		SetKey(s.key)
+	res, err := s.client.GetObject(req)
+	if err != nil {
+		return nil, err
+	}
+	data, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
