@@ -16,7 +16,12 @@
 
 package cmd
 
-import "os"
+import (
+	"os"
+
+	"github.com/loderunner/scrt/backend"
+	pflag "github.com/spf13/pflag"
+)
 
 var osStdin, osStdout *os.File
 var hijackStdin, hijackStdout *os.File
@@ -42,4 +47,20 @@ func restore() {
 	os.Stdout = osStdout
 	hijackStdin.Close()
 	hijackStdout.Close()
+}
+
+type mockFactory struct {
+	b backend.Backend
+}
+
+func (f mockFactory) New(path string) (backend.Backend, error) {
+	return f.b, nil
+}
+
+func (f mockFactory) Flags() *pflag.FlagSet {
+	return pflag.NewFlagSet("mock", pflag.ContinueOnError)
+}
+
+func newMockFactory(b backend.Backend) mockFactory {
+	return mockFactory{b: b}
 }

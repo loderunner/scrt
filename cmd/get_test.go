@@ -36,9 +36,7 @@ func TestGetCmd(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockBackend := NewMockBackend(ctrl)
-	backend.Backends["mock"] = func(name string) (backend.Backend, error) {
-		return mockBackend, nil
-	}
+	backend.Backends["mock"] = newMockFactory(mockBackend)
 
 	password := "toto"
 
@@ -85,9 +83,7 @@ func TestGetCmdNotExists(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockBackend := NewMockBackend(ctrl)
-	backend.Backends["mock"] = func(name string) (backend.Backend, error) {
-		return mockBackend, nil
-	}
+	backend.Backends["mock"] = newMockFactory(mockBackend)
 
 	viper.Set(configKeyStorage, "mock")
 	viper.Set(configKeyLocation, "location")
@@ -110,9 +106,7 @@ func TestGetCmdFailedLoad(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockBackend := NewMockBackend(ctrl)
-	backend.Backends["mock"] = func(name string) (backend.Backend, error) {
-		return mockBackend, nil
-	}
+	backend.Backends["mock"] = newMockFactory(mockBackend)
 
 	viper.Set(configKeyStorage, "mock")
 	viper.Set(configKeyLocation, "location")
@@ -136,9 +130,7 @@ func TestGetCmdFailedInvalidData(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockBackend := NewMockBackend(ctrl)
-	backend.Backends["mock"] = func(name string) (backend.Backend, error) {
-		return mockBackend, nil
-	}
+	backend.Backends["mock"] = newMockFactory(mockBackend)
 
 	viper.Set(configKeyStorage, "mock")
 	viper.Set(configKeyLocation, "location")
@@ -164,9 +156,7 @@ func TestGetCmdFailedNoValue(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockBackend := NewMockBackend(ctrl)
-	backend.Backends["mock"] = func(name string) (backend.Backend, error) {
-		return mockBackend, nil
-	}
+	backend.Backends["mock"] = newMockFactory(mockBackend)
 
 	password := "toto"
 

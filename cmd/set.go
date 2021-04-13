@@ -57,7 +57,7 @@ line, it will be read from standard input.`,
 			val = []byte(args[1])
 		}
 
-		b, err := backend.Backends[storage](location)
+		b, err := backend.Backends[storage].New(location)
 		if err != nil {
 			return err
 		}

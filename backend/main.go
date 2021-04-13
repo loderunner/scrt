@@ -14,8 +14,10 @@
 
 package backend
 
+import "github.com/spf13/pflag"
+
 // Backends associates backend type names to constructor functions
-var Backends = map[string]constructor{}
+var Backends = map[string]backendFactory{}
 
 // Backend implements the common backend operations
 type Backend interface {
@@ -24,4 +26,7 @@ type Backend interface {
 	Load() ([]byte, error)
 }
 
-type constructor func(name string) (Backend, error)
+type backendFactory interface {
+	New(name string) (Backend, error)
+	Flags() *pflag.FlagSet
+}

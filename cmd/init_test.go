@@ -30,9 +30,7 @@ func TestInitCmd(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockBackend := NewMockBackend(ctrl)
-	backend.Backends["mock"] = func(name string) (backend.Backend, error) {
-		return mockBackend, nil
-	}
+	backend.Backends["mock"] = newMockFactory(mockBackend)
 
 	viper.Set(configKeyPassword, "toto")
 	viper.Set(configKeyStorage, "mock")
@@ -53,9 +51,7 @@ func TestInitOverWrite(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockBackend := NewMockBackend(ctrl)
-	backend.Backends["mock"] = func(name string) (backend.Backend, error) {
-		return mockBackend, nil
-	}
+	backend.Backends["mock"] = newMockFactory(mockBackend)
 
 	viper.Set(configKeyPassword, "toto")
 	viper.Set(configKeyStorage, "mock")

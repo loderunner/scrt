@@ -20,6 +20,7 @@ import (
 	"os"
 
 	"github.com/spf13/afero"
+	"github.com/spf13/pflag"
 )
 
 type local struct {
@@ -27,8 +28,18 @@ type local struct {
 	fs   afero.Fs
 }
 
+type localFactory struct{}
+
+func (f localFactory) New(path string) (Backend, error) {
+	return newLocal(path)
+}
+
+func (f localFactory) Flags() *pflag.FlagSet {
+	return pflag.NewFlagSet("local", pflag.ContinueOnError)
+}
+
 func init() {
-	Backends["local"] = newLocal
+	Backends["local"] = localFactory{}
 }
 
 func newLocal(path string) (Backend, error) {

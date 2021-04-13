@@ -23,6 +23,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3iface"
+	"github.com/spf13/pflag"
 )
 
 type s3Backend struct {
@@ -30,8 +31,18 @@ type s3Backend struct {
 	client      s3iface.S3API
 }
 
+type s3Factory struct{}
+
+func (f s3Factory) New(location string) (Backend, error) {
+	return newS3(location)
+}
+
+func (f s3Factory) Flags() *pflag.FlagSet {
+	return pflag.NewFlagSet("s3", pflag.ContinueOnError)
+}
+
 func init() {
-	Backends["s3"] = newS3
+	Backends["s3"] = s3Factory{}
 }
 
 func newS3(location string) (Backend, error) {
