@@ -57,7 +57,10 @@ line, it will be read from standard input.`,
 			val = []byte(args[1])
 		}
 
-		b := backend.Backends[storage](location)
+		b, err := backend.Backends[storage](location)
+		if err != nil {
+			return err
+		}
 		if !b.Exists() {
 			return fmt.Errorf("%s store at %s does not exist", storage, location)
 		}

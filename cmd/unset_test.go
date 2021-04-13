@@ -32,7 +32,9 @@ func TestUnsetCmd(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockBackend := NewMockBackend(ctrl)
-	backend.Backends["mock"] = func(name string) backend.Backend { return mockBackend }
+	backend.Backends["mock"] = func(name string) (backend.Backend, error) {
+		return mockBackend, nil
+	}
 
 	password := "toto"
 
@@ -70,7 +72,9 @@ func TestUnsetCmdNoValue(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockBackend := NewMockBackend(ctrl)
-	backend.Backends["mock"] = func(name string) backend.Backend { return mockBackend }
+	backend.Backends["mock"] = func(name string) (backend.Backend, error) {
+		return mockBackend, nil
+	}
 
 	password := "toto"
 
@@ -104,7 +108,9 @@ func TestUnsetCmdNotExists(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockBackend := NewMockBackend(ctrl)
-	backend.Backends["mock"] = func(name string) backend.Backend { return mockBackend }
+	backend.Backends["mock"] = func(name string) (backend.Backend, error) {
+		return mockBackend, nil
+	}
 
 	viper.Set(configKeyPassword, "toto")
 	viper.Set(configKeyStorage, "mock")
@@ -128,7 +134,9 @@ func TestUnsetCmdFailedLoad(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockBackend := NewMockBackend(ctrl)
-	backend.Backends["mock"] = func(name string) backend.Backend { return mockBackend }
+	backend.Backends["mock"] = func(name string) (backend.Backend, error) {
+		return mockBackend, nil
+	}
 
 	viper.Set(configKeyPassword, "toto")
 	viper.Set(configKeyStorage, "mock")
@@ -153,7 +161,9 @@ func TestUnsetCmdFailedSave(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockBackend := NewMockBackend(ctrl)
-	backend.Backends["mock"] = func(name string) backend.Backend { return mockBackend }
+	backend.Backends["mock"] = func(name string) (backend.Backend, error) {
+		return mockBackend, nil
+	}
 
 	password := "toto"
 

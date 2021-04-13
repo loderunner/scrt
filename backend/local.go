@@ -15,6 +15,10 @@
 package backend
 
 import (
+	"errors"
+	"fmt"
+	"os"
+
 	"github.com/spf13/afero"
 )
 
@@ -27,8 +31,21 @@ func init() {
 	Backends["local"] = newLocal
 }
 
-func newLocal(path string) Backend {
-	return local{path: path, fs: afero.NewOsFs()}
+func newLocal(path string) (Backend, error) {
+	fs := afero.NewOsFs()
+	_, err := fs.Stat(path)
+	if err != nil && !errors.Is(err, afero.ErrFileNotFound) {
+		return nil, fmt.Errorf("invalid location: \"path\"")
+	}
+	return local{path: path, fs: fs}, nil
+}
+
+func (l local) Valid() bool {
+	_, err := os.Stat(l.path)
+	if err == nil || errors.Is(err, os.ErrNotExist) {
+		return true
+	}
+	return false
 }
 
 func (l local) Exists() bool {

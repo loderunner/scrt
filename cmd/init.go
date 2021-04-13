@@ -32,7 +32,10 @@ var initCmd = &cobra.Command{
 		storage := viper.GetString(configKeyStorage)
 		location := viper.GetString(configKeyLocation)
 
-		b := backend.Backends[storage](location)
+		b, err := backend.Backends[storage](location)
+		if err != nil {
+			return err
+		}
 
 		if b.Exists() {
 			var overwrite bool

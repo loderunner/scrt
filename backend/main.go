@@ -24,4 +24,4 @@ type Backend interface {
 	Load() ([]byte, error)
 }
 
-type constructor func(name string) Backend
+type constructor func(name string) (Backend, error)
