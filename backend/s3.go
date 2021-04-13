@@ -22,11 +22,12 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/aws/aws-sdk-go/service/s3/s3iface"
 )
 
 type s3Backend struct {
 	bucket, key string
-	client      *s3.S3
+	client      s3iface.S3API
 }
 
 func init() {
