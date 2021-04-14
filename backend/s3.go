@@ -26,6 +26,13 @@ import (
 	"github.com/spf13/pflag"
 )
 
+var s3FlagSet *pflag.FlagSet
+
+func init() {
+	s3FlagSet = pflag.NewFlagSet("s3", pflag.ContinueOnError)
+	s3FlagSet.String("s3-endpoint-url", "", "override default S3 endpoint URL")
+}
+
 type s3Backend struct {
 	bucket, key string
 	client      s3iface.S3API
@@ -38,7 +45,7 @@ func (f s3Factory) New(location string) (Backend, error) {
 }
 
 func (f s3Factory) Flags() *pflag.FlagSet {
-	return pflag.NewFlagSet("s3", pflag.ContinueOnError)
+	return s3FlagSet
 }
 
 func init() {

@@ -23,6 +23,12 @@ import (
 	"github.com/spf13/pflag"
 )
 
+var localFlagSet *pflag.FlagSet
+
+func init() {
+	localFlagSet = pflag.NewFlagSet("local", pflag.ContinueOnError)
+}
+
 type local struct {
 	path string
 	fs   afero.Fs
@@ -35,7 +41,7 @@ func (f localFactory) New(path string) (Backend, error) {
 }
 
 func (f localFactory) Flags() *pflag.FlagSet {
-	return pflag.NewFlagSet("local", pflag.ContinueOnError)
+	return localFlagSet
 }
 
 func init() {

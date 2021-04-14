@@ -62,8 +62,17 @@ var rootCmd = &cobra.Command{
 		}
 
 		storage := viper.GetString(configKeyStorage)
-		if _, ok := backend.Backends[storage]; !ok {
+		factory, ok := backend.Backends[storage]
+		if !ok {
 			return fmt.Errorf("unknown storage type: %s", storage)
+		}
+
+		// Add backend flags to command's flagset and re-parse
+		cmd.FParseErrWhitelist.UnknownFlags = false
+		cmd.Flags().AddFlagSet(factory.Flags())
+		err = cmd.ParseFlags(os.Args[1:])
+		if err != nil {
+			return cmd.FlagErrorFunc()(cmd, err)
 		}
 
 		// Silence usage on error, since errors are runtime, not config, from
@@ -74,11 +83,16 @@ var rootCmd = &cobra.Command{
 	},
 }
 
+func addCommand(cmd *cobra.Command) {
+	rootCmd.AddCommand(cmd)
+	cmd.FParseErrWhitelist.UnknownFlags = true
+}
+
 func init() {
-	rootCmd.AddCommand(initCmd)
-	rootCmd.AddCommand(setCmd)
-	rootCmd.AddCommand(getCmd)
-	rootCmd.AddCommand(unsetCmd)
+	addCommand(initCmd)
+	addCommand(setCmd)
+	addCommand(getCmd)
+	addCommand(unsetCmd)
 
 	rootCmd.PersistentFlags().StringP("password", "p", "", "master password to unlock the store")
 	err := viper.BindPFlag(configKeyPassword, rootCmd.PersistentFlags().Lookup("password"))
@@ -98,6 +112,8 @@ func init() {
 
 	viper.SetEnvPrefix("scrt")
 	viper.AutomaticEnv()
+
+	cobra.OnInitialize()
 }
 
 // Execute executes the root cobra command
