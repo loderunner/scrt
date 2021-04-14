@@ -40,8 +40,8 @@ type s3Backend struct {
 
 type s3Factory struct{}
 
-func (f s3Factory) New(location string) (Backend, error) {
-	return newS3(location)
+func (f s3Factory) New(location string, flags *pflag.FlagSet) (Backend, error) {
+	return newS3(location, flags)
 }
 
 func (f s3Factory) Flags() *pflag.FlagSet {
@@ -52,7 +52,7 @@ func init() {
 	Backends["s3"] = s3Factory{}
 }
 
-func newS3(location string) (Backend, error) {
+func newS3(location string, flags *pflag.FlagSet) (Backend, error) {
 	sess, err := session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
 	})

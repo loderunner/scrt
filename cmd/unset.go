@@ -38,7 +38,7 @@ var unsetCmd = &cobra.Command{
 		location := viper.GetString(configKeyLocation)
 		key := args[0]
 
-		b, err := backend.Backends[storage].New(location)
+		b, err := backend.Backends[storage].New(location, cmd.Flags())
 		if err != nil {
 			return err
 		}

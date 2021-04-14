@@ -8,7 +8,6 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	pflag "github.com/spf13/pflag"
 )
 
 // MockBackend is a mock of Backend interface.
@@ -46,20 +45,6 @@ func (m *MockBackend) Exists() bool {
 func (mr *MockBackendMockRecorder) Exists() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Exists", reflect.TypeOf((*MockBackend)(nil).Exists))
-}
-
-// Flags mocks base method.
-func (m *MockBackend) Flags() *pflag.FlagSet {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Flags")
-	ret0, _ := ret[0].(*pflag.FlagSet)
-	return ret0
-}
-
-// Flags indicates an expected call of Flags.
-func (mr *MockBackendMockRecorder) Flags() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Flags", reflect.TypeOf((*MockBackend)(nil).Flags))
 }
 
 // Load mocks base method.

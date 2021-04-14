@@ -53,7 +53,7 @@ type mockFactory struct {
 	b backend.Backend
 }
 
-func (f mockFactory) New(path string) (backend.Backend, error) {
+func (f mockFactory) New(path string, flags *pflag.FlagSet) (backend.Backend, error) {
 	return f.b, nil
 }
 
