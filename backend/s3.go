@@ -20,6 +20,7 @@ import (
 	"io/ioutil"
 	"net/url"
 
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3iface"
@@ -59,7 +60,17 @@ func newS3(location string, flags *pflag.FlagSet) (Backend, error) {
 	if err != nil {
 		return nil, err
 	}
-	client := s3.New(sess)
+
+	cfgs := []*aws.Config{}
+	if flags.Changed("s3-endpoint-url") {
+		endpoint, err := flags.GetString("s3-endpoint-url")
+		if err != nil {
+			return nil, err
+		}
+		cfg := aws.NewConfig().WithEndpoint(endpoint)
+		cfgs = append(cfgs, cfg)
+	}
+	client := s3.New(sess, cfgs...)
 
 	s3URL, err := url.Parse(location)
 	if err != nil ||
