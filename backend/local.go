@@ -36,8 +36,8 @@ type local struct {
 
 type localFactory struct{}
 
-func (f localFactory) New(path string, flags *pflag.FlagSet) (Backend, error) {
-	return newLocal(path, flags)
+func (f localFactory) New(path string, conf map[string]interface{}) (Backend, error) {
+	return newLocal(path, conf)
 }
 
 func (f localFactory) Flags() *pflag.FlagSet {
@@ -48,7 +48,7 @@ func init() {
 	Backends["local"] = localFactory{}
 }
 
-func newLocal(path string, flags *pflag.FlagSet) (Backend, error) {
+func newLocal(path string, conf map[string]interface{}) (Backend, error) {
 	fs := afero.NewOsFs()
 	_, err := fs.Stat(path)
 	if err != nil && !errors.Is(err, afero.ErrFileNotFound) {

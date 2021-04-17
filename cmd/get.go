@@ -41,7 +41,7 @@ var getCmd = &cobra.Command{
 		location := viper.GetString(configKeyLocation)
 		key := args[0]
 
-		b, err := backend.Backends[storage].New(location, cmd.Flags())
+		b, err := backend.Backends[storage].New(location, viper.AllSettings())
 		if err != nil {
 			return err
 		}

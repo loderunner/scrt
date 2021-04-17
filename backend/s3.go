@@ -41,8 +41,8 @@ type s3Backend struct {
 
 type s3Factory struct{}
 
-func (f s3Factory) New(location string, flags *pflag.FlagSet) (Backend, error) {
-	return newS3(location, flags)
+func (f s3Factory) New(location string, conf map[string]interface{}) (Backend, error) {
+	return newS3(location, conf)
 }
 
 func (f s3Factory) Flags() *pflag.FlagSet {
@@ -53,7 +53,7 @@ func init() {
 	Backends["s3"] = s3Factory{}
 }
 
-func newS3(location string, flags *pflag.FlagSet) (Backend, error) {
+func newS3(location string, conf map[string]interface{}) (Backend, error) {
 	sess, err := session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
 	})
@@ -62,10 +62,14 @@ func newS3(location string, flags *pflag.FlagSet) (Backend, error) {
 	}
 
 	cfgs := []*aws.Config{}
-	if flags.Changed("s3-endpoint-url") {
-		endpoint, err := flags.GetString("s3-endpoint-url")
-		if err != nil {
-			return nil, err
+	if url, ok := conf["s3-endpoint-url"]; ok {
+		endpoint, ok := url.(string)
+		if !ok {
+			stringer, ok := url.(fmt.Stringer)
+			if !ok {
+				return nil, fmt.Errorf("S3 endpoint URL could not be converted to string: %v", url)
+			}
+			endpoint = stringer.String()
 		}
 		cfg := aws.NewConfig().WithEndpoint(endpoint)
 		cfgs = append(cfgs, cfg)

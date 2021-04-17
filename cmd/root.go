@@ -67,9 +67,13 @@ var rootCmd = &cobra.Command{
 			return fmt.Errorf("unknown storage type: %s", storage)
 		}
 
-		// Add backend flags to command's flagset and re-parse
+		// Add backend flags to command's flagset, bind to config and re-parse
 		cmd.FParseErrWhitelist.UnknownFlags = false
 		cmd.Flags().AddFlagSet(factory.Flags())
+		err = viper.BindPFlags(cmd.Flags())
+		if err != nil {
+			return err
+		}
 		err = cmd.ParseFlags(os.Args[1:])
 		if err != nil {
 			return cmd.FlagErrorFunc()(cmd, err)

@@ -57,7 +57,7 @@ line, it will be read from standard input.`,
 			val = []byte(args[1])
 		}
 
-		b, err := backend.Backends[storage].New(location, cmd.Flags())
+		b, err := backend.Backends[storage].New(location, viper.AllSettings())
 		if err != nil {
 			return err
 		}
