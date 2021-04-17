@@ -58,11 +58,25 @@ var _ = Describe("scrt", func() {
 			nil,
 		)
 	})
+	Context("for s3 backend", func() {
+		s3Locations := [3]string{
+			"s3://test-bucket/store-args.scrt",
+			"s3://test-bucket/store-env.scrt",
+			"s3://test-bucket/store-conf.scrt",
+		}
+
+		runTestsForStorage(
+			"s3",
+			"toto",
+			s3Locations,
+			map[string]string{"s3-endpoint-url": os.Getenv("SCRT_TEST_E2E_S3_ENDPOINT_URL")},
+		)
+	})
 })
 
 func execute(args []string, env []string) *gexec.Session {
 	cmd := exec.Command(executablePath, args...)
-	cmd.Env = env
+	cmd.Env = append(os.Environ(), env...)
 	session, err := gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
 	Expect(err).NotTo(HaveOccurred())
 
@@ -88,7 +102,7 @@ func runTestsForStorage(storage, password string, locations [3]string, extraArgs
 			"SCRT_LOCATION=" + locations[1],
 		}
 		for k, v := range extraArgs {
-			env = append(env, strings.ToUpper(k)+"="+v)
+			env = append(env, "SCRT_"+strings.ToUpper(k)+"="+v)
 		}
 		runTests([]string{}, env)
 	})
