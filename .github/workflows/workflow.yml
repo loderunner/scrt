@@ -33,8 +33,8 @@ jobs:
     runs-on: ubuntu-latest
     services:
       minio:
-        image: minio/minio
-        options: "server /data"
+        # Use Bitnami image here because GitHub actions won't let us pass args to docker create
+        image: bitnami/minio
         ports:
           - 9000:9000
         volumes:
