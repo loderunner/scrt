@@ -53,8 +53,8 @@ jobs:
         env:
           SCRT_TEST_E2E: y
           SCRT_TEST_E2E_S3_ENDPOINT_URL: http://127.0.0.1:9000
-          AWS_ACCESS_KEY_ID: minioadmin
-          AWS_SECRET_ACCESS_KEY: minioadmin
+          AWS_ACCESS_KEY_ID: minio
+          AWS_SECRET_ACCESS_KEY: miniosecret
         run: go test -v ./e2e
 
   build:
