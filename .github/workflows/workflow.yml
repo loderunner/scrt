@@ -38,11 +38,11 @@ jobs:
         ports:
           - 9000:9000
         volumes:
-          - "/tmp/data:/data"
+          - "./data:/data"
     needs: lint
     steps:
       - name: Create test bucket
-        run: mkdir -p /tmp/data/test-bucket
+        run: mkdir -p ./data/test-bucket
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
