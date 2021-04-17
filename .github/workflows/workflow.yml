@@ -38,7 +38,7 @@ jobs:
         ports:
           - 9000:9000
         volumes:
-          - "./data:/data"
+          - ${{env.working-directory}}:/data
     needs: lint
     steps:
       - name: Create test bucket
