@@ -31,14 +31,14 @@ jobs:
 
   e2e:
     runs-on: ubuntu-latest
-    services:
-      minio:
-        # Use Bitnami image here because GitHub actions won't let us pass args to docker create
-        image: bitnami/minio
-        ports:
-          - 9000:9000
-        volumes:
-          - ${{ github.workspace }}/data:/data
+    # services:
+    #   minio:
+    #     # Use Bitnami image here because GitHub actions won't let us pass args to docker create
+    #     image: bitnami/minio
+    #     ports:
+    #       - 9000:9000
+    #     volumes:
+    #       - ${{ github.workspace }}/data:/data
     needs: lint
     steps:
       - name: Create test bucket
