@@ -71,7 +71,7 @@ func newS3(location string, conf map[string]interface{}) (Backend, error) {
 			}
 			endpoint = stringer.String()
 		}
-		cfg := aws.NewConfig().WithEndpoint(endpoint)
+		cfg := aws.NewConfig().WithEndpoint(endpoint).WithS3ForcePathStyle(true)
 		cfgs = append(cfgs, cfg)
 	}
 	client := s3.New(sess, cfgs...)
