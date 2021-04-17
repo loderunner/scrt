@@ -29,6 +29,21 @@ jobs:
       - name: Test
         run: go test -race -v ./...
 
+  e2e:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.16
+      - name: Checkout
+        uses: actions/checkout@v2.3.4
+      - name: Test
+        env:
+          SCRT_TEST_E2E: y
+        run: go test -v ./e2e
+
   build:
     runs-on: ubuntu-latest
     needs: lint
