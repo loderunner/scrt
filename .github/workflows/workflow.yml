@@ -41,7 +41,7 @@ jobs:
     needs: lint
     steps:
       - name: Create test bucket
-        run: docker run minio mkdir -p /data/test-bucket
+        run: docker exec minio mkdir -p /data/test-bucket
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
