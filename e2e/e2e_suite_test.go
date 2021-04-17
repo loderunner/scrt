@@ -1,0 +1,192 @@
+package e2e_test
+
+import (
+	"os"
+	"os/exec"
+	"path/filepath"
+	"strings"
+	"testing"
+
+	"gopkg.in/yaml.v2"
+
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+	"github.com/onsi/gomega/gbytes"
+	"github.com/onsi/gomega/gexec"
+)
+
+func TestE2e(t *testing.T) {
+	if os.Getenv("SCRT_TEST_E2E") != "y" {
+		t.Log("Skipping e2e tests. Set environment variable SCRT_TEST_E2E=y to run e2e tests.")
+		return
+	}
+	RegisterFailHandler(Fail)
+	RunSpecs(t, "End-to-end tests")
+}
+
+var executablePath string
+var tmpLocalDir string
+
+var _ = BeforeSuite(func() {
+	var err error
+
+	executablePath, err = gexec.Build("github.com/loderunner/scrt")
+	Expect(err).NotTo(HaveOccurred())
+})
+
+var _ = AfterSuite(func() {
+	gexec.CleanupBuildArtifacts()
+	os.RemoveAll(tmpLocalDir)
+})
+
+var _ = Describe("scrt", func() {
+	Context("for local backend", func() {
+		var err error
+		tmpLocalDir, err = os.MkdirTemp("", "scrt-e2e-*")
+		Expect(err).NotTo(HaveOccurred())
+
+		tmpLocalLocations := [3]string{
+			filepath.Join(tmpLocalDir, "store-args.scrt"),
+			filepath.Join(tmpLocalDir, "store-env.scrt"),
+			filepath.Join(tmpLocalDir, "store-conf.scrt"),
+		}
+
+		runTestsForStorage(
+			"local",
+			"toto",
+			tmpLocalLocations,
+			nil,
+		)
+	})
+})
+
+func execute(args []string, env []string) *gexec.Session {
+	cmd := exec.Command(executablePath, args...)
+	cmd.Env = env
+	session, err := gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
+	Expect(err).NotTo(HaveOccurred())
+
+	return session
+}
+
+func runTestsForStorage(storage, password string, locations [3]string, extraArgs map[string]string) {
+	Context("with args", func() {
+		args := []string{
+			"--storage=" + storage,
+			"--password=" + password,
+			"--location=" + locations[0],
+		}
+		for k, v := range extraArgs {
+			args = append(args, "--"+k+"="+v)
+		}
+		runTests(args, []string{})
+	})
+	Context("with environment variables", func() {
+		env := []string{
+			"SCRT_STORAGE=" + storage,
+			"SCRT_PASSWORD=" + password,
+			"SCRT_LOCATION=" + locations[1],
+		}
+		for k, v := range extraArgs {
+			env = append(env, strings.ToUpper(k)+"="+v)
+		}
+		runTests([]string{}, env)
+	})
+	Context("with .scrt.yml configuration file", func() {
+		BeforeEach(func() {
+			conf := map[string]string{
+				"storage":  storage,
+				"password": password,
+				"location": locations[2],
+			}
+			for k, v := range extraArgs {
+				conf[k] = v
+			}
+			yamlData, err := yaml.Marshal(conf)
+			Expect(err).NotTo(HaveOccurred())
+			err = os.WriteFile(".scrt.yml", yamlData, 0600)
+			Expect(err).NotTo(HaveOccurred())
+		})
+		AfterEach(func() {
+			os.Remove(".scrt.yml")
+		})
+		runTests([]string{}, []string{})
+	})
+}
+
+func runTests(args []string, env []string) {
+	It("inits a new store", func() {
+		session := execute(append(args, "init"), env)
+		Eventually(session).Should(gexec.Exit(0))
+		session.Wait()
+	})
+
+	It("fails when initing an existing store", func() {
+		session := execute(append(args, "init"), env)
+		Eventually(session).ShouldNot(gexec.Exit(0))
+		session.Wait()
+	})
+
+	It("sets a new value", func() {
+		session := execute(append(args, "set", "hello", "world"), env)
+		Eventually(session).Should(gexec.Exit(0))
+		session.Wait()
+	})
+
+	It("gets the value", func() {
+		session := execute(append(args, "get", "hello"), env)
+		Eventually(session).Should(gexec.Exit(0))
+		Eventually(session).Should(gbytes.Say("world"))
+		session.Wait()
+	})
+
+	It("fails to get a non-existing value", func() {
+		session := execute(append(args, "get", "toto"), env)
+		Eventually(session).ShouldNot(gexec.Exit(0))
+		session.Wait()
+	})
+
+	It("fails to overwrite a value", func() {
+		session := execute(append(args, "set", "hello", "world2"), env)
+		Eventually(session).ShouldNot(gexec.Exit(0))
+		session.Wait()
+	})
+
+	It("checks the value has not been overwritten", func() {
+		session := execute(append(args, "get", "hello"), env)
+		Eventually(session).Should(gexec.Exit(0))
+		Eventually(session).Should(gbytes.Say("world"))
+		session.Wait()
+	})
+
+	It("overwrites a value with --overwrite", func() {
+		session := execute(append(args, "set", "--overwrite", "hello", "world2"), env)
+		Eventually(session).Should(gexec.Exit(0))
+		session.Wait()
+	})
+
+	It("checks the value has been overwritten", func() {
+		session := execute(append(args, "get", "hello"), env)
+		Eventually(session).Should(gexec.Exit(0))
+		Eventually(session).Should(gbytes.Say("world2"))
+		session.Wait()
+	})
+
+	It("unsets the value in the store", func() {
+		session := execute(append(args, "unset", "hello"), env)
+		Eventually(session).Should(gexec.Exit(0))
+		session.Wait()
+	})
+
+	It("unsets a non-existing value in the store", func() {
+		session := execute(append(args, "unset", "toto"), env)
+		Eventually(session).Should(gexec.Exit(0))
+		session.Wait()
+	})
+
+	It("fails to get a unset value", func() {
+		session := execute(append(args, "get", "toto"), env)
+		Eventually(session).ShouldNot(gexec.Exit(0))
+		session.Wait()
+	})
+}
