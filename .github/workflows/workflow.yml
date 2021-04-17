@@ -38,11 +38,11 @@ jobs:
         ports:
           - 9000:9000
         volumes:
-          - ${{ env.HOME }}/data:/data
+          - ${{ github.workspace }}/data:/data
     needs: lint
     steps:
       - name: Create test bucket
-        run: mkdir -p $HOME/data/test-bucket
+        run: mkdir -p $GITHUB_WORKSPACE/data/test-bucket
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
