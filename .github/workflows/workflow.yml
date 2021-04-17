@@ -55,6 +55,7 @@ jobs:
           SCRT_TEST_E2E_S3_ENDPOINT_URL: http://127.0.0.1:9000
           AWS_ACCESS_KEY_ID: minio
           AWS_SECRET_ACCESS_KEY: miniosecret
+          AWS_DEFAULT_REGION: us-east-1
         run: go test -v ./e2e
 
   build:
