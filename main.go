@@ -23,6 +23,11 @@ import (
 	"github.com/loderunner/scrt/cmd"
 )
 
+var (
+	version = "dev"
+	commit  = "dev"
+)
+
 func main() {
 	defer func() {
 		if r := recover(); r != nil {
@@ -30,7 +35,12 @@ func main() {
 		}
 	}()
 
-	err := cmd.Execute()
+	if version == "dev" {
+		cmd.RootCmd.Version = commit
+	} else {
+		cmd.RootCmd.Version = version
+	}
+	err := cmd.RootCmd.Execute()
 	if err != nil {
 		handleError(err)
 	}

@@ -24,12 +24,8 @@ import (
 	"github.com/spf13/viper"
 )
 
-var (
-	version = "dev"
-	commit  = "none"
-)
-
-var rootCmd = &cobra.Command{
+// RootCmd is the root command for scrt
+var RootCmd = &cobra.Command{
 	Use:   "scrt",
 	Short: "A secret manager for the command-line",
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
@@ -92,34 +88,28 @@ var rootCmd = &cobra.Command{
 }
 
 func addCommand(cmd *cobra.Command) {
-	rootCmd.AddCommand(cmd)
+	RootCmd.AddCommand(cmd)
 	cmd.FParseErrWhitelist.UnknownFlags = true
 }
 
 func init() {
-	if version == "dev" {
-		rootCmd.Version = fmt.Sprintf("%s-%s", version, commit)
-	} else {
-		rootCmd.Version = version
-	}
-
 	addCommand(initCmd)
 	addCommand(setCmd)
 	addCommand(getCmd)
 	addCommand(unsetCmd)
 
-	rootCmd.PersistentFlags().StringP("password", "p", "", "master password to unlock the store")
-	err := viper.BindPFlag(configKeyPassword, rootCmd.PersistentFlags().Lookup("password"))
+	RootCmd.PersistentFlags().StringP("password", "p", "", "master password to unlock the store")
+	err := viper.BindPFlag(configKeyPassword, RootCmd.PersistentFlags().Lookup("password"))
 	if err != nil {
 		panic(err)
 	}
-	rootCmd.PersistentFlags().String("storage", "", "storage type")
-	err = viper.BindPFlag(configKeyStorage, rootCmd.PersistentFlags().Lookup("storage"))
+	RootCmd.PersistentFlags().String("storage", "", "storage type")
+	err = viper.BindPFlag(configKeyStorage, RootCmd.PersistentFlags().Lookup("storage"))
 	if err != nil {
 		panic(err)
 	}
-	rootCmd.PersistentFlags().String("location", "", "store location")
-	err = viper.BindPFlag(configKeyLocation, rootCmd.PersistentFlags().Lookup("location"))
+	RootCmd.PersistentFlags().String("location", "", "store location")
+	err = viper.BindPFlag(configKeyLocation, RootCmd.PersistentFlags().Lookup("location"))
 	if err != nil {
 		panic(err)
 	}
@@ -128,9 +118,4 @@ func init() {
 	viper.AutomaticEnv()
 
 	cobra.OnInitialize()
-}
-
-// Execute executes the root cobra command
-func Execute() error {
-	return rootCmd.Execute()
 }
