@@ -25,7 +25,6 @@ import (
 
 var (
 	version = "dev"
-	commit  = "dev"
 )
 
 func main() {
@@ -35,11 +34,7 @@ func main() {
 		}
 	}()
 
-	if version == "dev" {
-		cmd.RootCmd.Version = commit
-	} else {
-		cmd.RootCmd.Version = version
-	}
+	cmd.RootCmd.Version = version
 	err := cmd.RootCmd.Execute()
 	if err != nil {
 		handleError(err)
