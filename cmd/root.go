@@ -24,10 +24,14 @@ import (
 	"github.com/spf13/viper"
 )
 
+var (
+	version = "dev"
+	commit  = "none"
+)
+
 var rootCmd = &cobra.Command{
-	Use:     "scrt",
-	Short:   "A secret manager for the command-line",
-	Version: "0.0.0",
+	Use:   "scrt",
+	Short: "A secret manager for the command-line",
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		// Read configuration from .scrt file if exists, recursively searching
 		// for .scrt file in parent directories until root is reached
@@ -93,6 +97,12 @@ func addCommand(cmd *cobra.Command) {
 }
 
 func init() {
+	if version == "dev" {
+		rootCmd.Version = fmt.Sprintf("%s-%s", version, commit)
+	} else {
+		rootCmd.Version = version
+	}
+
 	addCommand(initCmd)
 	addCommand(setCmd)
 	addCommand(getCmd)
