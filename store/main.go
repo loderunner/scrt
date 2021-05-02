@@ -47,10 +47,8 @@ func ReadStore(password []byte, data []byte) (Store, error) {
 	if len(data) < saltLength+aes.BlockSize {
 		return Store{}, fmt.Errorf("invalid length")
 	}
-	salt := data[:saltLength]
-	iv := data[saltLength : saltLength+aes.BlockSize]
-	ciphertext := data[saltLength+aes.BlockSize:]
 
+	salt := data[:saltLength]
 	key := argon2.IDKey(password, salt, 1, 64*1024, 4, 32)
 
 	block, err := aes.NewCipher(key)
@@ -58,9 +56,18 @@ func ReadStore(password []byte, data []byte) (Store, error) {
 		return Store{}, err
 	}
 
-	stream := cipher.NewCTR(block, iv)
-	plaintext := make([]byte, len(ciphertext))
-	stream.XORKeyStream(plaintext, ciphertext)
+	aesgcm, err := cipher.NewGCM(block)
+	if err != nil {
+		return Store{}, err
+	}
+
+	nonce := data[saltLength : saltLength+aesgcm.NonceSize()]
+
+	ciphertext := data[saltLength+aesgcm.NonceSize():]
+	plaintext, err := aesgcm.Open(nil, nonce, ciphertext, nil)
+	if err != nil {
+		return Store{}, err
+	}
 
 	store := Store{
 		salt: salt,
@@ -97,25 +104,28 @@ func WriteStore(password []byte, store Store) ([]byte, error) {
 
 	key := argon2.IDKey(password, salt, 1, 64*1024, 4, 32)
 
-	iv := make([]byte, aes.BlockSize)
-	n, err = rand.Read(iv)
-	if err != nil {
-		return nil, err
-	}
-	if n != aes.BlockSize {
-		return nil, fmt.Errorf("unexpected IV length: %d", n)
-	}
-
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, err
 	}
 
-	stream := cipher.NewCTR(block, iv)
-	ciphertext := make([]byte, len(plaintext))
-	stream.XORKeyStream(ciphertext, plaintext)
+	aesgcm, err := cipher.NewGCM(block)
+	if err != nil {
+		return nil, err
+	}
 
-	return append(salt, append(iv, ciphertext...)...), nil
+	nonce := make([]byte, aesgcm.NonceSize())
+	n, err = rand.Read(nonce)
+	if err != nil {
+		return nil, err
+	}
+	if n != aesgcm.NonceSize() {
+		return nil, fmt.Errorf("unexpected nonce length: %d", n)
+	}
+
+	ciphertext := aesgcm.Seal(plaintext[:0], nonce, plaintext, nil)
+
+	return append(salt, append(nonce, ciphertext...)...), nil
 }
 
 // Has returns true if a value is associated to key in the Store.
