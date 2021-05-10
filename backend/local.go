@@ -18,7 +18,9 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 
+	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/afero"
 	"github.com/spf13/pflag"
 )
@@ -37,6 +39,14 @@ type local struct {
 type localFactory struct{}
 
 func (f localFactory) New(path string, conf map[string]interface{}) (Backend, error) {
+	path, err := homedir.Expand(path)
+	if err != nil {
+		return nil, err
+	}
+	path, err = filepath.Abs(path)
+	if err != nil {
+		return nil, err
+	}
 	return newLocal(path, conf)
 }
 
