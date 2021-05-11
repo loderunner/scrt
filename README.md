@@ -297,7 +297,7 @@ With the `local` backend, the location string is a path on the filesystem.
 
 ### S3
 
-Use the `s3` storage type to create and access a store using [AWS S3](https://aws.amazon.com/s3/) or any compatible cloud object storage (such as [MinIO](https://min.io/)).
+Use the `s3` storage type to create and access a store using [AWS S3](https://aws.amazon.com/s3/) or any compatible object storage (such as [MinIO](https://min.io/)).
 
 Example:
 
