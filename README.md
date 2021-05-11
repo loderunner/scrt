@@ -141,11 +141,11 @@ Use "scrt [command] --help" for more information about a command.
 
 ### Global options
 
-**`--storage string`:** storage type, see [Storage types](#storage-types) for details.
+**`--storage`:** storage type, see [Storage types](#storage-types) for details.
 
-**`--location string`:** location of the store, [storage](#storage-types)-dependent.
+**`--location`:** location of the store, [storage](#storage-types)-dependent.
 
-**`-p,--password string`:** password to the store. The argument will be used to derive a key, to decrypt and encrypt the data in the store.
+**`-p`**, **`--password`:** password to the store. The argument will be used to derive a key, to decrypt and encrypt the data in the store.
 
 > In the following examples, these options will be sometimes omitted, as they can be [configured](#configuration) using a configuration file or environment variables.
 
