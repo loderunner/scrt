@@ -3,6 +3,9 @@
 `scrt` is a command-line secret manager for developers, sysadmins and devops. `scrt` aims to provide command-line users with a secure way of storing and retrieving secrets, while retaining control of the storage.
 
 - [Features](#features)
+- [Installation](#installation)
+  - [`go get`](#go-get)
+  - [Build from source](#build-from-source)
 - [Example](#example)
   - [Initialization](#initialization)
   - [Configuration](#configuration)
@@ -32,6 +35,30 @@
   - Local filesystem
   - S3 (or S3-compatible object storage)
   - More to come...
+
+## Installation
+
+### `go get`
+
+Use `go get` to download and build the latest version:
+
+```sh
+go get github.com/loderunner/scrt
+```
+
+`scrt` will be available in the binaries directory of your GOPATH. Add it to your path, and run `scrt`.
+
+### Build from source
+
+Clone the repository and use `go build` to build a binary (requires go >= 1.16):
+
+```sh
+git clone https://github.com/loderunner/scrt.git
+cd scrt
+go build .
+```
+
+The built executable will be located at `scrt` at the root of the repository.
 
 ## Example
 
