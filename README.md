@@ -327,7 +327,7 @@ Nobody knows. It's either "secret" without the e's; or "skrrt" like a [Migos](ht
 
 The encryption keys are derived from the password using the [Argon2id](https://www.password-hashing.net/#argon2) key derivation function. A new random salt is used every time the store is written to, preventing reuse of existing cryptographic keys.
 
-#### Does `scrt` store my keys? Shouuld I be worried about my secrets being intercepted?
+#### Does `scrt` store my keys? Should I be worried about my secrets being intercepted?
 
 `scrt` does not save keys in the store, nor does it transfer any plaintext over the wire. All decryption and encryption happens on your computer while the program is running. This is the only way to provide full privacy and zero-trust security.
 
