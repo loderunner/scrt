@@ -112,8 +112,6 @@ The content of the file is still unreadable, but now contains your value:
 00000030  51 9e ad cf 15 d8 7e 35  77 1c 0c f1 70 be cb 91  |Q.....~5w...p...|
 ```
 
-Keep reading to learn more about how to use `scrt`.
-
 ## Usage
 
 Use `scrt --help` to output a full help message.
