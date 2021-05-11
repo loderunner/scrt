@@ -1,3 +1,5 @@
+[![](https://img.shields.io/github/workflow/status/loderunner/scrt/scrt?style=flat-square)](https://github.com/loderunner/scrt/actions/workflows/workflow.yml) [![](https://img.shields.io/static/v1?label=%E2%80%8B&message=reference&color=00add8&logo=go&style=flat-square)](https://pkg.go.dev/github.com/loderunner/scrt)
+
 # scrt
 
 `scrt` is a command-line secret manager for developers, sysadmins and devops. `scrt` aims to provide command-line users with a secure way of storing and retrieving secrets, while retaining control of the storage.
@@ -64,7 +66,7 @@ The built executable will be located at `scrt` at the root of the repository.
 
 ### Initialization
 
-Initialize a new `scrt` store, with `scrt init`.
+Initialize a new store, with `scrt init`.
 
 ```
 $ scrt init --storage=local \
