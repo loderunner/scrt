@@ -27,7 +27,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2.3.4
       - name: Test
-        run: go test -race -v ./...
+        run: go test -race -v -covermode=count -coverprofile=coverage.out ./...
+      - name: Convert coverage.out to coverage.lcov
+        uses: jandelgado/gcov2lcov-action@v1.0.6
+      - name: Coveralls
+        uses: coverallsapp/github-action@v1.1.2
+        with:
+          github-token: ${{ secrets.github_token }}
+          path-to-lcov: coverage.lcov
 
   e2e:
     runs-on: ubuntu-latest
