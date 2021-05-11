@@ -331,7 +331,7 @@ The encryption keys are derived from the password using the [Argon2id](https://w
 
 `scrt` does not save keys in the store, nor does it transfer any plaintext over the wire. All decryption and encryption happens on your computer while the program is running. This is the only way to provide full privacy and zero-trust security.
 
-The downside to this is that the entire store must be loaded into memory, possibly downloading it through the network, decrypted, and possibly reencrypted (on a mutating operation like `set` or `unset`) every time you run `scrt`. If the size of your store becomes an issue, there are some workarounds like splitting your store into multiple stores, or loading the entire store to the local filesystem before using it.
+The downside to this is that the entire store must be loaded into memory, possibly downloading it through the network, decrypted, and possibly reencrypted (on a mutating operation like `set` or `unset`) every time you run `scrt`. If the size of your store becomes an issue, there are workarounds like splitting your store into multiple stores, or downloading the entire store to the local filesystem before using it.
 
 #### I lost my password, how can I recover my secrets?
 
