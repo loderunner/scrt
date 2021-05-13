@@ -45,10 +45,11 @@ var _ = Describe("scrt", func() {
 		tmpLocalDir, err = os.MkdirTemp("", "scrt-e2e-*")
 		Expect(err).NotTo(HaveOccurred())
 
-		tmpLocalLocations := [3]string{
+		tmpLocalLocations := [4]string{
 			filepath.Join(tmpLocalDir, "store-args.scrt"),
 			filepath.Join(tmpLocalDir, "store-env.scrt"),
-			filepath.Join(tmpLocalDir, "store-conf.scrt"),
+			filepath.Join(tmpLocalDir, "store-implicit-conf.scrt"),
+			filepath.Join(tmpLocalDir, "store-explicit-conf.scrt"),
 		}
 
 		runTestsForStorage(
@@ -59,10 +60,11 @@ var _ = Describe("scrt", func() {
 		)
 	})
 	Context("for s3 backend", func() {
-		s3Locations := [3]string{
+		s3Locations := [4]string{
 			"s3://test-bucket/store-args.scrt",
 			"s3://test-bucket/store-env.scrt",
-			"s3://test-bucket/store-conf.scrt",
+			"s3://test-bucket/store-implicit-conf.scrt",
+			"s3://test-bucket/store-explicit-conf.scrt",
 		}
 
 		runTestsForStorage(
@@ -83,7 +85,7 @@ func execute(args []string, env []string) *gexec.Session {
 	return session
 }
 
-func runTestsForStorage(storage, password string, locations [3]string, extraArgs map[string]string) {
+func runTestsForStorage(storage, password string, locations [4]string, extraArgs map[string]string) {
 	Context("with args", func() {
 		args := []string{
 			"--storage=" + storage,
@@ -106,7 +108,7 @@ func runTestsForStorage(storage, password string, locations [3]string, extraArgs
 		}
 		runTests([]string{}, env)
 	})
-	Context("with .scrt.yml configuration file", func() {
+	Context("with .scrt.yml implicit configuration file", func() {
 		BeforeEach(func() {
 			conf := map[string]string{
 				"storage":  storage,
@@ -125,6 +127,26 @@ func runTestsForStorage(storage, password string, locations [3]string, extraArgs
 			os.Remove(".scrt.yml")
 		})
 		runTests([]string{}, []string{})
+	})
+	Context("with scrt.yml explicit configuration file", func() {
+		BeforeEach(func() {
+			conf := map[string]string{
+				"storage":  storage,
+				"password": password,
+				"location": locations[3],
+			}
+			for k, v := range extraArgs {
+				conf[k] = v
+			}
+			yamlData, err := yaml.Marshal(conf)
+			Expect(err).NotTo(HaveOccurred())
+			err = os.WriteFile("scrt.yml", yamlData, 0600)
+			Expect(err).NotTo(HaveOccurred())
+		})
+		AfterEach(func() {
+			os.Remove("scrt.yml")
+		})
+		runTests([]string{"--config=scrt.yml"}, []string{})
 	})
 }
 
