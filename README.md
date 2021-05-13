@@ -256,7 +256,7 @@ location: ~/.scrt/store.scrt
 password: p4ssw0rd
 ```
 
-If the `--config` option is set, `scrt` will try to load the configuration from a file at the given path. otherwise, it looks for any file named `.scrt`, `.scrt.yml` or `.scrt.yaml` in the current working directory, then recursively in the parent directory up to the root of the filesystem. If such a file is found, its values are loaded as configuration.
+If the `--config` option is set, `scrt` will try to load the configuration from a file at the given path. Otherwise, it looks for any file named `.scrt`, `.scrt.yml` or `.scrt.yaml` in the current working directory, then recursively in the parent directory up to the root of the filesystem. If such a file is found, its values are loaded as configuration.
 
 This can be useful in configuring the location of a store for a project, by adding a `.scrt` file at the root of the project repository. `scrt` can then be used in CI and other DevOps tools.
 
