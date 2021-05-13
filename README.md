@@ -255,13 +255,13 @@ password: p4ssw0rd
 
 When `scrt` is run, it looks for any file named `.scrt`, `.scrt.yml` or `.scrt.yaml` in the current working directory, then recursively in the parent directory up to the root of the filesystem. If such a file is found, its values are loaded as configuration.
 
-This can be useful in configuring the location of a store for a project, by adding a `.scrt` file at the root of the project repository. `scrt` can then be used in CI and other GitOps tools.
+This can be useful in configuring the location of a store for a project, by adding a `.scrt` file at the root of the project repository. `scrt` can then be used in CI and other DevOps tools.
 
 > :warning: Don't add the password to a public git repository! :warning:
 
 ### Environment variables
 
-Each global option has an environment variable counterpart. Environment variables use the same name as the configuration option, in uppercas letters, prefixed with `SCRT_`.
+Each global option has an environment variable counterpart. Environment variables use the same name as the configuration option, in uppercase letters, prefixed with `SCRT_`.
 
 - `storage` ⇒ `SCRT_STORAGE`
 - `location` ⇒ `SCRT_LOCATION`
