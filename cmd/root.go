@@ -24,30 +24,16 @@ import (
 	"github.com/spf13/viper"
 )
 
+var configFile string
+
 // RootCmd is the root command for scrt
 var RootCmd = &cobra.Command{
 	Use:   "scrt",
 	Short: "A secret manager for the command-line",
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-		// Read configuration from .scrt file if exists, recursively searching
-		// for .scrt file in parent directories until root is reached
-		viper.SetConfigName(".scrt")
-		viper.SetConfigType("yaml")
-		dir, err := os.Getwd()
+		err := readConfig(cmd)
 		if err != nil {
 			return err
-		}
-		viper.AddConfigPath(dir)
-		for dir != "/" {
-			dir = filepath.Dir(dir)
-			viper.AddConfigPath(dir)
-		}
-
-		err = viper.ReadInConfig()
-		if err != nil {
-			if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
-				return err
-			}
 		}
 
 		// Validate configuration
@@ -87,6 +73,35 @@ var RootCmd = &cobra.Command{
 	},
 }
 
+func readConfig(cmd *cobra.Command) error {
+	if configFile != "" {
+		viper.SetConfigFile(configFile)
+	} else {
+		// Read configuration from .scrt file if exists, recursively searching
+		// for .scrt file in parent directories until root is reached
+		viper.SetConfigName(".scrt")
+		viper.SetConfigType("yaml")
+		dir, err := os.Getwd()
+		if err != nil {
+			return err
+		}
+		viper.AddConfigPath(dir)
+		for parentDir := filepath.Dir(dir); dir != parentDir; parentDir = filepath.Dir(dir) {
+			dir = parentDir
+			viper.AddConfigPath(dir)
+		}
+	}
+
+	err := viper.ReadInConfig()
+	if err != nil {
+		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func addCommand(cmd *cobra.Command) {
 	RootCmd.AddCommand(cmd)
 	cmd.FParseErrWhitelist.UnknownFlags = true
@@ -98,6 +113,7 @@ func init() {
 	addCommand(getCmd)
 	addCommand(unsetCmd)
 
+	RootCmd.PersistentFlags().StringVarP(&configFile, "config", "c", "", "configuration file")
 	RootCmd.PersistentFlags().StringP("password", "p", "", "master password to unlock the store")
 	err := viper.BindPFlag(configKeyPassword, RootCmd.PersistentFlags().Lookup("password"))
 	if err != nil {
