@@ -59,6 +59,7 @@ brews:
     license: "Apache-2.0"
     install: bin.install "scrt"
     test: system "#{bin}/scrt --version"
+    skip_upload: auto
 dockers:
   # Tag release
   - image_templates:
