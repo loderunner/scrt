@@ -46,7 +46,7 @@ brews:
   - goarm: 6
     tap:
       owner: loderunner
-      name: homebrew-tap
+      name: homebrew-scrt
     commit_author:
       name: Charles Francoise
       email: charles.francoise@gmail.com
