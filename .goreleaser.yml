@@ -27,9 +27,9 @@ archives:
     format_overrides:
       - goos: windows
         format: zip
-
 nfpms:
-  - replacements:
+  - id: linux_packages
+    replacements:
       386: i386
       amd64: x86_64
     homepage: https://github.com/loderunner/scrt
@@ -70,8 +70,12 @@ dockers:
   # Prerelease
   - image_templates:
       - "loderunner/scrt:{{ .Version }}"
-
 checksum:
   name_template: "checksums.txt"
+  ids:
+    - default
 snapshot:
   name_template: "{{ .RawVersion }}-dev-{{ .ShortCommit }}"
+release:
+  ids:
+    - default
