@@ -22,11 +22,39 @@ builds:
         goarch: arm
 archives:
   - replacements:
-      darwin: Darwin
-      linux: Linux
-      windows: Windows
       386: i386
       amd64: x86_64
+nfpms:
+  - replacements:
+      386: i386
+      amd64: x86_64
+    homepage: https://github.com/loderunner/scrt
+    maintainer: Charles Francoise <charles.francoise@gmail.com>
+    description: A secret manager for the command-line
+    license: Apache 2.0
+    formats:
+      - deb
+      - rpm
+    section: devel
+    rpm:
+      signature:
+        key_file: key.gpg
+    deb:
+      signature:
+        key_file: key.gpg
+brews:
+  - goarm: 6
+    tap:
+      owner: loderunner
+      name: homebrew-tap
+    commit_author:
+      name: Charles Francoise
+      email: charles.francoise@gmail.com
+    homepage: "https://github.com/loderunner/scrt"
+    description: "A secret manager for the command-line"
+    license: "Apache-2.0"
+    install: bin.install "scrt"
+    test: system "#{bin}/scrt --version"
 dockers:
   - image_templates:
       - "loderunner/scrt:{{ .Major }}"
