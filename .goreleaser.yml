@@ -60,11 +60,17 @@ brews:
     install: bin.install "scrt"
     test: system "#{bin}/scrt --version"
 dockers:
+  # Tag release
   - image_templates:
       - "loderunner/scrt:{{ .Major }}"
       - "loderunner/scrt:{{ .Major }}.{{ .Minor }}"
       - "loderunner/scrt:{{ .Major }}.{{ .Minor }}.{{ .Patch }}"
       - "loderunner/scrt:latest"
+    skip_push: auto
+  # Prerelease
+  - image_templates:
+      - "loderunner/scrt:{{ .Version }}"
+
 checksum:
   name_template: "checksums.txt"
 snapshot:
