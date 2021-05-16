@@ -1,0 +1,26 @@
+#!/bin/sh
+set -e
+
+# Install GPG Key from file
+echo ${PASSPHRASE} | gpg --import --batch --pinentry-mode loopback --passphrase-fd 0 ${KEY_FILE}
+
+# Clone apt repo
+git clone https://${GITHUB_TOKEN}@github.com/${APT_REPOSITORY}.git ${DEST_DIR}
+
+# Copy new packages to apt repo
+cp dist/*.deb ${DEST_DIR}/main/
+
+cd ${DEST_DIR}
+
+# Scan packages and rebuild packages file
+dpkg-scanpackages -m main | tee Packages | gzip > Packages.gz
+
+# Create & sign release
+apt-ftparchive release . > Release
+echo ${PASSPHRASE} | gpg --default-key "${SIG_EMAIL}" --batch --pinentry-mode loopback --passphrase-fd 0 -abs -o - Release > Release.gpg
+echo ${PASSPHRASE} | gpg --default-key "${SIG_EMAIL}" --batch --pinentry-mode loopback --passphrase-fd 0 --clearsign -o - Release > InRelease
+
+# Push new release to server
+git add .
+git commit -m "release scrt version ${VERSION}"
+git push
