@@ -1,8 +1,14 @@
 name: scrt
 
 on:
-  - push
-  - pull_request
+  push:
+    branches:
+      - "main"
+    tags:
+      - "*"
+  pull_request:
+    branches:
+      - "*"
 
 jobs:
   lint:
