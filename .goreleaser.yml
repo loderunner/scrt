@@ -95,3 +95,17 @@ publishers:
       - "GIT_AUTHOR_EMAIL=scrt@scrt.run"
       - "GIT_COMMITTER_NAME='Charles Francoise'"
       - "GIT_COMMITTER_EMAIL=scrt@scrt.run"
+  - name: yum
+    cmd: .scripts/publish_yum
+    env:
+      - "KEY_FILE=key.gpg"
+      - "PASSPHRASE={{ .Env.NFPM_LINUX_PACKAGES_PASSPHRASE }}"
+      - "GITHUB_TOKEN={{ .Env.GITHUB_TOKEN }}"
+      - "YUM_REPOSITORY=loderunner/scrt-yum"
+      - "DEST_DIR={{ .Env.HOME }}/scrt-yum"
+      - "SIG_EMAIL=scrt@scrt.run"
+      - "VERSION={{ .Version }}"
+      - "GIT_AUTHOR_NAME='Charles Francoise'"
+      - "GIT_AUTHOR_EMAIL=scrt@scrt.run"
+      - "GIT_COMMITTER_NAME='Charles Francoise'"
+      - "GIT_COMMITTER_EMAIL=scrt@scrt.run"
