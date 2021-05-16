@@ -1,0 +1,22 @@
+#!/bin/sh
+set -e
+
+# Install GPG Key from file
+echo ${PASSPHRASE} | gpg --import --batch --pinentry-mode loopback --passphrase-fd 0 ${KEY_FILE}
+
+# Clone yum repo
+git clone https://${GITHUB_TOKEN}@github.com/${YUM_REPOSITORY}.git ${DEST_DIR}
+
+# Copy new packages to yum repo
+cp dist/*.rpm ${DEST_DIR}/main/
+
+cd ${DEST_DIR}
+
+# Create yum repo release
+createrepo .
+echo ${PASSPHRASE} | gpg --default-key "${SIG_EMAIL}" --batch --pinentry-mode loopback --passphrase-fd 0 --detach-sign --armor -o - repodata/repomd.xml > repodata/repomd.xml.asc
+
+# Push new release to server
+git add .
+git commit -m "release scrt version ${VERSION}"
+git push
