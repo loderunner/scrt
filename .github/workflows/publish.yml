@@ -23,7 +23,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2.3.4
       - name: Create key file
-        run: echo ${{ secrets.GPG_KEY }} > key.gpg
+        run: 'echo "${{ secrets.GPG_KEY }}" > key.gpg'
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v2
         with:
