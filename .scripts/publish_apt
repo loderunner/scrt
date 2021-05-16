@@ -22,5 +22,5 @@ echo ${PASSPHRASE} | gpg --default-key "${SIG_EMAIL}" --batch --pinentry-mode lo
 
 # Push new release to server
 git add .
-git commit -m "release scrt version ${VERSION}"
+git commit -m "release scrt version"
 git push
