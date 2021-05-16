@@ -78,6 +78,8 @@ release:
     - default
 publishers:
   - name: apt
+    ids:
+      - linux_packages
     cmd: .scripts/publish_apt
     env:
       - "KEY_FILE=key.gpg"
@@ -92,6 +94,8 @@ publishers:
       - "GIT_COMMITTER_NAME='Charles Francoise'"
       - "GIT_COMMITTER_EMAIL=scrt@scrt.run"
   - name: yum
+    ids:
+      - linux_packages
     cmd: .scripts/publish_yum
     env:
       - "KEY_FILE=key.gpg"
