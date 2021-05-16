@@ -2,6 +2,8 @@ name: scrt
 
 on:
   push:
+    branches:
+      - "*"
     tags-ignore:
       - "*"
 
