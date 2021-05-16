@@ -1,4 +1,4 @@
-name: scrt
+name: Build scrt
 
 on:
   push:
