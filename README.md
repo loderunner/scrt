@@ -46,7 +46,7 @@
 
 Download the latest finary release for your platform from the [releases page](https://github.com/loderunner/scrt/releases). Decompress the archive to the desired location. E.g.
 
-```sh
+```shell
 tar xzvf scrt_1.2.3_linux_x86_64.tar.gz
 sudo cp scrt_1.2.3_linux_x86_64/scrt /usr/local/bin/scrt
 ```
@@ -71,7 +71,7 @@ sudo apt install scrt
 
 Configure the yum repository:
 
-```conf
+```ini
 [scrt]
 name=scrt
 baseurl=https://loderunner.github.io/scrt-yum
@@ -85,7 +85,7 @@ metadata_expire=300
 
 Install the binary package
 
-```sh
+```shell
 sudo yum update
 sudo yum install scrt
 ```
@@ -108,7 +108,7 @@ brew install scrt
 
 Use `go get` to download and build the latest version:
 
-```sh
+```shell
 go get github.com/loderunner/scrt
 ```
 
@@ -118,7 +118,7 @@ go get github.com/loderunner/scrt
 
 Clone the repository and use `go build` to build a binary (requires go >= 1.16):
 
-```sh
+```shell
 git clone https://github.com/loderunner/scrt.git
 cd scrt
 go build .
@@ -132,11 +132,11 @@ The built executable will be located at `scrt` at the root of the repository.
 
 Initialize a new store, with `scrt init`.
 
-```
-$ scrt init --storage=local \
-            --location=~/.scrt/store.scrt \
-            --password=p4ssw0rd
-local store initialized at ~/.scrt/store.scrt
+```shell
+scrt init --storage=local \
+          --location=~/.scrt/store.scrt \
+          --password=p4ssw0rd
+# local store initialized at ~/.scrt/store.scrt
 ```
 
 This will create an empty store, in a `store.scrt` file located in `.scrt` inside your home directory. The file is encrypted using a secret key derived from the given password.
@@ -153,20 +153,20 @@ The content of the file is unreadable:
 
 Set your configuration in environment variables, so you don't have to type them out each time you run a command.
 
-```
-$ export SCRT_STORAGE=local
-$ export SCRT_LOCATION=~/.scrt/store.scrt
-$ export SCRT_PASSWORD=p4ssw0rd
+```shell
+export SCRT_STORAGE=local
+export SCRT_LOCATION=~/.scrt/store.scrt
+export SCRT_PASSWORD=p4ssw0rd
 ```
 
 ## Using the store
 
 Set and retrieve a value for a key using `scrt set` and `scrt get`.
 
-```
-$ scrt set hello 'World!'
-$ scrt get hello
-World!
+```shell
+scrt set hello 'World!'
+scrt get hello
+# Output: World!
 ```
 
 The content of the file is still unreadable, but now contains your value:
@@ -230,7 +230,7 @@ Initialize a new store at the given location. If an item is already present at t
 
 Create a store in a `store.scrt` file in the local filesystem, in the current working directory, using the password `"p4ssw0rd"`.
 
-```sh
+```shell
 scrt init --storage=local --location=./store.scrt --password=p4ssw0rd
 ```
 
@@ -253,7 +253,7 @@ If a value is already set for `key`, the command will fail unless the `--overwri
 
 Associate `Hello World` to the key `greeting` in the store, using implicit store configuration (configuration file or environment variables).
 
-```sh
+```shell
 scrt set greeting "Hello World"
 ```
 
@@ -273,7 +273,7 @@ Retrieve the value associated to the key in the store, if it exists. Returns an 
 
 Retrieve the value associated to the key `greeting` in the store, using implicit store configuration (configuration file or environment variables).
 
-```sh
+```shell
 scrt get greeting
 # Output: Hello World
 ```
@@ -290,7 +290,7 @@ Disassociate the value associated to a key in the store. If no value is associat
 
 Remove the value associated to the key. After this command, no value will be associated to the key `greeting` in the store.
 
-```sh
+```shell
 scrt unset greeting
 ```
 
@@ -356,7 +356,7 @@ Use the `local` storage type to create and access a store on your local filesyst
 
 Example:
 
-```sh
+```shell
 scrt init --storage=local --location=/tmp/store.scrt --password=p4ssw0rd
 ```
 
@@ -370,7 +370,7 @@ Use the `s3` storage type to create and access a store using [AWS S3](https://aw
 
 Example:
 
-```sh
+```shell
 scrt init --storage=s3 --location=s3://scrt-bucket/store.scrt --password=p4ssw0rd
 ```
 
