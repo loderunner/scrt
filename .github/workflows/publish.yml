@@ -51,6 +51,8 @@ jobs:
         run: sudo apt update && sudo apt install -y git gnupg apt-utils dpkg-dev
       - name: Download release artifacts
         uses: actions/download-artifact@v2
+      - name: Create key file
+        run: 'echo "${{ secrets.GPG_KEY }}" > key.gpg'
       - name: Publish to apt repository
         run: .scripts/publish_apt
         env:
@@ -76,6 +78,8 @@ jobs:
         run: sudo apt update && sudo apt install -y git gnupg createrepo
       - name: Download release artifacts
         uses: actions/download-artifact@v2
+      - name: Create key file
+        run: 'echo "${{ secrets.GPG_KEY }}" > key.gpg'
       - name: Publish to yum repository
         run: .scripts/publish_yum
         env:
