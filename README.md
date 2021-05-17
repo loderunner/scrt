@@ -1,7 +1,5 @@
 [![Workflow status](https://img.shields.io/github/workflow/status/loderunner/scrt/Build%20scrt?style=flat-square)](https://github.com/loderunner/scrt/actions/workflows/build.yml) [![Coverage Status](https://img.shields.io/coveralls/github/loderunner/scrt?style=flat-square)](https://coveralls.io/github/loderunner/scrt?branch=main) [![Go reference](https://img.shields.io/static/v1?label=%E2%80%8B&message=reference&color=00add8&logo=go&style=flat-square)](https://pkg.go.dev/github.com/loderunner/scrt)
 
-# scrt
-
 `scrt` is a command-line secret manager for developers, sysadmins and devops. `scrt` aims to provide command-line users with a secure way of storing and retrieving secrets, while retaining control of the storage.
 
 - [Features](#features)
@@ -31,7 +29,7 @@
 - [FAQ](#faq)
 - [License](#license)
 
-## Features
+# Features
 
 - Stateless command-line tool for Linux/Windows/Darwin
 - All cryptography happens in the client: no passwords, keys or plaintext data over the wire, no key management included
@@ -42,9 +40,9 @@
   - S3 (or S3-compatible object storage)
   - More to come...
 
-## Installation
+# Installation
 
-### Download binary release
+## Download binary release
 
 Download the latest finary release for your platform from the [releases page](https://github.com/loderunner/scrt/releases). Decompress the archive to the desired location. E.g.
 
@@ -53,7 +51,7 @@ tar xzvf scrt_1.2.3_linux_x86_64.tar.gz
 sudo cp scrt_1.2.3_linux_x86_64/scrt /usr/local/bin/scrt
 ```
 
-### `apt` (Debian/Ubuntu)
+## `apt` (Debian/Ubuntu)
 
 Configure the apt repository:
 
@@ -69,7 +67,7 @@ sudo apt update
 sudo apt install scrt
 ```
 
-### `yum` (RHEL/CentOS)
+## `yum` (RHEL/CentOS)
 
 Configure the yum repository:
 
@@ -92,7 +90,7 @@ sudo yum update
 sudo yum install scrt
 ```
 
-### Homebrew (macOS)
+## Homebrew (macOS)
 
 Configure the Homebrew tap:
 
@@ -106,7 +104,7 @@ Install the binary package:
 brew install scrt
 ```
 
-### `go get`
+## `go get`
 
 Use `go get` to download and build the latest version:
 
@@ -116,7 +114,7 @@ go get github.com/loderunner/scrt
 
 `scrt` will be available in the binaries directory of your GOPATH. Add it to your path, and run `scrt`.
 
-### Build from source
+## Build from source
 
 Clone the repository and use `go build` to build a binary (requires go >= 1.16):
 
@@ -128,9 +126,9 @@ go build .
 
 The built executable will be located at `scrt` at the root of the repository.
 
-## Example
+# Example
 
-### Initialization
+## Initialization
 
 Initialize a new store, with `scrt init`.
 
@@ -151,7 +149,7 @@ The content of the file is unreadable:
 00000020  d8 5d 47 2b 99 b1 99 fa  2c 07 0a ec 8c 11        |.]G+....,.....|
 ```
 
-### Configuration
+## Configuration
 
 Set your configuration in environment variables, so you don't have to type them out each time you run a command.
 
@@ -161,7 +159,7 @@ $ export SCRT_LOCATION=~/.scrt/store.scrt
 $ export SCRT_PASSWORD=p4ssw0rd
 ```
 
-### Using the store
+## Using the store
 
 Set and retrieve a value for a key using `scrt set` and `scrt get`.
 
@@ -180,7 +178,7 @@ The content of the file is still unreadable, but now contains your value:
 00000030  51 9e ad cf 15 d8 7e 35  77 1c 0c f1 70 be cb 91  |Q.....~5w...p...|
 ```
 
-## Usage
+# Usage
 
 Use `scrt --help` to output a full help message.
 
@@ -208,7 +206,7 @@ Flags:
 Use "scrt [command] --help" for more information about a command.
 ```
 
-### Global options
+## Global options
 
 **`-c`**, **`--config`:** Path to a YAML [Configuration file](#configuration-file)
 
@@ -220,7 +218,7 @@ Use "scrt [command] --help" for more information about a command.
 
 > In the following examples, these options will be sometimes omitted, as they can be [configured](#configuration) using a configuration file or environment variables.
 
-### Initializing a store
+## Initializing a store
 
 ```
 scrt init [flags]
@@ -228,7 +226,7 @@ scrt init [flags]
 
 Initialize a new store at the given location. If an item is already present at the location, the initialization will fail unless the `--overwrite` option is set.
 
-#### Example
+### Example
 
 Create a store in a `store.scrt` file in the local filesystem, in the current working directory, using the password `"p4ssw0rd"`.
 
@@ -236,11 +234,11 @@ Create a store in a `store.scrt` file in the local filesystem, in the current wo
 scrt init --storage=local --location=./store.scrt --password=p4ssw0rd
 ```
 
-#### Options
+### Options
 
 **`--overwrite`:** when this flag is set, `scrt` will overwrite the item at the given location, if it exists, instead of returning an error. If no item exists at the given location, `--overwrite` has no effect.
 
-### Storing a secret
+## Storing a secret
 
 ```
 scrt set [flags] key [value]
@@ -251,7 +249,7 @@ line, it will be read from standard input.
 
 If a value is already set for `key`, the command will fail unless the `--overwrite` option is set.
 
-#### Example
+### Example
 
 Associate `Hello World` to the key `greeting` in the store, using implicit store configuration (configuration file or environment variables).
 
@@ -259,11 +257,11 @@ Associate `Hello World` to the key `greeting` in the store, using implicit store
 scrt set greeting "Hello World"
 ```
 
-#### Options
+### Options
 
 **`--overwrite`:** when this flag is set, `scrt` will overwrite the value for `key` in the store, if it exists, instead of returning an error. If no value is associated to `key`, `--overwrite` has no effect.
 
-### Retrieving a secret
+## Retrieving a secret
 
 ```
 scrt get [flags] key
@@ -271,7 +269,7 @@ scrt get [flags] key
 
 Retrieve the value associated to the key in the store, if it exists. Returns an error if no value is associated to the key.
 
-#### Example
+### Example
 
 Retrieve the value associated to the key `greeting` in the store, using implicit store configuration (configuration file or environment variables).
 
@@ -280,7 +278,7 @@ scrt get greeting
 # Output: Hello World
 ```
 
-### Deleting a secret
+## Deleting a secret
 
 ```
 scrt unset [flags] key
@@ -288,7 +286,7 @@ scrt unset [flags] key
 
 Disassociate the value associated to a key in the store. If no value is associated to the key, does nothing.
 
-#### Example
+### Example
 
 Remove the value associated to the key. After this command, no value will be associated to the key `greeting` in the store.
 
@@ -296,7 +294,7 @@ Remove the value associated to the key. After this command, no value will be ass
 scrt unset greeting
 ```
 
-## Configuration
+# Configuration
 
 Repeating the global options every time the `scrt` command is invoked can be verbose. Also, some options–like the store password–shouldn't be used on the command line on a shared computer, to avoid security issues.
 
@@ -310,7 +308,7 @@ To prevent this, `scrt` can be configured with a configuration file or using env
 
 > Configuration options can be considered to be chosen from "most explicit" (flags) to "least explicit" (configuration file).
 
-### Configuration file
+## Configuration file
 
 The `scrt` configuration file is a YAML file with the configuration options as keys.
 
@@ -328,7 +326,7 @@ This can be useful in configuring the location of a store for a project, by addi
 
 > :warning: Don't add the password to a public git repository! :warning:
 
-### Environment variables
+## Environment variables
 
 Each global option has an environment variable counterpart. Environment variables use the same name as the configuration option, in uppercase letters, prefixed with `SCRT_`.
 
@@ -346,13 +344,13 @@ export SCRT_PASSWORD=p4ssw0rd
 
 > Refer to your shell interpreter's documentation to set environment variables if you don't use `bash` (`zsh`, `dash`, `tcsh`, etc.)
 
-## Storage types
+# Storage types
 
 `scrt` supports various storage backends, independent of the secrets engine. Each storage type has a name, and location strings vary according to the chosen type.
 
 Storage types may support additional options. See the documentation below for details.
 
-### Local
+## Local
 
 Use the `local` storage type to create and access a store on your local filesystem.
 
@@ -362,11 +360,11 @@ Example:
 scrt init --storage=local --location=/tmp/store.scrt --password=p4ssw0rd
 ```
 
-#### Location
+### Location
 
 With the `local` backend, the location string is a path on the filesystem.
 
-### S3
+## S3
 
 Use the `s3` storage type to create and access a store using [AWS S3](https://aws.amazon.com/s3/) or any compatible object storage (such as [MinIO](https://min.io/)).
 
@@ -378,33 +376,33 @@ scrt init --storage=s3 --location=s3://scrt-bucket/store.scrt --password=p4ssw0r
 
 > `scrt` uses your [AWS configuration (config files, environment variables)](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) if it can be found.
 
-#### Location
+### Location
 
 With the `s3` backend, the location string is an S3 URI of the form `s3://mybucket/mykey`.
 
-#### Extra options
+### Extra options
 
 **`s3-endpoint-url`:** When using an S3-compatible object storage other than AWS, `scrt` requires the URL of the S3 API endpoint. Can be configured in the configuration file, or with the `SCRT_S3_ENDPOINT_URL` environment variable.
 
-## FAQ
+# FAQ
 
-#### How do you pronounce `scrt`?
+### How do you pronounce `scrt`?
 
 Nobody knows. It's either "secret" without the e's; or "skrrt" like a [Migos](https://genius.com/artists/Migos) ad-lib.
 
-#### What is the cryptography behind `scrt`?
+### What is the cryptography behind `scrt`?
 
 `scrt` relies on the industry-standard [AES](https://csrc.nist.gov/publications/detail/fips/197/final) symmetric encryption algorithm with 256-bit keys, with GCM [mode of operation](https://csrc.nist.gov/publications/detail/sp/800-38a/final) (AES-256-GCM, in OpenSSL parlance).
 
 The encryption keys are derived from the password using the [Argon2id](https://www.password-hashing.net/#argon2) key derivation function. A new random salt is used every time the store is written to, preventing reuse of existing cryptographic keys.
 
-#### Does `scrt` store my keys? Should I be worried about my secrets being intercepted?
+### Does `scrt` store my keys? Should I be worried about my secrets being intercepted?
 
 `scrt` does not save keys in the store, nor does it transfer any plaintext over the wire. All decryption and encryption happens on your computer while the program is running. This is the only way to provide full privacy and zero-trust security.
 
 The downside to this is that the entire store must be loaded into memory, possibly downloading it through the network, decrypted, and possibly reencrypted (on a mutating operation like `set` or `unset`) every time you run `scrt`. If the size of your store becomes an issue, there are workarounds like splitting your store into multiple stores, or downloading the entire store to the local filesystem before using it.
 
-#### I lost my password, how can I recover my secrets?
+### I lost my password, how can I recover my secrets?
 
 I've got some good news and some bad news.
 
@@ -412,6 +410,6 @@ The bad news: you're doomed. Your secrets are encrypted with a key that can only
 
 The good news: you probably won't lose your password again.
 
-## License
+# License
 
 [Apache 2.0](https://choosealicense.com/licenses/apache-2.0/)
