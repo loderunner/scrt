@@ -23,6 +23,7 @@ archives:
     format_overrides:
       - goos: windows
         format: zip
+    wrap_in_directory: true
 nfpms:
   - id: linux_packages
     replacements:

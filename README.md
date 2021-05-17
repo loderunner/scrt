@@ -1,4 +1,4 @@
-[![Workflow status](https://img.shields.io/github/workflow/status/loderunner/scrt/build?style=flat-square)](https://github.com/loderunner/scrt/actions/workflows/build.yml) [![Go reference](https://img.shields.io/static/v1?label=%E2%80%8B&message=reference&color=00add8&logo=go&style=flat-square)](https://pkg.go.dev/github.com/loderunner/scrt) [![Coverage Status](https://img.shields.io/coveralls/github/loderunner/scrt?style=flat-square)](https://coveralls.io/github/loderunner/scrt?branch=main)
+[![Workflow status](https://img.shields.io/github/workflow/status/loderunner/scrt/build?style=flat-square)](https://github.com/loderunner/scrt/actions/workflows/build.yml) [![Coverage Status](https://img.shields.io/coveralls/github/loderunner/scrt?style=flat-square)](https://coveralls.io/github/loderunner/scrt?branch=main) [![Go reference](https://img.shields.io/static/v1?label=%E2%80%8B&message=reference&color=00add8&logo=go&style=flat-square)](https://pkg.go.dev/github.com/loderunner/scrt)
 
 # scrt
 
@@ -6,6 +6,10 @@
 
 - [Features](#features)
 - [Installation](#installation)
+  - [Download binary release](#download-binary-release)
+  - [`apt` (Debian/Ubuntu)](#apt-debianubuntu)
+  - [`yum` (RHEL/CentOS)](#yum-rhelcentos)
+  - [Homebrew (macOS)](#homebrew-macos)
   - [`go get`](#go-get)
   - [Build from source](#build-from-source)
 - [Example](#example)
@@ -39,6 +43,68 @@
   - More to come...
 
 ## Installation
+
+### Download binary release
+
+Download the latest finary release for your platform from the [releases page](https://github.com/loderunner/scrt/releases). Decompress the archive to the desired location. E.g.
+
+```sh
+tar xzvf scrt_1.2.3_linux_x86_64.tar.gz
+sudo cp scrt_1.2.3_linux_x86_64/scrt /usr/local/bin/scrt
+```
+
+### `apt` (Debian/Ubuntu)
+
+Configure the apt repository:
+
+```shell
+echo "deb https://loderunner.github.io/scrt-apt /" | sudo tee /etc/apt/sources.list.d/scrt.list
+curl "https://loderunner.github.io/scrt-apt/key.gpg" | sudo apt-key add -
+```
+
+Install the binary package:
+
+```shell
+sudo apt update
+sudo apt install scrt
+```
+
+### `yum` (RHEL/CentOS)
+
+Configure the yum repository:
+
+```conf
+[scrt]
+name=scrt
+baseurl=https://loderunner.github.io/scrt-yum
+repo_gpgcheck=1
+gpgcheck=1
+enabled=1
+gpgkey=https://loderunner.github.io/scrt-yum/key.gpg
+sslverify=1
+metadata_expire=300
+```
+
+Install the binary package
+
+```sh
+sudo yum update
+sudo yum install scrt
+```
+
+### Homebrew (macOS)
+
+Configure the Homebrew tap:
+
+```shell
+brew tap loderunner/scrt
+```
+
+Install the binary package:
+
+```
+brew install scrt
+```
 
 ### `go get`
 
