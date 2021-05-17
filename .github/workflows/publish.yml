@@ -35,7 +35,7 @@ jobs:
           version: latest
           args: release --rm-dist --release-notes=CHANGELOG.md
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PUBLISH_GITHUB_TOKEN }}
           NFPM_LINUX_PACKAGES_PASSPHRASE: ${{ secrets.NFPM_LINUX_PACKAGES_PASSPHRASE }}
       - name: publish to apt repository
         run: .scripts/publish_apt
