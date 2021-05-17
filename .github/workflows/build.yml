@@ -14,6 +14,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2.3.4
+      - name: Cache Go modules
+        uses: actions/cache@v2
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
       - name: Run linters
         run: golangci-lint run
 
@@ -27,6 +32,11 @@ jobs:
           go-version: 1.16
       - name: Checkout
         uses: actions/checkout@v2.3.4
+      - name: Cache Go modules
+        uses: actions/cache@v2
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
       - name: Test
         run: go test -race -v -covermode=atomic -coverprofile=coverage.out ./...
       - name: Convert coverage.out to coverage.lcov
@@ -56,6 +66,11 @@ jobs:
           go-version: 1.16
       - name: Checkout
         uses: actions/checkout@v2.3.4
+      - name: Cache Go modules
+        uses: actions/cache@v2
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
       - name: Test
         env:
           SCRT_TEST_E2E: y
@@ -75,5 +90,10 @@ jobs:
           go-version: 1.16
       - name: Checkout
         uses: actions/checkout@v2.3.4
+      - name: Cache Go modules
+        uses: actions/cache@v2
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
       - name: Build
         run: go build -v .
