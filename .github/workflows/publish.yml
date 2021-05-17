@@ -54,6 +54,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: dist
+          path: dist
       - name: Create key file
         run: 'echo "${{ secrets.GPG_KEY }}" > key.gpg'
       - name: Publish to apt repository
@@ -83,6 +84,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: dist
+          path: dist
       - name: Create key file
         run: 'echo "${{ secrets.GPG_KEY }}" > key.gpg'
       - name: Publish to yum repository
