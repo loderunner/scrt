@@ -240,7 +240,10 @@ func TestSetList(t *testing.T) {
 	}
 
 	for i, k := range keys {
-		s.Set(k, vals[i])
+		err := s.Set(k, vals[i])
+		if err != nil {
+			t.Fatal(err)
+		}
 	}
 
 	res := s.List()
