@@ -118,6 +118,7 @@ func init() {
 	addCommand(initCmd)
 	addCommand(setCmd)
 	addCommand(getCmd)
+	addCommand(listCmd)
 	addCommand(unsetCmd)
 	addCommand(storageCmd)
 
