@@ -22,6 +22,7 @@
   - [Initializing a store](#initializing-a-store)
   - [Storing a secret](#storing-a-secret)
   - [Retrieving a secret](#retrieving-a-secret)
+  - [Listing all keys](#listing-all-keys)
   - [Deleting a secret](#deleting-a-secret)
 - [Configuration](#configuration-1)
   - [Configuration file](#configuration-file)
@@ -288,6 +289,23 @@ Retrieve the value associated to the key `greeting` in the store, using implicit
 ```shell
 scrt get greeting
 # Output: Hello World
+```
+
+## Listing all keys
+
+```
+scrt list
+```
+
+List all the keys in the store.
+
+### Example
+
+List all the keys in the store, using implicit store configuration (configuration file or environment variables).
+
+```shell
+scrt list
+# Output: greeting
 ```
 
 ## Deleting a secret
