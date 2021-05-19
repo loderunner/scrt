@@ -25,6 +25,7 @@ const testKey = "hello"
 const testBadKey = "toto"
 
 var testVal = []byte("world")
+var testBinaryVal = make([]byte, 256)
 
 func makePassword(t *testing.T) []byte {
 	passwordLength, err := rand.Int(rand.Reader, big.NewInt(256))
@@ -59,6 +60,28 @@ func testWriteReadStore(t *testing.T, store Store) Store {
 	}
 
 	return got
+}
+
+func testSetGet(t *testing.T, val []byte) {
+	s := NewStore()
+
+	err := s.Set(testKey, val)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	res, err := s.Get(testKey)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(res, val) {
+		t.Fatalf("expected %#v, got %#v", val, res)
+	}
+
+	_, err = s.Get(testBadKey)
+	if err == nil {
+		t.Fatalf("expected s.Get(%#v) to return error", testBadKey)
+	}
 }
 
 func TestEmptyStore(t *testing.T) {
@@ -136,6 +159,22 @@ func TestHasFail(t *testing.T) {
 	}
 }
 
+func TestSetGet(t *testing.T) {
+	testSetGet(t, testVal)
+}
+
+func TestSetGetBinary(t *testing.T) {
+
+	n, err := rand.Read(testBinaryVal)
+	if n != 256 {
+		t.Fatalf("expected 256 bytes, got %d", n)
+	}
+	if err != nil {
+		t.Fatal(err)
+	}
+	testSetGet(t, testBinaryVal)
+}
+
 func TestSetHas(t *testing.T) {
 	s := NewStore()
 
@@ -159,28 +198,6 @@ func TestGetFail(t *testing.T) {
 	_, err := s.Get(testKey)
 	if err == nil {
 		t.Fatalf("expected s.Get(%#v) to return error", testKey)
-	}
-}
-
-func TestSetGet(t *testing.T) {
-	s := NewStore()
-
-	err := s.Set(testKey, testVal)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	val, err := s.Get(testKey)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !reflect.DeepEqual(val, testVal) {
-		t.Fatalf("expected %#v, got %#v", testVal, val)
-	}
-
-	_, err = s.Get(testBadKey)
-	if err == nil {
-		t.Fatalf("expected s.Get(%#v) to return error", testBadKey)
 	}
 }
 
