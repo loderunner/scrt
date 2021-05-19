@@ -113,6 +113,8 @@ func addCommand(cmd *cobra.Command) {
 }
 
 func init() {
+	cobra.EnableCommandSorting = false
+
 	addCommand(initCmd)
 	addCommand(setCmd)
 	addCommand(getCmd)

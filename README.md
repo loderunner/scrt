@@ -190,12 +190,12 @@ Usage:
   scrt [command]
 
 Available Commands:
-  get         Retrieve the value associated to key from a store
-  help        Help about any command
   init        Initialize a new store
   set         Associate a key to a value in a store
-  storage     List storage types and options
+  get         Retrieve the value associated to key from a store
   unset       Remove the value associated to key in a store
+  storage     List storage types and options
+  help        Help about any command
 
 Flags:
   -c, --config string     configuration file
