@@ -16,6 +16,7 @@
   - [Using the store](#using-the-store)
 - [Usage](#usage)
   - [Global options](#global-options)
+  - [Listing storage types](#listing-storage-types)
   - [Initializing a store](#initializing-a-store)
   - [Storing a secret](#storing-a-secret)
   - [Retrieving a secret](#retrieving-a-secret)
@@ -193,6 +194,7 @@ Available Commands:
   help        Help about any command
   init        Initialize a new store
   set         Associate a key to a value in a store
+  storage     List storage types and options
   unset       Remove the value associated to key in a store
 
 Flags:
@@ -217,6 +219,14 @@ Use "scrt [command] --help" for more information about a command.
 **`-p`**, **`--password`:** password to the store. The argument will be used to derive a key, to decrypt and encrypt the data in the store.
 
 > In the following examples, these options will be sometimes omitted, as they can be [configured](#configuration) using a configuration file or environment variables.
+
+## Listing storage types
+
+```
+scrt storage
+```
+
+List all available storage types and options
 
 ## Initializing a store
 
