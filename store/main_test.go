@@ -18,6 +18,7 @@ import (
 	"crypto/rand"
 	"math/big"
 	"reflect"
+	"sort"
 	"testing"
 )
 
@@ -217,5 +218,35 @@ func TestSetUnsetHasGet(t *testing.T) {
 	_, err = s.Get(testKey)
 	if err == nil {
 		t.Fatalf("expected s.Get(%#v) to return error", testKey)
+	}
+}
+
+func TestSetList(t *testing.T) {
+	s := NewStore()
+
+	keys := []string{
+		"never",
+		"gonna",
+		"give",
+		"you",
+		"up",
+	}
+	vals := [][]byte{
+		[]byte("never"),
+		[]byte("gonna"),
+		[]byte("let"),
+		[]byte("you"),
+		[]byte("down"),
+	}
+
+	for i, k := range keys {
+		s.Set(k, vals[i])
+	}
+
+	res := s.List()
+	sort.Strings(keys)
+	sort.Strings(res)
+	if !reflect.DeepEqual(keys, res) {
+		t.Fatalf("expected %#v, got %#v", keys, res)
 	}
 }

@@ -134,6 +134,17 @@ func (s Store) Has(key string) bool {
 	return ok
 }
 
+// List returns all the keys is the Store
+func (s Store) List() []string {
+	keys := make([]string, len(s.data))
+	i := 0
+	for k := range s.data {
+		keys[i] = k
+		i++
+	}
+	return keys
+}
+
 // Get returns the value associated to key in the Store, or an error if none is
 // associated.
 func (s Store) Get(key string) ([]byte, error) {
