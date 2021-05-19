@@ -45,6 +45,10 @@ func (f s3Factory) New(location string, conf map[string]interface{}) (Backend, e
 	return newS3(location, conf)
 }
 
+func (f s3Factory) Name() string {
+	return "S3"
+}
+
 func (f s3Factory) Description() string {
 	return "store secrets to AWS S3 or S3-compatible object storage"
 }

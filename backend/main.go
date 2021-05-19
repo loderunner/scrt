@@ -30,6 +30,7 @@ type Backend interface {
 // backend-related functions.
 type Factory interface {
 	New(location string, conf map[string]interface{}) (Backend, error)
+	Name() string
 	Description() string
 	Flags() *pflag.FlagSet
 }
