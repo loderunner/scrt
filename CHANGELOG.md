@@ -8,7 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- List storage types and options from the command-line
+- List storage types and options with `scrt storage`
+- List all keys in the store with `scrt list`
 
 ## 0.1.1 - 2021-05-17
 
