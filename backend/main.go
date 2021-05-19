@@ -29,6 +29,7 @@ type Backend interface {
 // Factory can instantiate a new Backend with New, and other static
 // backend-related functions.
 type Factory interface {
-	New(name string, conf map[string]interface{}) (Backend, error)
+	New(location string, conf map[string]interface{}) (Backend, error)
+	Description() string
 	Flags() *pflag.FlagSet
 }

@@ -50,6 +50,10 @@ func (f localFactory) New(path string, conf map[string]interface{}) (Backend, er
 	return newLocal(path, conf)
 }
 
+func (f localFactory) Description() string {
+	return "store secrets to local filesystem"
+}
+
 func (f localFactory) Flags() *pflag.FlagSet {
 	return localFlagSet
 }

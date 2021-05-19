@@ -57,6 +57,10 @@ func (f mockFactory) New(path string, conf map[string]interface{}) (backend.Back
 	return f.b, nil
 }
 
+func (f mockFactory) Description() string {
+	return "mock storage"
+}
+
 func (f mockFactory) Flags() *pflag.FlagSet {
 	return pflag.NewFlagSet("mock", pflag.ContinueOnError)
 }
