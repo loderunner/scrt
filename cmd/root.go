@@ -31,6 +31,11 @@ var RootCmd = &cobra.Command{
 	Use:   "scrt",
 	Short: "A secret manager for the command-line",
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+		// Short circuit for storage command
+		if cmd == storageCmd {
+			return nil
+		}
+
 		err := readConfig(cmd)
 		if err != nil {
 			return err
@@ -112,6 +117,7 @@ func init() {
 	addCommand(setCmd)
 	addCommand(getCmd)
 	addCommand(unsetCmd)
+	addCommand(storageCmd)
 
 	RootCmd.PersistentFlags().StringVarP(&configFile, "config", "c", "", "configuration file")
 	RootCmd.PersistentFlags().StringP("password", "p", "", "master password to unlock the store")
