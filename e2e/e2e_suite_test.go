@@ -222,6 +222,13 @@ func runTests(args []string, env []string) {
 		session.Wait()
 	})
 
+	It("lists the values", func() {
+		session := execute(append(args, "list"), env)
+		Eventually(session).Should(gexec.Exit(0))
+		Eventually(session).Should(gbytes.Say("hello"))
+		session.Wait()
+	})
+
 	It("unsets the value in the store", func() {
 		session := execute(append(args, "unset", "hello"), env)
 		Eventually(session).Should(gexec.Exit(0))
