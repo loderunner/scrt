@@ -59,18 +59,18 @@ var _ = Describe("scrt", func() {
 		tmpLocalDir, err = os.MkdirTemp("", "scrt-e2e-*")
 		Expect(err).NotTo(HaveOccurred())
 
-		tmpLocalLocations := [4]string{
-			filepath.Join(tmpLocalDir, "store-args.scrt"),
-			filepath.Join(tmpLocalDir, "store-env.scrt"),
-			filepath.Join(tmpLocalDir, "store-implicit-conf.scrt"),
-			filepath.Join(tmpLocalDir, "store-explicit-conf.scrt"),
+		extraArgs := [4]map[string]string{
+			{"local.path": filepath.Join(tmpLocalDir, "store-args.scrt")},
+			{"local.path": filepath.Join(tmpLocalDir, "store-env.scrt")},
+			{"local.path": filepath.Join(tmpLocalDir, "store-implicit-conf.scrt")},
+			{"local.path": filepath.Join(tmpLocalDir, "store-explicit-conf.scrt")},
 		}
 
 		runTestsForStorage(
 			"local",
 			"toto",
-			tmpLocalLocations,
-			nil,
+			[4]string{"toto", "toto", "toto", "toto"},
+			extraArgs,
 		)
 	})
 	Context("for s3 backend", func() {
@@ -81,13 +81,20 @@ var _ = Describe("scrt", func() {
 			"s3://test-bucket/store-explicit-conf.scrt",
 		}
 
+		extraArgs := map[string]string{
+			"s3-endpoint-url": os.Getenv("SCRT_TEST_E2E_S3_ENDPOINT_URL"),
+			"s3-region":       os.Getenv("SCRT_TEST_E2E_S3_REGION"),
+		}
+
 		runTestsForStorage(
 			"s3",
 			"toto",
 			s3Locations,
-			map[string]string{
-				"s3-endpoint-url": os.Getenv("SCRT_TEST_E2E_S3_ENDPOINT_URL"),
-				"s3-region":       os.Getenv("SCRT_TEST_E2E_S3_REGION"),
+			[4]map[string]string{
+				extraArgs,
+				extraArgs,
+				extraArgs,
+				extraArgs,
 			},
 		)
 	})
@@ -102,15 +109,15 @@ func execute(args []string, env []string) *gexec.Session {
 	return session
 }
 
-func runTestsForStorage(storage, password string, locations [4]string, extraArgs map[string]string) {
+func runTestsForStorage(storage, password string, locations [4]string, extraArgs [4]map[string]string) {
 	Context("with args", func() {
 		args := []string{
 			"--storage=" + storage,
 			"--password=" + password,
 			"--location=" + locations[0],
 		}
-		for k, v := range extraArgs {
-			args = append(args, "--"+k+"="+v)
+		for k, v := range extraArgs[0] {
+			args = append(args, "--"+strings.ReplaceAll(k, ".", "-")+"="+v)
 		}
 		runTests(args, []string{})
 	})
@@ -120,20 +127,32 @@ func runTestsForStorage(storage, password string, locations [4]string, extraArgs
 			"SCRT_PASSWORD=" + password,
 			"SCRT_LOCATION=" + locations[1],
 		}
-		for k, v := range extraArgs {
-			env = append(env, "SCRT_"+strings.ToUpper(k)+"="+v)
+		for k, v := range extraArgs[1] {
+			env = append(env, "SCRT_"+strings.ToUpper(strings.ReplaceAll(k, ".", "_"))+"="+v)
 		}
 		runTests([]string{}, env)
 	})
 	Context("with .scrt.yml implicit configuration file", func() {
 		BeforeEach(func() {
-			conf := map[string]string{
+			conf := map[string]interface{}{
 				"storage":  storage,
 				"password": password,
 				"location": locations[2],
 			}
-			for k, v := range extraArgs {
-				conf[k] = v
+			for k, v := range extraArgs[2] {
+				i := strings.Index(k, ".")
+				if i == -1 {
+					conf[k] = v
+				} else {
+					// Handle nested conf 1-layer deep
+					newK := k[:i]
+					subK := k[i+1:]
+					if subConf, ok := conf[newK]; ok {
+						(subConf.(map[string]interface{}))[subK] = v
+					} else {
+						conf[newK] = map[string]interface{}{subK: v}
+					}
+				}
 			}
 			yamlData, err := yaml.Marshal(conf)
 			Expect(err).NotTo(HaveOccurred())
@@ -152,7 +171,7 @@ func runTestsForStorage(storage, password string, locations [4]string, extraArgs
 				"password": password,
 				"location": locations[3],
 			}
-			for k, v := range extraArgs {
+			for k, v := range extraArgs[3] {
 				conf[k] = v
 			}
 			yamlData, err := yaml.Marshal(conf)

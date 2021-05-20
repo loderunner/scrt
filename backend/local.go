@@ -28,6 +28,7 @@ var localFlagSet *pflag.FlagSet
 
 func init() {
 	localFlagSet = pflag.NewFlagSet("local", pflag.ContinueOnError)
+	localFlagSet.String("local-path", "", "path to the store in the local filesystem")
 }
 
 type local struct {
@@ -38,19 +39,7 @@ type local struct {
 type localFactory struct{}
 
 func (f localFactory) New(path string, conf map[string]interface{}) (Backend, error) {
-	if path == "" {
-		return nil, fmt.Errorf("empty path")
-	}
-
-	path, err := homedir.Expand(path)
-	if err != nil {
-		return nil, err
-	}
-	path, err = filepath.Abs(path)
-	if err != nil {
-		return nil, err
-	}
-	return newLocal(path, conf)
+	return newLocal(conf)
 }
 
 func (f localFactory) Name() string {
@@ -69,12 +58,46 @@ func init() {
 	Backends["local"] = localFactory{}
 }
 
-func newLocal(path string, conf map[string]interface{}) (Backend, error) {
+func newLocal(conf map[string]interface{}) (Backend, error) {
+	var localOpts map[string]interface{}
+	l, ok := conf["local"]
+	if ok {
+		localOpts, _ = l.(map[string]interface{})
+	}
+	p, ok := conf["local-path"]
+	if p == "" || !ok {
+		if localOpts != nil {
+			p, ok = localOpts["path"]
+		}
+	}
+	if !ok {
+		return nil, fmt.Errorf("missing path")
+	}
+
+	path, ok := p.(string)
+	if !ok {
+		return nil, fmt.Errorf("path is not a string: %#v", path)
+	}
+
+	if p == "" {
+		return nil, fmt.Errorf("missing path")
+	}
+
+	path, err := homedir.Expand(path)
+	if err != nil {
+		return nil, err
+	}
+	path, err = filepath.Abs(path)
+	if err != nil {
+		return nil, err
+	}
+
 	fs := afero.NewOsFs()
-	_, err := fs.Stat(path)
+	_, err = fs.Stat(path)
 	if err != nil && !errors.Is(err, afero.ErrFileNotFound) {
 		return nil, fmt.Errorf("invalid location: %s", path)
 	}
+
 	return local{path: path, fs: fs}, nil
 }
 
