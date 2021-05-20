@@ -412,7 +412,7 @@ With the `s3` backend, the location string is an S3 URI of the form `s3://mybuck
 
 ### Extra options
 
-**`s3-endpoint-url`:** When using an S3-compatible object storage other than AWS, `scrt` requires the URL of the S3 API endpoint. Can be configured in the configuration file, or with the `SCRT_S3_ENDPOINT_URL` environment variable.
+**`--s3-endpoint-url`:** When using an S3-compatible object storage other than AWS, `scrt` requires the URL of the S3 API endpoint. Can be configured in the configuration file, or with the `SCRT_S3_ENDPOINT_URL` environment variable.
 
 # FAQ
 
