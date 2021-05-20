@@ -51,7 +51,7 @@ func TestUnsetCmd(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	mockBackend.EXPECT().Exists().Return(true)
+	mockBackend.EXPECT().Exists().Return(true, nil)
 	mockBackend.EXPECT().Load().Return(data, nil)
 	mockBackend.EXPECT().Save(gomock.Any())
 
@@ -86,7 +86,7 @@ func TestUnsetCmdNoValue(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	mockBackend.EXPECT().Exists().Return(true)
+	mockBackend.EXPECT().Exists().Return(true, nil)
 	mockBackend.EXPECT().Load().Return(data, nil)
 	mockBackend.EXPECT().Save(gomock.Any())
 
@@ -113,7 +113,7 @@ func TestUnsetCmdNotExists(t *testing.T) {
 	viper.Set(configKeyStorage, "mock")
 	viper.Set(configKeyLocation, "location")
 
-	mockBackend.EXPECT().Exists().Return(false)
+	mockBackend.EXPECT().Exists().Return(false, nil)
 
 	args := []string{"hello"}
 	err := unsetCmd.Args(unsetCmd, args)
@@ -138,7 +138,7 @@ func TestUnsetCmdFailedLoad(t *testing.T) {
 	viper.Set(configKeyStorage, "mock")
 	viper.Set(configKeyLocation, "location")
 
-	mockBackend.EXPECT().Exists().Return(true)
+	mockBackend.EXPECT().Exists().Return(true, nil)
 	mockBackend.EXPECT().Load().Return(nil, fmt.Errorf("error"))
 
 	args := []string{"hello"}
@@ -172,7 +172,7 @@ func TestUnsetCmdFailedSave(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	mockBackend.EXPECT().Exists().Return(true)
+	mockBackend.EXPECT().Exists().Return(true, nil)
 	mockBackend.EXPECT().Load().Return(data, nil)
 	mockBackend.EXPECT().Save(gomock.Any()).Return(fmt.Errorf("error"))
 

@@ -47,7 +47,7 @@ func TestSetCmd(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	mockBackend.EXPECT().Exists().Return(true)
+	mockBackend.EXPECT().Exists().Return(true, nil)
 	mockBackend.EXPECT().Load().Return(data, nil)
 	mockBackend.EXPECT().Save(gomock.Any())
 
@@ -86,7 +86,7 @@ func TestSetCmdStdin(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	mockBackend.EXPECT().Exists().Return(true)
+	mockBackend.EXPECT().Exists().Return(true, nil)
 	mockBackend.EXPECT().Load().Return(data, nil)
 	mockBackend.EXPECT().Save(gomock.Any())
 
@@ -119,7 +119,7 @@ func TestSetCmdNotExists(t *testing.T) {
 	viper.Set(configKeyStorage, "mock")
 	viper.Set(configKeyLocation, "location")
 
-	mockBackend.EXPECT().Exists().Return(false)
+	mockBackend.EXPECT().Exists().Return(false, nil)
 
 	args := []string{"hello", "world"}
 	err := setCmd.Args(setCmd, args)
@@ -144,7 +144,7 @@ func TestSetCmdFailedLoad(t *testing.T) {
 	viper.Set(configKeyStorage, "mock")
 	viper.Set(configKeyLocation, "location")
 
-	mockBackend.EXPECT().Exists().Return(true)
+	mockBackend.EXPECT().Exists().Return(true, nil)
 	mockBackend.EXPECT().Load().Return(nil, fmt.Errorf("error"))
 
 	args := []string{"hello", "world"}
@@ -172,7 +172,7 @@ func TestSetCmdFailedInvalidData(t *testing.T) {
 
 	data := []byte("toto")
 
-	mockBackend.EXPECT().Exists().Return(true)
+	mockBackend.EXPECT().Exists().Return(true, nil)
 	mockBackend.EXPECT().Load().Return(data, nil)
 
 	args := []string{"hello", "world"}
@@ -210,7 +210,7 @@ func TestSetCmdFailedNoOverwrite(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	mockBackend.EXPECT().Exists().Return(true)
+	mockBackend.EXPECT().Exists().Return(true, nil)
 	mockBackend.EXPECT().Load().Return(data, nil)
 
 	args := []string{"hello", "world"}
@@ -248,7 +248,7 @@ func TestSetCmdOverwrite(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	mockBackend.EXPECT().Exists().Return(true)
+	mockBackend.EXPECT().Exists().Return(true, nil)
 	mockBackend.EXPECT().Load().Return(data, nil)
 	mockBackend.EXPECT().Save(gomock.Any())
 
@@ -287,7 +287,7 @@ func TestSetCmdFailedSave(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	mockBackend.EXPECT().Exists().Return(true)
+	mockBackend.EXPECT().Exists().Return(true, nil)
 	mockBackend.EXPECT().Load().Return(data, nil)
 	mockBackend.EXPECT().Save(gomock.Any()).Return(fmt.Errorf("error"))
 
