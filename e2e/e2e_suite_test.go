@@ -85,7 +85,10 @@ var _ = Describe("scrt", func() {
 			"s3",
 			"toto",
 			s3Locations,
-			map[string]string{"s3-endpoint-url": os.Getenv("SCRT_TEST_E2E_S3_ENDPOINT_URL")},
+			map[string]string{
+				"s3-endpoint-url": os.Getenv("SCRT_TEST_E2E_S3_ENDPOINT_URL"),
+				"s3-region":       os.Getenv("SCRT_TEST_E2E_S3_REGION"),
+			},
 		)
 	})
 })
