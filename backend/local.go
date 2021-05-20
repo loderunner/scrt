@@ -78,9 +78,12 @@ func newLocal(path string, conf map[string]interface{}) (Backend, error) {
 	return local{path: path, fs: fs}, nil
 }
 
-func (l local) Exists() bool {
-	exists, _ := afero.Exists(l.fs, l.path)
-	return exists
+func (l local) Exists() (bool, error) {
+	exists, err := afero.Exists(l.fs, l.path)
+	if err != nil {
+		return false, err
+	}
+	return exists, nil
 }
 
 func (l local) Save(data []byte) error {

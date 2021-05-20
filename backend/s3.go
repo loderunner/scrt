@@ -16,11 +16,13 @@ package backend
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/url"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3iface"
@@ -31,6 +33,7 @@ var s3FlagSet *pflag.FlagSet
 
 func init() {
 	s3FlagSet = pflag.NewFlagSet("s3", pflag.ContinueOnError)
+	s3FlagSet.String("s3-region", "", "region of the S3 storage")
 	s3FlagSet.String("s3-endpoint-url", "", "override default S3 endpoint URL")
 }
 
@@ -70,6 +73,7 @@ func newS3(location string, conf map[string]interface{}) (Backend, error) {
 	}
 
 	cfgs := []*aws.Config{}
+
 	if url, ok := conf["s3-endpoint-url"]; ok {
 		endpoint, ok := url.(string)
 		if !ok {
@@ -79,9 +83,27 @@ func newS3(location string, conf map[string]interface{}) (Backend, error) {
 			}
 			endpoint = stringer.String()
 		}
-		cfg := aws.NewConfig().WithEndpoint(endpoint).WithS3ForcePathStyle(true)
-		cfgs = append(cfgs, cfg)
+		if endpoint != "" {
+			cfg := aws.NewConfig().WithEndpoint(endpoint).WithS3ForcePathStyle(true)
+			cfgs = append(cfgs, cfg)
+		}
 	}
+
+	if region, ok := conf["s3-region"]; ok {
+		r, ok := region.(string)
+		if !ok {
+			stringer, ok := region.(fmt.Stringer)
+			if !ok {
+				return nil, fmt.Errorf("S3 region could not be converted to string: %v", region)
+			}
+			r = stringer.String()
+		}
+		if r != "" {
+			cfg := aws.NewConfig().WithRegion(r)
+			cfgs = append(cfgs, cfg)
+		}
+	}
+
 	client := s3.New(sess, cfgs...)
 
 	s3URL, err := url.Parse(location)
@@ -102,12 +124,22 @@ func newS3(location string, conf map[string]interface{}) (Backend, error) {
 	}, nil
 }
 
-func (s s3Backend) Exists() bool {
-	req := (&s3.HeadObjectInput{}).
+func (s s3Backend) Exists() (bool, error) {
+	req := (&s3.GetObjectInput{}).
 		SetBucket(s.bucket).
 		SetKey(s.key)
-	_, err := s.client.HeadObject(req)
-	return err == nil
+	res, err := s.client.GetObject(req)
+	if err != nil {
+		var awsErr awserr.Error
+		if errors.As(err, &awsErr) &&
+			(awsErr.Code() == s3.ErrCodeNoSuchBucket ||
+				awsErr.Code() == s3.ErrCodeNoSuchKey) {
+			return false, nil
+		}
+		return false, err
+	}
+	res.Body.Close()
+	return true, nil
 }
 
 func (s s3Backend) Save(data []byte) error {

@@ -37,7 +37,7 @@ func TestInitCmd(t *testing.T) {
 	viper.Set(configKeyStorage, "mock")
 	viper.Set(configKeyLocation, "location")
 
-	mockBackend.EXPECT().Exists().Return(false)
+	mockBackend.EXPECT().Exists().Return(false, nil)
 	mockBackend.EXPECT().Save(gomock.Any())
 
 	args := []string{"path"}
@@ -59,7 +59,7 @@ func TestInitOverwrite(t *testing.T) {
 	viper.Set(configKeyStorage, "mock")
 	viper.Set(configKeyLocation, "location")
 
-	mockBackend.EXPECT().Exists().Return(true)
+	mockBackend.EXPECT().Exists().Return(true, nil)
 
 	args := []string{"path"}
 	err := initCmd.RunE(initCmd, args)
@@ -67,7 +67,7 @@ func TestInitOverwrite(t *testing.T) {
 		t.Fatal("expected error")
 	}
 
-	mockBackend.EXPECT().Exists().Return(true)
+	mockBackend.EXPECT().Exists().Return(true, nil)
 	mockBackend.EXPECT().Save(gomock.Any())
 
 	err = initCmd.Flags().Set("overwrite", "true")

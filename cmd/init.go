@@ -37,7 +37,11 @@ var initCmd = &cobra.Command{
 			return err
 		}
 
-		if b.Exists() {
+		exists, err := b.Exists()
+		if err != nil {
+			return fmt.Errorf("could not check store existence: %w", err)
+		}
+		if exists {
 			var overwrite bool
 			var err error
 			if cmd.Flags().Changed("overwrite") {

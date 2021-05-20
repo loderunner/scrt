@@ -53,7 +53,7 @@ func TestListCmdEmpty(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	mockBackend.EXPECT().Exists().Return(true)
+	mockBackend.EXPECT().Exists().Return(true, nil)
 	mockBackend.EXPECT().Load().Return(data, nil)
 
 	err = listCmd.RunE(listCmd, []string{})
@@ -99,7 +99,7 @@ func TestListCmd(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	mockBackend.EXPECT().Exists().Return(true)
+	mockBackend.EXPECT().Exists().Return(true, nil)
 	mockBackend.EXPECT().Load().Return(data, nil)
 
 	args := []string{"hello", "world"}
@@ -134,7 +134,7 @@ func TestListCmdFailedLoad(t *testing.T) {
 	viper.Set(configKeyStorage, "mock")
 	viper.Set(configKeyLocation, "location")
 
-	mockBackend.EXPECT().Exists().Return(true)
+	mockBackend.EXPECT().Exists().Return(true, nil)
 	mockBackend.EXPECT().Load().Return(nil, fmt.Errorf("error"))
 
 	err := listCmd.RunE(listCmd, []string{})
@@ -156,7 +156,7 @@ func TestListCmdFailedInvalidData(t *testing.T) {
 
 	data := []byte("toto")
 
-	mockBackend.EXPECT().Exists().Return(true)
+	mockBackend.EXPECT().Exists().Return(true, nil)
 	mockBackend.EXPECT().Load().Return(data, nil)
 
 	err := listCmd.RunE(listCmd, []string{})

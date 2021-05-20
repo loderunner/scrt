@@ -41,7 +41,7 @@ jobs:
           path: ~/go/pkg/mod
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
       - name: Test
-        run: go test -race -v -covermode=atomic -coverprofile=coverage.out ./...
+        run: go test -race -covermode=atomic -coverprofile=coverage.out ./...
       - name: Convert coverage.out to coverage.lcov
         uses: jandelgado/gcov2lcov-action@v1.0.6
       - name: Coveralls
@@ -78,10 +78,10 @@ jobs:
         env:
           SCRT_TEST_E2E: y
           SCRT_TEST_E2E_S3_ENDPOINT_URL: http://127.0.0.1:9000
+          SCRT_TEST_E2E_S3_REGION: us-east-1
           AWS_ACCESS_KEY_ID: minio
           AWS_SECRET_ACCESS_KEY: miniosecret
-          AWS_DEFAULT_REGION: us-east-1
-        run: go test -v ./e2e
+        run: go test ./e2e
 
   build:
     runs-on: ubuntu-latest
