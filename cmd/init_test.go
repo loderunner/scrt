@@ -58,13 +58,15 @@ func TestInitOverwrite(t *testing.T) {
 	viper.Set(configKeyLocation, "location")
 
 	mockBackend.EXPECT().Exists().Return(true)
-	mockBackend.EXPECT().Save(gomock.Any())
 
 	args := []string{"path"}
 	err := initCmd.RunE(initCmd, args)
 	if err == nil {
 		t.Fatal("expected error")
 	}
+
+	mockBackend.EXPECT().Exists().Return(true)
+	mockBackend.EXPECT().Save(gomock.Any())
 
 	err = initCmd.Flags().Set("overwrite", "true")
 	if err != nil {

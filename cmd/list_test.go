@@ -18,6 +18,8 @@ package cmd
 
 import (
 	"fmt"
+	"io/ioutil"
+	"os"
 	"reflect"
 	"testing"
 
@@ -58,13 +60,13 @@ func TestListCmdEmpty(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	fileInfo, err := hijackStdout.Stat()
+	os.Stdout.Close()
+	data, err = ioutil.ReadAll(hijackStdout)
 	if err != nil {
 		t.Fatal(err)
 	}
-	size := fileInfo.Size()
-	if size > 0 {
-		t.Fatalf("expected empty output, got %d", size)
+	if len(data) > 0 {
+		t.Fatalf("expected empty output, got %#v", data)
 	}
 }
 
@@ -99,7 +101,7 @@ func TestListCmd(t *testing.T) {
 	mockBackend.EXPECT().Load().Return(data, nil)
 
 	args := []string{"hello", "world"}
-	err = setCmd.Args(setCmd, args)
+	err = listCmd.Args(listCmd, args)
 	if err == nil {
 		t.Fatal("expected error")
 	}
@@ -109,11 +111,11 @@ func TestListCmd(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	n, err := hijackStdout.Read(data)
+	os.Stdout.Close()
+	data, err = ioutil.ReadAll(hijackStdout)
 	if err != nil {
 		t.Fatal(err)
 	}
-	data = data[:n]
 	if !reflect.DeepEqual(data, []byte("hello\n")) {
 		t.Fatalf("expected %#v, got %#v", []byte("hello\n"), data)
 	}

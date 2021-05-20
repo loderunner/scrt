@@ -18,6 +18,8 @@ package cmd
 
 import (
 	"fmt"
+	"io/ioutil"
+	"os"
 	"reflect"
 	"testing"
 
@@ -68,11 +70,11 @@ func TestGetCmd(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	n, err := hijackStdout.Read(data)
+	os.Stdout.Close()
+	data, err = ioutil.ReadAll(hijackStdout)
 	if err != nil {
 		t.Fatal(err)
 	}
-	data = data[:n]
 	if !reflect.DeepEqual(data, testVal) {
 		t.Fatalf("expected %#v, got %#v", testVal, data)
 	}

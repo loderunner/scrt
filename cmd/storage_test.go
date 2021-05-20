@@ -15,6 +15,8 @@
 package cmd
 
 import (
+	"io/ioutil"
+	"os"
 	"testing"
 )
 
@@ -25,18 +27,20 @@ func TestStorageCmd(t *testing.T) {
 	args := []string{"hello", "world"}
 	err := storageCmd.Args(storageCmd, args)
 	if err == nil {
-		t.Fatal("unexpected error")
+		t.Fatal("expected error")
 	}
+
+	args = []string{}
 	err = storageCmd.RunE(storageCmd, args)
-	if err == nil {
-		t.Fatal("unexpected error")
-	}
-	data := make([]byte, 0)
-	n, err := hijackStdout.Read(data)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if n == 0 {
+	os.Stdout.Close()
+	data, err := ioutil.ReadAll(hijackStdout)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(data) == 0 {
 		t.Fatal("no output")
 	}
 }
