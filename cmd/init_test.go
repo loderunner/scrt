@@ -46,7 +46,7 @@ func TestInitCmd(t *testing.T) {
 	}
 }
 
-func TestInitOverWrite(t *testing.T) {
+func TestInitOverwrite(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -60,12 +60,17 @@ func TestInitOverWrite(t *testing.T) {
 	mockBackend.EXPECT().Exists().Return(true)
 	mockBackend.EXPECT().Save(gomock.Any())
 
-	err := initCmd.Flags().Set("overwrite", "true")
+	args := []string{"path"}
+	err := initCmd.RunE(initCmd, args)
+	if err == nil {
+		t.Fatal("expected error")
+	}
+
+	err = initCmd.Flags().Set("overwrite", "true")
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	args := []string{"path"}
 	err = initCmd.RunE(initCmd, args)
 	if err != nil {
 		t.Fatal(err)
