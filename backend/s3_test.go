@@ -32,15 +32,8 @@ type mockS3Client struct {
 	data []byte
 }
 
-func (m *mockS3Client) HeadObject(input *s3.HeadObjectInput) (*s3.HeadObjectOutput, error) {
-	if *input.Bucket == "test-bucket" && *input.Key == "/store.scrt" {
-		return &s3.HeadObjectOutput{}, nil
-	}
-	return nil, awserr.New(s3.ErrCodeNoSuchKey, "no such key", nil)
-}
-
 func (m *mockS3Client) GetObject(input *s3.GetObjectInput) (*s3.GetObjectOutput, error) {
-	if m.data == nil {
+	if *input.Key != "/store.scrt" || m.data == nil {
 		return nil, awserr.New(s3.ErrCodeNoSuchKey, "no such key", nil)
 	}
 	return &s3.GetObjectOutput{
@@ -59,6 +52,14 @@ func (m *mockS3Client) PutObject(input *s3.PutObjectInput) (*s3.PutObjectOutput,
 
 func TestS3Exists(t *testing.T) {
 	b := s3Backend{bucket: "test-bucket", key: "/nonexistent.scrt", client: &mockS3Client{}}
+
+	s := store.NewStore()
+	data, _ := store.WriteStore([]byte("password"), s)
+
+	err := b.Save(data)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	exists, err := b.Exists()
 	if err != nil {
