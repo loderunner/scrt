@@ -17,7 +17,6 @@ package backend
 import (
 	"errors"
 	"fmt"
-	"os"
 	"path/filepath"
 
 	"github.com/mitchellh/go-homedir"
@@ -76,8 +75,8 @@ func newLocal(path string, conf map[string]interface{}) (Backend, error) {
 }
 
 func (l local) Valid() bool {
-	_, err := os.Stat(l.path)
-	if err == nil || errors.Is(err, os.ErrNotExist) {
+	_, err := l.fs.Stat(l.path)
+	if err == nil || errors.Is(err, afero.ErrFileNotFound) {
 		return true
 	}
 	return false
