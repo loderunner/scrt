@@ -30,6 +30,6 @@ func TestLocalFactory(t *testing.T) {
 
 	_, err = f.New("toto", map[string]interface{}{})
 	if err != nil {
-		t.Errorf("unexpected error: %s", err)
+		t.Error(err)
 	}
 }

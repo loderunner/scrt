@@ -35,14 +35,14 @@ func TestS3Factory(t *testing.T) {
 
 	_, err = f.New("s3://test-bucket/store.scrt", map[string]interface{}{})
 	if err != nil {
-		t.Errorf("unexpected error: %s", err)
+		t.Error(err)
 	}
 
 	_, err = f.New("s3://test-bucket/store.scrt", map[string]interface{}{
 		"s3-endpoint-url": "http://localhost:123456",
 	})
 	if err != nil {
-		t.Errorf("unexpected error: %s", err)
+		t.Error(err)
 	}
 
 	_, err = f.New("s3://test-bucket/store.scrt", map[string]interface{}{
