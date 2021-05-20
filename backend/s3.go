@@ -31,6 +31,7 @@ var s3FlagSet *pflag.FlagSet
 
 func init() {
 	s3FlagSet = pflag.NewFlagSet("s3", pflag.ContinueOnError)
+	s3FlagSet.String("s3-region", "", "region of the S3 storage")
 	s3FlagSet.String("s3-endpoint-url", "", "override default S3 endpoint URL")
 }
 
@@ -70,6 +71,7 @@ func newS3(location string, conf map[string]interface{}) (Backend, error) {
 	}
 
 	cfgs := []*aws.Config{}
+
 	if url, ok := conf["s3-endpoint-url"]; ok {
 		endpoint, ok := url.(string)
 		if !ok {
@@ -82,6 +84,20 @@ func newS3(location string, conf map[string]interface{}) (Backend, error) {
 		cfg := aws.NewConfig().WithEndpoint(endpoint).WithS3ForcePathStyle(true)
 		cfgs = append(cfgs, cfg)
 	}
+
+	if region, ok := conf["s3-region"]; ok {
+		r, ok := region.(string)
+		if !ok {
+			stringer, ok := region.(fmt.Stringer)
+			if !ok {
+				return nil, fmt.Errorf("S3 region could not be converted to string: %v", region)
+			}
+			r = stringer.String()
+		}
+		cfg := aws.NewConfig().WithRegion(r)
+		cfgs = append(cfgs, cfg)
+	}
+
 	client := s3.New(sess, cfgs...)
 
 	s3URL, err := url.Parse(location)
