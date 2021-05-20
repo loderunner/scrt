@@ -125,17 +125,20 @@ func newS3(location string, conf map[string]interface{}) (Backend, error) {
 }
 
 func (s s3Backend) Exists() (bool, error) {
-	req := (&s3.HeadObjectInput{}).
+	req := (&s3.GetObjectInput{}).
 		SetBucket(s.bucket).
 		SetKey(s.key)
-	_, err := s.client.HeadObject(req)
+	res, err := s.client.GetObject(req)
 	if err != nil {
 		var awsErr awserr.Error
-		if errors.As(err, &awsErr) && (awsErr.Code() == s3.ErrCodeNoSuchBucket || awsErr.Code() == s3.ErrCodeNoSuchKey) {
+		if errors.As(err, &awsErr) &&
+			(awsErr.Code() == s3.ErrCodeNoSuchBucket ||
+				awsErr.Code() == s3.ErrCodeNoSuchKey) {
 			return false, nil
 		}
 		return false, err
 	}
+	res.Body.Close()
 	return true, nil
 }
 
