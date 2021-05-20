@@ -98,6 +98,12 @@ func TestListCmd(t *testing.T) {
 	mockBackend.EXPECT().Exists().Return(true)
 	mockBackend.EXPECT().Load().Return(data, nil)
 
+	args := []string{"hello", "world"}
+	err = setCmd.Args(setCmd, args)
+	if err == nil {
+		t.Fatal("expected error")
+	}
+
 	err = listCmd.RunE(listCmd, []string{})
 	if err != nil {
 		t.Fatal(err)
