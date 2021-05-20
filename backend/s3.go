@@ -83,8 +83,10 @@ func newS3(location string, conf map[string]interface{}) (Backend, error) {
 			}
 			endpoint = stringer.String()
 		}
-		cfg := aws.NewConfig().WithEndpoint(endpoint).WithS3ForcePathStyle(true)
-		cfgs = append(cfgs, cfg)
+		if endpoint != "" {
+			cfg := aws.NewConfig().WithEndpoint(endpoint).WithS3ForcePathStyle(true)
+			cfgs = append(cfgs, cfg)
+		}
 	}
 
 	if region, ok := conf["s3-region"]; ok {
@@ -96,8 +98,10 @@ func newS3(location string, conf map[string]interface{}) (Backend, error) {
 			}
 			r = stringer.String()
 		}
-		cfg := aws.NewConfig().WithRegion(r)
-		cfgs = append(cfgs, cfg)
+		if r != "" {
+			cfg := aws.NewConfig().WithRegion(r)
+			cfgs = append(cfgs, cfg)
+		}
 	}
 
 	client := s3.New(sess, cfgs...)
