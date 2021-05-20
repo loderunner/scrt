@@ -61,7 +61,12 @@ line, it will be read from standard input.`,
 		if err != nil {
 			return err
 		}
-		if !b.Exists() {
+
+		exists, err := b.Exists()
+		if err != nil {
+			return fmt.Errorf("could not check store existence: %w", err)
+		}
+		if !exists {
 			return fmt.Errorf("%s store at %s does not exist", storage, location)
 		}
 

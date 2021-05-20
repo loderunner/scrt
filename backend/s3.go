@@ -16,11 +16,13 @@ package backend
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/url"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3iface"
@@ -118,12 +120,19 @@ func newS3(location string, conf map[string]interface{}) (Backend, error) {
 	}, nil
 }
 
-func (s s3Backend) Exists() bool {
+func (s s3Backend) Exists() (bool, error) {
 	req := (&s3.HeadObjectInput{}).
 		SetBucket(s.bucket).
 		SetKey(s.key)
 	_, err := s.client.HeadObject(req)
-	return err == nil
+	if err != nil {
+		var awsErr awserr.Error
+		if errors.As(err, &awsErr) && (awsErr.Code() == s3.ErrCodeNoSuchBucket || awsErr.Code() == s3.ErrCodeNoSuchKey) {
+			return false, nil
+		}
+		return false, err
+	}
+	return true, nil
 }
 
 func (s s3Backend) Save(data []byte) error {

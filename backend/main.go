@@ -21,7 +21,7 @@ var Backends = map[string]Factory{}
 
 // Backend implements the common backend operations
 type Backend interface {
-	Exists() bool
+	Exists() (bool, error)
 	Save(data []byte) error
 	Load() ([]byte, error)
 }

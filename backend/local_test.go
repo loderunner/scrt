@@ -33,12 +33,20 @@ func TestLocalExists(t *testing.T) {
 	f.Close()
 
 	b := local{path: "/tmp/nonexistent.scrt", fs: fs}
-	if b.Exists() {
+	exists, err := b.Exists()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if exists {
 		t.Error("expected store not to exist")
 	}
 
 	b.path = path
-	if !b.Exists() {
+	exists, err = b.Exists()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !exists {
 		t.Error("expected store to exist")
 	}
 }
@@ -56,7 +64,11 @@ func TestLocalSaveLoad(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if !b.Exists() {
+	exists, err := b.Exists()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !exists {
 		t.Fatal("expected store to exist")
 	}
 

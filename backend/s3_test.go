@@ -59,12 +59,21 @@ func (m *mockS3Client) PutObject(input *s3.PutObjectInput) (*s3.PutObjectOutput,
 
 func TestS3Exists(t *testing.T) {
 	b := s3Backend{bucket: "test-bucket", key: "/nonexistent.scrt", client: &mockS3Client{}}
-	if b.Exists() {
+
+	exists, err := b.Exists()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if exists {
 		t.Error("expected store not to exist")
 	}
 
 	b.key = "/store.scrt"
-	if !b.Exists() {
+	exists, err = b.Exists()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !exists {
 		t.Error("expected store to exist")
 	}
 }
@@ -80,7 +89,11 @@ func TestS3SaveLoad(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if !b.Exists() {
+	exists, err := b.Exists()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !exists {
 		t.Fatal("expected store to exist")
 	}
 
