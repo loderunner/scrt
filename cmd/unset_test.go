@@ -36,6 +36,7 @@ func TestUnsetCmd(t *testing.T) {
 
 	password := "toto"
 
+	viper.Reset()
 	viper.Set(configKeyPassword, password)
 	viper.Set(configKeyStorage, "mock")
 	viper.Set(configKeyLocation, "location")
@@ -74,6 +75,7 @@ func TestUnsetCmdNoValue(t *testing.T) {
 
 	password := "toto"
 
+	viper.Reset()
 	viper.Set(configKeyPassword, password)
 	viper.Set(configKeyStorage, "mock")
 	viper.Set(configKeyLocation, "location")
@@ -106,6 +108,7 @@ func TestUnsetCmdNotExists(t *testing.T) {
 	mockBackend := NewMockBackend(ctrl)
 	backend.Backends["mock"] = newMockFactory(mockBackend)
 
+	viper.Reset()
 	viper.Set(configKeyPassword, "toto")
 	viper.Set(configKeyStorage, "mock")
 	viper.Set(configKeyLocation, "location")
@@ -130,6 +133,7 @@ func TestUnsetCmdFailedLoad(t *testing.T) {
 	mockBackend := NewMockBackend(ctrl)
 	backend.Backends["mock"] = newMockFactory(mockBackend)
 
+	viper.Reset()
 	viper.Set(configKeyPassword, "toto")
 	viper.Set(configKeyStorage, "mock")
 	viper.Set(configKeyLocation, "location")
@@ -157,6 +161,7 @@ func TestUnsetCmdFailedSave(t *testing.T) {
 
 	password := "toto"
 
+	viper.Reset()
 	viper.Set(configKeyPassword, password)
 	viper.Set(configKeyStorage, "mock")
 	viper.Set(configKeyLocation, "location")

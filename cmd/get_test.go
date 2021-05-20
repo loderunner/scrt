@@ -42,6 +42,7 @@ func TestGetCmd(t *testing.T) {
 
 	password := "toto"
 
+	viper.Reset()
 	viper.Set(configKeyPassword, password)
 	viper.Set(configKeyStorage, "mock")
 	viper.Set(configKeyLocation, "location")
@@ -87,6 +88,7 @@ func TestGetCmdNotExists(t *testing.T) {
 	mockBackend := NewMockBackend(ctrl)
 	backend.Backends["mock"] = newMockFactory(mockBackend)
 
+	viper.Reset()
 	viper.Set(configKeyStorage, "mock")
 	viper.Set(configKeyLocation, "location")
 
@@ -110,6 +112,7 @@ func TestGetCmdFailedLoad(t *testing.T) {
 	mockBackend := NewMockBackend(ctrl)
 	backend.Backends["mock"] = newMockFactory(mockBackend)
 
+	viper.Reset()
 	viper.Set(configKeyStorage, "mock")
 	viper.Set(configKeyLocation, "location")
 
@@ -134,6 +137,7 @@ func TestGetCmdFailedInvalidData(t *testing.T) {
 	mockBackend := NewMockBackend(ctrl)
 	backend.Backends["mock"] = newMockFactory(mockBackend)
 
+	viper.Reset()
 	viper.Set(configKeyStorage, "mock")
 	viper.Set(configKeyLocation, "location")
 
@@ -162,6 +166,7 @@ func TestGetCmdFailedNoValue(t *testing.T) {
 
 	password := "toto"
 
+	viper.Reset()
 	viper.Set(configKeyPassword, password)
 	viper.Set(configKeyStorage, "mock")
 	viper.Set(configKeyLocation, "location")
