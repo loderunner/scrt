@@ -28,7 +28,11 @@ func TestLocalFactory(t *testing.T) {
 		t.Error("expected error")
 	}
 
-	_, err = f.New("toto", map[string]interface{}{})
+	_, err = f.New("", map[string]interface{}{
+		"local": map[string]interface{}{
+			"path": "/tmp/store.scrt",
+		},
+	})
 	if err != nil {
 		t.Error(err)
 	}

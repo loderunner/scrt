@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/loderunner/scrt/backend"
 	"github.com/spf13/cobra"
@@ -141,6 +142,7 @@ func init() {
 
 	viper.SetEnvPrefix("scrt")
 	viper.AutomaticEnv()
+	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
 
 	cobra.OnInitialize()
 }
