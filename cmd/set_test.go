@@ -36,6 +36,7 @@ func TestSetCmd(t *testing.T) {
 
 	password := "toto"
 
+	viper.Reset()
 	viper.Set(configKeyPassword, password)
 	viper.Set(configKeyStorage, "mock")
 	viper.Set(configKeyLocation, "location")
@@ -74,6 +75,7 @@ func TestSetCmdStdin(t *testing.T) {
 
 	password := "toto"
 
+	viper.Reset()
 	viper.Set(configKeyPassword, password)
 	viper.Set(configKeyStorage, "mock")
 	viper.Set(configKeyLocation, "location")
@@ -112,6 +114,7 @@ func TestSetCmdNotExists(t *testing.T) {
 	mockBackend := NewMockBackend(ctrl)
 	backend.Backends["mock"] = newMockFactory(mockBackend)
 
+	viper.Reset()
 	viper.Set(configKeyPassword, "toto")
 	viper.Set(configKeyStorage, "mock")
 	viper.Set(configKeyLocation, "location")
@@ -136,6 +139,7 @@ func TestSetCmdFailedLoad(t *testing.T) {
 	mockBackend := NewMockBackend(ctrl)
 	backend.Backends["mock"] = newMockFactory(mockBackend)
 
+	viper.Reset()
 	viper.Set(configKeyPassword, "toto")
 	viper.Set(configKeyStorage, "mock")
 	viper.Set(configKeyLocation, "location")
@@ -161,6 +165,7 @@ func TestSetCmdFailedInvalidData(t *testing.T) {
 	mockBackend := NewMockBackend(ctrl)
 	backend.Backends["mock"] = newMockFactory(mockBackend)
 
+	viper.Reset()
 	viper.Set(configKeyPassword, "toto")
 	viper.Set(configKeyStorage, "mock")
 	viper.Set(configKeyLocation, "location")
@@ -190,6 +195,7 @@ func TestSetCmdFailedNoOverwrite(t *testing.T) {
 
 	password := "toto"
 
+	viper.Reset()
 	viper.Set(configKeyPassword, password)
 	viper.Set(configKeyStorage, "mock")
 	viper.Set(configKeyLocation, "location")
@@ -227,6 +233,7 @@ func TestSetCmdOverwrite(t *testing.T) {
 
 	password := "toto"
 
+	viper.Reset()
 	viper.Set(configKeyPassword, password)
 	viper.Set(configKeyStorage, "mock")
 	viper.Set(configKeyLocation, "location")
@@ -269,6 +276,7 @@ func TestSetCmdFailedSave(t *testing.T) {
 
 	password := "toto"
 
+	viper.Reset()
 	viper.Set(configKeyPassword, password)
 	viper.Set(configKeyStorage, "mock")
 	viper.Set(configKeyLocation, "location")

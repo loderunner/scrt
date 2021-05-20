@@ -18,6 +18,8 @@ package cmd
 
 import (
 	"fmt"
+	"io/ioutil"
+	"os"
 	"reflect"
 	"testing"
 
@@ -40,6 +42,7 @@ func TestListCmdEmpty(t *testing.T) {
 
 	password := "toto"
 
+	viper.Reset()
 	viper.Set(configKeyPassword, password)
 	viper.Set(configKeyStorage, "mock")
 	viper.Set(configKeyLocation, "location")
@@ -58,13 +61,13 @@ func TestListCmdEmpty(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	fileInfo, err := hijackStdout.Stat()
+	os.Stdout.Close()
+	data, err = ioutil.ReadAll(hijackStdout)
 	if err != nil {
 		t.Fatal(err)
 	}
-	size := fileInfo.Size()
-	if size > 0 {
-		t.Fatalf("expected empty output, got %d", size)
+	if len(data) > 0 {
+		t.Fatalf("expected empty output, got %#v", data)
 	}
 }
 
@@ -80,6 +83,7 @@ func TestListCmd(t *testing.T) {
 
 	password := "toto"
 
+	viper.Reset()
 	viper.Set(configKeyPassword, password)
 	viper.Set(configKeyStorage, "mock")
 	viper.Set(configKeyLocation, "location")
@@ -98,16 +102,22 @@ func TestListCmd(t *testing.T) {
 	mockBackend.EXPECT().Exists().Return(true)
 	mockBackend.EXPECT().Load().Return(data, nil)
 
+	args := []string{"hello", "world"}
+	err = listCmd.Args(listCmd, args)
+	if err == nil {
+		t.Fatal("expected error")
+	}
+
 	err = listCmd.RunE(listCmd, []string{})
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	n, err := hijackStdout.Read(data)
+	os.Stdout.Close()
+	data, err = ioutil.ReadAll(hijackStdout)
 	if err != nil {
 		t.Fatal(err)
 	}
-	data = data[:n]
 	if !reflect.DeepEqual(data, []byte("hello\n")) {
 		t.Fatalf("expected %#v, got %#v", []byte("hello\n"), data)
 	}
@@ -120,6 +130,7 @@ func TestListCmdFailedLoad(t *testing.T) {
 	mockBackend := NewMockBackend(ctrl)
 	backend.Backends["mock"] = newMockFactory(mockBackend)
 
+	viper.Reset()
 	viper.Set(configKeyStorage, "mock")
 	viper.Set(configKeyLocation, "location")
 
@@ -139,6 +150,7 @@ func TestListCmdFailedInvalidData(t *testing.T) {
 	mockBackend := NewMockBackend(ctrl)
 	backend.Backends["mock"] = newMockFactory(mockBackend)
 
+	viper.Reset()
 	viper.Set(configKeyStorage, "mock")
 	viper.Set(configKeyLocation, "location")
 

@@ -18,6 +18,8 @@ package cmd
 
 import (
 	"fmt"
+	"io/ioutil"
+	"os"
 	"reflect"
 	"testing"
 
@@ -40,6 +42,7 @@ func TestGetCmd(t *testing.T) {
 
 	password := "toto"
 
+	viper.Reset()
 	viper.Set(configKeyPassword, password)
 	viper.Set(configKeyStorage, "mock")
 	viper.Set(configKeyLocation, "location")
@@ -68,11 +71,11 @@ func TestGetCmd(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	n, err := hijackStdout.Read(data)
+	os.Stdout.Close()
+	data, err = ioutil.ReadAll(hijackStdout)
 	if err != nil {
 		t.Fatal(err)
 	}
-	data = data[:n]
 	if !reflect.DeepEqual(data, testVal) {
 		t.Fatalf("expected %#v, got %#v", testVal, data)
 	}
@@ -85,6 +88,7 @@ func TestGetCmdNotExists(t *testing.T) {
 	mockBackend := NewMockBackend(ctrl)
 	backend.Backends["mock"] = newMockFactory(mockBackend)
 
+	viper.Reset()
 	viper.Set(configKeyStorage, "mock")
 	viper.Set(configKeyLocation, "location")
 
@@ -108,6 +112,7 @@ func TestGetCmdFailedLoad(t *testing.T) {
 	mockBackend := NewMockBackend(ctrl)
 	backend.Backends["mock"] = newMockFactory(mockBackend)
 
+	viper.Reset()
 	viper.Set(configKeyStorage, "mock")
 	viper.Set(configKeyLocation, "location")
 
@@ -132,6 +137,7 @@ func TestGetCmdFailedInvalidData(t *testing.T) {
 	mockBackend := NewMockBackend(ctrl)
 	backend.Backends["mock"] = newMockFactory(mockBackend)
 
+	viper.Reset()
 	viper.Set(configKeyStorage, "mock")
 	viper.Set(configKeyLocation, "location")
 
@@ -160,6 +166,7 @@ func TestGetCmdFailedNoValue(t *testing.T) {
 
 	password := "toto"
 
+	viper.Reset()
 	viper.Set(configKeyPassword, password)
 	viper.Set(configKeyStorage, "mock")
 	viper.Set(configKeyLocation, "location")

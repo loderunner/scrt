@@ -32,6 +32,7 @@ func TestInitCmd(t *testing.T) {
 	mockBackend := NewMockBackend(ctrl)
 	backend.Backends["mock"] = newMockFactory(mockBackend)
 
+	viper.Reset()
 	viper.Set(configKeyPassword, "toto")
 	viper.Set(configKeyStorage, "mock")
 	viper.Set(configKeyLocation, "location")
@@ -46,26 +47,34 @@ func TestInitCmd(t *testing.T) {
 	}
 }
 
-func TestInitOverWrite(t *testing.T) {
+func TestInitOverwrite(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	mockBackend := NewMockBackend(ctrl)
 	backend.Backends["mock"] = newMockFactory(mockBackend)
 
+	viper.Reset()
 	viper.Set(configKeyPassword, "toto")
 	viper.Set(configKeyStorage, "mock")
 	viper.Set(configKeyLocation, "location")
 
 	mockBackend.EXPECT().Exists().Return(true)
+
+	args := []string{"path"}
+	err := initCmd.RunE(initCmd, args)
+	if err == nil {
+		t.Fatal("expected error")
+	}
+
+	mockBackend.EXPECT().Exists().Return(true)
 	mockBackend.EXPECT().Save(gomock.Any())
 
-	err := initCmd.Flags().Set("overwrite", "true")
+	err = initCmd.Flags().Set("overwrite", "true")
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	args := []string{"path"}
 	err = initCmd.RunE(initCmd, args)
 	if err != nil {
 		t.Fatal(err)
