@@ -59,28 +59,13 @@ func init() {
 }
 
 func newLocal(conf map[string]interface{}) (Backend, error) {
-	var localOpts map[string]interface{}
-	l, ok := conf["local"]
-	if ok {
-		localOpts, _ = l.(map[string]interface{})
-	}
-	p, ok := conf["local-path"]
-	if p == "" || !ok {
-		if localOpts != nil {
-			p, ok = localOpts["path"]
-		}
-	}
-	if !ok {
+	opt := readOpt("local", "path", conf)
+	if opt == nil || opt == "" {
 		return nil, fmt.Errorf("missing path")
 	}
-
-	path, ok := p.(string)
+	path, ok := opt.(string)
 	if !ok {
-		return nil, fmt.Errorf("path is not a string: %#v", path)
-	}
-
-	if p == "" {
-		return nil, fmt.Errorf("missing path")
+		return nil, fmt.Errorf("path is not a string: (%T)%s", path, path)
 	}
 
 	path, err := homedir.Expand(path)
