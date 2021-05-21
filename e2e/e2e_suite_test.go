@@ -29,6 +29,8 @@ import (
 	"github.com/onsi/gomega/gexec"
 )
 
+var envReplacer = strings.NewReplacer("-", "_", ".", "_")
+
 func TestE2e(t *testing.T) {
 	if os.Getenv("SCRT_TEST_E2E") != "y" {
 		t.Log("Skipping e2e tests. Set environment variable SCRT_TEST_E2E=y to run e2e tests.")
@@ -128,7 +130,8 @@ func runTestsForStorage(storage, password string, locations [4]string, extraArgs
 			"SCRT_LOCATION=" + locations[1],
 		}
 		for k, v := range extraArgs[1] {
-			env = append(env, "SCRT_"+strings.ToUpper(strings.ReplaceAll(k, ".", "_"))+"="+v)
+			k = "SCRT_" + strings.ToUpper(envReplacer.Replace(k))
+			env = append(env, k+"="+v)
 		}
 		runTests([]string{}, env)
 	})
