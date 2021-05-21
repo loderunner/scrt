@@ -71,7 +71,6 @@ var _ = Describe("scrt", func() {
 		runTestsForStorage(
 			"local",
 			"toto",
-			[4]string{"toto", "toto", "toto", "toto"},
 			extraArgs,
 		)
 	})
@@ -108,7 +107,6 @@ var _ = Describe("scrt", func() {
 		runTestsForStorage(
 			"s3",
 			"toto",
-			[4]string{"toto", "toto", "toto", "toto"},
 			extraArgs,
 		)
 	})
@@ -123,12 +121,11 @@ func execute(args []string, env []string) *gexec.Session {
 	return session
 }
 
-func runTestsForStorage(storage, password string, locations [4]string, extraArgs [4]map[string]string) {
+func runTestsForStorage(storage, password string, extraArgs [4]map[string]string) {
 	Context("with args", func() {
 		args := []string{
 			"--storage=" + storage,
 			"--password=" + password,
-			"--location=" + locations[0],
 		}
 		for k, v := range extraArgs[0] {
 			args = append(args, "--"+strings.ReplaceAll(k, ".", "-")+"="+v)
@@ -139,7 +136,6 @@ func runTestsForStorage(storage, password string, locations [4]string, extraArgs
 		env := []string{
 			"SCRT_STORAGE=" + storage,
 			"SCRT_PASSWORD=" + password,
-			"SCRT_LOCATION=" + locations[1],
 		}
 		for k, v := range extraArgs[1] {
 			k = "SCRT_" + strings.ToUpper(envReplacer.Replace(k))
@@ -152,7 +148,6 @@ func runTestsForStorage(storage, password string, locations [4]string, extraArgs
 			conf := map[string]interface{}{
 				"storage":  storage,
 				"password": password,
-				"location": locations[2],
 			}
 			for k, v := range extraArgs[2] {
 				i := strings.Index(k, ".")
@@ -184,7 +179,6 @@ func runTestsForStorage(storage, password string, locations [4]string, extraArgs
 			conf := map[string]string{
 				"storage":  storage,
 				"password": password,
-				"location": locations[3],
 			}
 			for k, v := range extraArgs[3] {
 				conf[k] = v

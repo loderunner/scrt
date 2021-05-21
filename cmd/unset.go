@@ -35,10 +35,9 @@ var unsetCmd = &cobra.Command{
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		storage := viper.GetString(configKeyStorage)
-		location := viper.GetString(configKeyLocation)
 		key := args[0]
 
-		b, err := backend.Backends[storage].New(location, viper.AllSettings())
+		b, err := backend.Backends[storage].New(viper.AllSettings())
 		if err != nil {
 			return err
 		}
@@ -48,12 +47,12 @@ var unsetCmd = &cobra.Command{
 			return fmt.Errorf("could not check store existence: %w", err)
 		}
 		if !exists {
-			return fmt.Errorf("%s store at %s does not exist", storage, location)
+			return fmt.Errorf("store does not exist")
 		}
 
 		data, err := b.Load()
 		if err != nil {
-			return fmt.Errorf("could not load data from %s: %w", location, err)
+			return fmt.Errorf("could not load data from store: %w", err)
 		}
 
 		password := []byte(viper.GetString(configKeyPassword))
@@ -71,7 +70,7 @@ var unsetCmd = &cobra.Command{
 
 		err = b.Save(data)
 		if err != nil {
-			return fmt.Errorf("could not save data to %s: %w", location, err)
+			return fmt.Errorf("could not save data to store: %w", err)
 		}
 
 		return nil

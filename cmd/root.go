@@ -46,9 +46,6 @@ var RootCmd = &cobra.Command{
 		if !viper.IsSet(configKeyStorage) {
 			return fmt.Errorf("missing storage type")
 		}
-		if !viper.IsSet(configKeyLocation) {
-			return fmt.Errorf("missing store location")
-		}
 		if !viper.IsSet(configKeyPassword) {
 			return fmt.Errorf("missing password")
 		}
@@ -131,11 +128,6 @@ func init() {
 	}
 	RootCmd.PersistentFlags().String("storage", "", "storage type")
 	err = viper.BindPFlag(configKeyStorage, RootCmd.PersistentFlags().Lookup("storage"))
-	if err != nil {
-		panic(err)
-	}
-	RootCmd.PersistentFlags().String("location", "", "store location")
-	err = viper.BindPFlag(configKeyLocation, RootCmd.PersistentFlags().Lookup("location"))
 	if err != nil {
 		panic(err)
 	}

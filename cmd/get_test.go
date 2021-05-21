@@ -45,7 +45,6 @@ func TestGetCmd(t *testing.T) {
 	viper.Reset()
 	viper.Set(configKeyPassword, password)
 	viper.Set(configKeyStorage, "mock")
-	viper.Set(configKeyLocation, "location")
 
 	s := store.NewStore()
 	testVal := []byte("world")
@@ -90,7 +89,6 @@ func TestGetCmdNotExists(t *testing.T) {
 
 	viper.Reset()
 	viper.Set(configKeyStorage, "mock")
-	viper.Set(configKeyLocation, "location")
 
 	mockBackend.EXPECT().Exists().Return(false, nil)
 
@@ -114,7 +112,6 @@ func TestGetCmdFailedLoad(t *testing.T) {
 
 	viper.Reset()
 	viper.Set(configKeyStorage, "mock")
-	viper.Set(configKeyLocation, "location")
 
 	mockBackend.EXPECT().Exists().Return(true, nil)
 	mockBackend.EXPECT().Load().Return(nil, fmt.Errorf("error"))
@@ -139,7 +136,6 @@ func TestGetCmdFailedInvalidData(t *testing.T) {
 
 	viper.Reset()
 	viper.Set(configKeyStorage, "mock")
-	viper.Set(configKeyLocation, "location")
 
 	data := []byte("toto")
 
@@ -169,7 +165,6 @@ func TestGetCmdFailedNoValue(t *testing.T) {
 	viper.Reset()
 	viper.Set(configKeyPassword, password)
 	viper.Set(configKeyStorage, "mock")
-	viper.Set(configKeyLocation, "location")
 
 	s := store.NewStore()
 	data, err := store.WriteStore([]byte(password), s)

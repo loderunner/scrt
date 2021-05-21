@@ -45,7 +45,7 @@ type s3Backend struct {
 
 type s3Factory struct{}
 
-func (f s3Factory) New(location string, conf map[string]interface{}) (Backend, error) {
+func (f s3Factory) New(conf map[string]interface{}) (Backend, error) {
 	return newS3(conf)
 }
 

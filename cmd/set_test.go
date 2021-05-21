@@ -39,7 +39,6 @@ func TestSetCmd(t *testing.T) {
 	viper.Reset()
 	viper.Set(configKeyPassword, password)
 	viper.Set(configKeyStorage, "mock")
-	viper.Set(configKeyLocation, "location")
 
 	s := store.NewStore()
 	data, err := store.WriteStore([]byte(password), s)
@@ -78,7 +77,6 @@ func TestSetCmdStdin(t *testing.T) {
 	viper.Reset()
 	viper.Set(configKeyPassword, password)
 	viper.Set(configKeyStorage, "mock")
-	viper.Set(configKeyLocation, "location")
 
 	s := store.NewStore()
 	data, err := store.WriteStore([]byte(password), s)
@@ -117,7 +115,6 @@ func TestSetCmdNotExists(t *testing.T) {
 	viper.Reset()
 	viper.Set(configKeyPassword, "toto")
 	viper.Set(configKeyStorage, "mock")
-	viper.Set(configKeyLocation, "location")
 
 	mockBackend.EXPECT().Exists().Return(false, nil)
 
@@ -142,7 +139,6 @@ func TestSetCmdFailedLoad(t *testing.T) {
 	viper.Reset()
 	viper.Set(configKeyPassword, "toto")
 	viper.Set(configKeyStorage, "mock")
-	viper.Set(configKeyLocation, "location")
 
 	mockBackend.EXPECT().Exists().Return(true, nil)
 	mockBackend.EXPECT().Load().Return(nil, fmt.Errorf("error"))
@@ -168,7 +164,6 @@ func TestSetCmdFailedInvalidData(t *testing.T) {
 	viper.Reset()
 	viper.Set(configKeyPassword, "toto")
 	viper.Set(configKeyStorage, "mock")
-	viper.Set(configKeyLocation, "location")
 
 	data := []byte("toto")
 
@@ -198,7 +193,6 @@ func TestSetCmdFailedNoOverwrite(t *testing.T) {
 	viper.Reset()
 	viper.Set(configKeyPassword, password)
 	viper.Set(configKeyStorage, "mock")
-	viper.Set(configKeyLocation, "location")
 
 	s := store.NewStore()
 	err := s.Set("hello", []byte("world"))
@@ -236,7 +230,6 @@ func TestSetCmdOverwrite(t *testing.T) {
 	viper.Reset()
 	viper.Set(configKeyPassword, password)
 	viper.Set(configKeyStorage, "mock")
-	viper.Set(configKeyLocation, "location")
 
 	s := store.NewStore()
 	err := s.Set("hello", []byte("world"))
@@ -279,7 +272,6 @@ func TestSetCmdFailedSave(t *testing.T) {
 	viper.Reset()
 	viper.Set(configKeyPassword, password)
 	viper.Set(configKeyStorage, "mock")
-	viper.Set(configKeyLocation, "location")
 
 	s := store.NewStore()
 	data, err := store.WriteStore([]byte(password), s)
