@@ -32,6 +32,8 @@ var s3FlagSet *pflag.FlagSet
 
 func init() {
 	s3FlagSet = pflag.NewFlagSet("s3", pflag.ContinueOnError)
+	s3FlagSet.String("s3-bucket-name", "", "name of the S3 bucket")
+	s3FlagSet.String("s3-key", "", "path of the store object in the bucket")
 	s3FlagSet.String("s3-region", "", "region of the S3 storage")
 	s3FlagSet.String("s3-endpoint-url", "", "override default S3 endpoint URL")
 }
