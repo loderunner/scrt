@@ -44,12 +44,12 @@ func readOpt(prefix, name string, conf map[string]interface{}) interface{} {
 		backendOpts, _ = l.(map[string]interface{})
 	}
 	opt, ok := conf[prefix+"-"+name]
-	if !ok {
+	if opt == "" || !ok {
 		if backendOpts != nil {
 			opt, ok = backendOpts[name]
 		}
 	}
-	if !ok {
+	if opt == "" || !ok {
 		return nil
 	}
 	return opt
