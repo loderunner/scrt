@@ -76,28 +76,40 @@ var _ = Describe("scrt", func() {
 		)
 	})
 	Context("for s3 backend", func() {
-		s3Locations := [4]string{
-			"s3://test-bucket/store-args.scrt",
-			"s3://test-bucket/store-env.scrt",
-			"s3://test-bucket/store-implicit-conf.scrt",
-			"s3://test-bucket/store-explicit-conf.scrt",
-		}
+		extraArgs := [4]map[string]string{
+			{
+				"s3.bucket-name":  "test-bucket",
+				"s3.key":          "/store-args.scrt",
+				"s3.endpoint-url": os.Getenv("SCRT_TEST_E2E_S3_ENDPOINT_URL"),
+				"s3.region":       os.Getenv("SCRT_TEST_E2E_S3_REGION"),
+			},
 
-		extraArgs := map[string]string{
-			"s3-endpoint-url": os.Getenv("SCRT_TEST_E2E_S3_ENDPOINT_URL"),
-			"s3-region":       os.Getenv("SCRT_TEST_E2E_S3_REGION"),
+			{
+				"s3.bucket-name":  "test-bucket",
+				"s3.key":          "/store-env.scrt",
+				"s3.endpoint-url": os.Getenv("SCRT_TEST_E2E_S3_ENDPOINT_URL"),
+				"s3.region":       os.Getenv("SCRT_TEST_E2E_S3_REGION"),
+			},
+
+			{
+				"s3.bucket-name":  "test-bucket",
+				"s3.key":          "/store-implicit-conf.scrt",
+				"s3.endpoint-url": os.Getenv("SCRT_TEST_E2E_S3_ENDPOINT_URL"),
+				"s3.region":       os.Getenv("SCRT_TEST_E2E_S3_REGION"),
+			},
+			{
+				"s3.bucket-name":  "test-bucket",
+				"s3.key":          "/store-explicit-conf.scrt",
+				"s3.endpoint-url": os.Getenv("SCRT_TEST_E2E_S3_ENDPOINT_URL"),
+				"s3.region":       os.Getenv("SCRT_TEST_E2E_S3_REGION"),
+			},
 		}
 
 		runTestsForStorage(
 			"s3",
 			"toto",
-			s3Locations,
-			[4]map[string]string{
-				extraArgs,
-				extraArgs,
-				extraArgs,
-				extraArgs,
-			},
+			[4]string{"toto", "toto", "toto", "toto"},
+			extraArgs,
 		)
 	})
 })
