@@ -17,5 +17,4 @@ package cmd
 const (
 	configKeyPassword = "password"
 	configKeyStorage  = "storage"
-	configKeyLocation = "location"
 )

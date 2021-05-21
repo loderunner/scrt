@@ -35,7 +35,6 @@ func TestInitCmd(t *testing.T) {
 	viper.Reset()
 	viper.Set(configKeyPassword, "toto")
 	viper.Set(configKeyStorage, "mock")
-	viper.Set(configKeyLocation, "location")
 
 	mockBackend.EXPECT().Exists().Return(false, nil)
 	mockBackend.EXPECT().Save(gomock.Any())
@@ -57,7 +56,6 @@ func TestInitOverwrite(t *testing.T) {
 	viper.Reset()
 	viper.Set(configKeyPassword, "toto")
 	viper.Set(configKeyStorage, "mock")
-	viper.Set(configKeyLocation, "location")
 
 	mockBackend.EXPECT().Exists().Return(true, nil)
 

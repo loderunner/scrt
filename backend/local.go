@@ -38,7 +38,7 @@ type local struct {
 
 type localFactory struct{}
 
-func (f localFactory) New(path string, conf map[string]interface{}) (Backend, error) {
+func (f localFactory) New(conf map[string]interface{}) (Backend, error) {
 	return newLocal(conf)
 }
 

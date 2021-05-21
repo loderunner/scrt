@@ -23,22 +23,22 @@ func TestS3Factory(t *testing.T) {
 
 	testGenericFactory(t, f)
 
-	_, err := f.New("", map[string]interface{}{})
+	_, err := f.New(map[string]interface{}{})
 	if err == nil {
 		t.Error("expected error")
 	}
 
-	_, err = f.New("", map[string]interface{}{"s3-bucket-name": "toto"})
+	_, err = f.New(map[string]interface{}{"s3-bucket-name": "toto"})
 	if err == nil {
 		t.Errorf("expected error")
 	}
 
-	_, err = f.New("", map[string]interface{}{"s3-key": "toto"})
+	_, err = f.New(map[string]interface{}{"s3-key": "toto"})
 	if err == nil {
 		t.Errorf("expected error")
 	}
 
-	_, err = f.New("", map[string]interface{}{
+	_, err = f.New(map[string]interface{}{
 		"s3-bucket-name": "scrt-bucket",
 		"s3-key":         "/store.scrt",
 	})
@@ -46,7 +46,7 @@ func TestS3Factory(t *testing.T) {
 		t.Error(err)
 	}
 
-	_, err = f.New("", map[string]interface{}{
+	_, err = f.New(map[string]interface{}{
 		"s3": map[string]interface{}{
 			"bucket-name": "scrt-bucket",
 			"key":         "/store.scrt",
@@ -56,7 +56,7 @@ func TestS3Factory(t *testing.T) {
 		t.Error(err)
 	}
 
-	_, err = f.New("", map[string]interface{}{
+	_, err = f.New(map[string]interface{}{
 		"s3-bucket-name":  "scrt-bucket",
 		"s3-key":          "/store.scrt",
 		"s3-endpoint-url": "http://localhost:123456",
@@ -66,7 +66,7 @@ func TestS3Factory(t *testing.T) {
 		t.Error(err)
 	}
 
-	_, err = f.New("", map[string]interface{}{
+	_, err = f.New(map[string]interface{}{
 		"s3": map[string]interface{}{
 			"bucket-name":  "scrt-bucket",
 			"key":          "/store.scrt",
@@ -78,7 +78,7 @@ func TestS3Factory(t *testing.T) {
 		t.Error(err)
 	}
 
-	_, err = f.New("", map[string]interface{}{
+	_, err = f.New(map[string]interface{}{
 		"s3-bucket-name": []int{},
 		"s3-key":         "/store.scrt",
 	})
@@ -86,7 +86,7 @@ func TestS3Factory(t *testing.T) {
 		t.Errorf("expected error")
 	}
 
-	_, err = f.New("", map[string]interface{}{
+	_, err = f.New(map[string]interface{}{
 		"s3-bucket-name": "scrt-bucket",
 		"s3-key":         []int{},
 	})
@@ -94,7 +94,7 @@ func TestS3Factory(t *testing.T) {
 		t.Errorf("expected error")
 	}
 
-	_, err = f.New("", map[string]interface{}{
+	_, err = f.New(map[string]interface{}{
 		"s3-bucket-name":  "scrt-bucket",
 		"s3-key":          "/store.scrt",
 		"s3-endpoint-url": []int{},
@@ -103,7 +103,7 @@ func TestS3Factory(t *testing.T) {
 		t.Errorf("expected error")
 	}
 
-	_, err = f.New("", map[string]interface{}{
+	_, err = f.New(map[string]interface{}{
 		"s3-bucket-name": "scrt-bucket",
 		"s3-key":         "/store.scrt",
 		"s3-region":      []int{},

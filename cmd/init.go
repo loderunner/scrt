@@ -30,9 +30,8 @@ var initCmd = &cobra.Command{
 	Short: "Initialize a new store",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		storage := viper.GetString(configKeyStorage)
-		location := viper.GetString(configKeyLocation)
 
-		b, err := backend.Backends[storage].New(location, viper.AllSettings())
+		b, err := backend.Backends[storage].New(viper.AllSettings())
 		if err != nil {
 			return err
 		}
@@ -47,7 +46,7 @@ var initCmd = &cobra.Command{
 			if cmd.Flags().Changed("overwrite") {
 				overwrite, err = cmd.Flags().GetBool("overwrite")
 			} else {
-				overwrite, err = ask.Boolf("%s store already exists at %s. Do you want to overwrite it?", storage, location).
+				overwrite, err = ask.Boolf("store already exists. Do you want to overwrite it?").
 					Default(false).
 					Ask()
 			}
@@ -69,10 +68,10 @@ var initCmd = &cobra.Command{
 
 		err = b.Save(data)
 		if err != nil {
-			return fmt.Errorf("could not save data to %s: %w", location, err)
+			return fmt.Errorf("could not save data to store: %w", err)
 		}
 
-		fmt.Printf("%s store initialized at %s\n", storage, location)
+		fmt.Printf("store initialized\n")
 
 		return nil
 	},

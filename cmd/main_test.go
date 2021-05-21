@@ -53,7 +53,7 @@ type mockFactory struct {
 	b backend.Backend
 }
 
-func (f mockFactory) New(path string, conf map[string]interface{}) (backend.Backend, error) {
+func (f mockFactory) New(conf map[string]interface{}) (backend.Backend, error) {
 	return f.b, nil
 }
 
