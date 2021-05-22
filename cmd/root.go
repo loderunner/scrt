@@ -44,7 +44,15 @@ var RootCmd = &cobra.Command{
 
 		// Validate configuration
 		if !viper.IsSet(configKeyStorage) {
-			return fmt.Errorf("missing storage type")
+			for k := range backend.Backends {
+				if viper.InConfig(k) {
+					viper.Set(configKeyStorage, k)
+					break
+				}
+			}
+			if !viper.IsSet(configKeyStorage) {
+				return fmt.Errorf("missing storage type")
+			}
 		}
 		if !viper.IsSet(configKeyPassword) {
 			return fmt.Errorf("missing password")
