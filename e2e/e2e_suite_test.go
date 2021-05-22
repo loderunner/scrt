@@ -146,7 +146,6 @@ func runTestsForStorage(storage, password string, extraArgs [4]map[string]string
 	Context("with .scrt.yml implicit configuration file", func() {
 		BeforeEach(func() {
 			conf := map[string]interface{}{
-				"storage":  storage,
 				"password": password,
 			}
 			for k, v := range extraArgs[2] {
@@ -176,12 +175,23 @@ func runTestsForStorage(storage, password string, extraArgs [4]map[string]string
 	})
 	Context("with scrt.yml explicit configuration file", func() {
 		BeforeEach(func() {
-			conf := map[string]string{
-				"storage":  storage,
+			conf := map[string]interface{}{
 				"password": password,
 			}
 			for k, v := range extraArgs[3] {
-				conf[k] = v
+				i := strings.Index(k, ".")
+				if i == -1 {
+					conf[k] = v
+				} else {
+					// Handle nested conf 1-layer deep
+					newK := k[:i]
+					subK := k[i+1:]
+					if subConf, ok := conf[newK]; ok {
+						(subConf.(map[string]interface{}))[subK] = v
+					} else {
+						conf[newK] = map[string]interface{}{subK: v}
+					}
+				}
 			}
 			yamlData, err := yaml.Marshal(conf)
 			Expect(err).NotTo(HaveOccurred())
