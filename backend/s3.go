@@ -19,7 +19,6 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"net/url"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
@@ -33,6 +32,8 @@ var s3FlagSet *pflag.FlagSet
 
 func init() {
 	s3FlagSet = pflag.NewFlagSet("s3", pflag.ContinueOnError)
+	s3FlagSet.String("s3-bucket-name", "", "name of the S3 bucket")
+	s3FlagSet.String("s3-key", "", "path of the store object in the bucket")
 	s3FlagSet.String("s3-region", "", "region of the S3 storage")
 	s3FlagSet.String("s3-endpoint-url", "", "override default S3 endpoint URL")
 }
@@ -44,8 +45,8 @@ type s3Backend struct {
 
 type s3Factory struct{}
 
-func (f s3Factory) New(location string, conf map[string]interface{}) (Backend, error) {
-	return newS3(location, conf)
+func (f s3Factory) New(conf map[string]interface{}) (Backend, error) {
+	return newS3(conf)
 }
 
 func (f s3Factory) Name() string {
@@ -64,62 +65,58 @@ func init() {
 	Backends["s3"] = s3Factory{}
 }
 
-func newS3(location string, conf map[string]interface{}) (Backend, error) {
+func newS3(conf map[string]interface{}) (Backend, error) {
+	cfgs := []*aws.Config{}
+
+	opt := readOpt("s3", "bucket-name", conf)
+	if opt == nil || opt == "" {
+		return nil, fmt.Errorf("missing bucket name")
+	}
+	bucket, ok := opt.(string)
+	if !ok {
+		return nil, fmt.Errorf("bucket name is not a string: (%T)%s", bucket, bucket)
+	}
+
+	opt = readOpt("s3", "key", conf)
+	if opt == nil || opt == "" {
+		return nil, fmt.Errorf("missing key")
+	}
+	key, ok := opt.(string)
+	if !ok {
+		return nil, fmt.Errorf("key is not a string: (%T)%s", key, key)
+	}
+
+	opt = readOpt("s3", "endpoint-url", conf)
+	if opt != nil && opt != "" {
+		endpoint, ok := opt.(string)
+		if !ok {
+			return nil, fmt.Errorf("S3 endpoint url is not a string")
+		}
+		cfg := aws.NewConfig().WithEndpoint(endpoint).WithS3ForcePathStyle(true)
+		cfgs = append(cfgs, cfg)
+	}
+
+	opt = readOpt("s3", "region", conf)
+	if opt != nil && opt != "" {
+		region, ok := opt.(string)
+		if !ok {
+			return nil, fmt.Errorf("S3 region is not a string")
+		}
+		cfg := aws.NewConfig().WithRegion(region)
+		cfgs = append(cfgs, cfg)
+	}
+
 	sess, err := session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
 	})
 	if err != nil {
 		return nil, err
 	}
-
-	cfgs := []*aws.Config{}
-
-	if url, ok := conf["s3-endpoint-url"]; ok {
-		endpoint, ok := url.(string)
-		if !ok {
-			stringer, ok := url.(fmt.Stringer)
-			if !ok {
-				return nil, fmt.Errorf("S3 endpoint URL could not be converted to string: %v", url)
-			}
-			endpoint = stringer.String()
-		}
-		if endpoint != "" {
-			cfg := aws.NewConfig().WithEndpoint(endpoint).WithS3ForcePathStyle(true)
-			cfgs = append(cfgs, cfg)
-		}
-	}
-
-	if region, ok := conf["s3-region"]; ok {
-		r, ok := region.(string)
-		if !ok {
-			stringer, ok := region.(fmt.Stringer)
-			if !ok {
-				return nil, fmt.Errorf("S3 region could not be converted to string: %v", region)
-			}
-			r = stringer.String()
-		}
-		if r != "" {
-			cfg := aws.NewConfig().WithRegion(r)
-			cfgs = append(cfgs, cfg)
-		}
-	}
-
 	client := s3.New(sess, cfgs...)
 
-	s3URL, err := url.Parse(location)
-	if err != nil ||
-		s3URL.Scheme != "s3" ||
-		s3URL.Path == "" ||
-		s3URL.Path == "/" ||
-		s3URL.User != nil ||
-		s3URL.RawQuery != "" ||
-		s3URL.Fragment != "" {
-		return nil, fmt.Errorf("S3 URI is not written in the form: s3://mybucket/mykey")
-	}
-
 	return s3Backend{
-		bucket: s3URL.Host,
-		key:    s3URL.Path,
+		bucket: bucket,
+		key:    key,
 		client: client,
 	}, nil
 }

@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Configure region for S3 storage: `--s3-region`
 
+### Changed
+
+- Specify store location with storage-specific options
+
 ## 0.2.0 - 2021-05-20
 
 ### Added

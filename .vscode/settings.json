@@ -1,3 +1,10 @@
 {
-  "markdown.extension.toc.levels": "1..2"
+  "markdown.extension.toc.levels": "1..2",
+  "go.testEnvVars": {
+    "SCRT_TEST_E2E": "y",
+    "SCRT_TEST_E2E_S3_ENDPOINT_URL": "http://127.0.0.1:9000",
+    "SCRT_TEST_E2E_S3_REGION": "us-east-1",
+    "AWS_ACCESS_KEY_ID": "minio",
+    "AWS_SECRET_ACCESS_KEY": "miniosecret"
+  }
 }

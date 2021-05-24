@@ -23,22 +23,42 @@ func TestS3Factory(t *testing.T) {
 
 	testGenericFactory(t, f)
 
-	_, err := f.New("", map[string]interface{}{})
+	_, err := f.New(map[string]interface{}{})
 	if err == nil {
 		t.Error("expected error")
 	}
 
-	_, err = f.New("toto", map[string]interface{}{})
+	_, err = f.New(map[string]interface{}{"s3-bucket-name": "toto"})
 	if err == nil {
 		t.Errorf("expected error")
 	}
 
-	_, err = f.New("s3://test-bucket/store.scrt", map[string]interface{}{})
+	_, err = f.New(map[string]interface{}{"s3-key": "toto"})
+	if err == nil {
+		t.Errorf("expected error")
+	}
+
+	_, err = f.New(map[string]interface{}{
+		"s3-bucket-name": "scrt-bucket",
+		"s3-key":         "/store.scrt",
+	})
 	if err != nil {
 		t.Error(err)
 	}
 
-	_, err = f.New("s3://test-bucket/store.scrt", map[string]interface{}{
+	_, err = f.New(map[string]interface{}{
+		"s3": map[string]interface{}{
+			"bucket-name": "scrt-bucket",
+			"key":         "/store.scrt",
+		},
+	})
+	if err != nil {
+		t.Error(err)
+	}
+
+	_, err = f.New(map[string]interface{}{
+		"s3-bucket-name":  "scrt-bucket",
+		"s3-key":          "/store.scrt",
 		"s3-endpoint-url": "http://localhost:123456",
 		"s3-region":       "fr-paris-75019",
 	})
@@ -46,15 +66,47 @@ func TestS3Factory(t *testing.T) {
 		t.Error(err)
 	}
 
-	_, err = f.New("s3://test-bucket/store.scrt", map[string]interface{}{
+	_, err = f.New(map[string]interface{}{
+		"s3": map[string]interface{}{
+			"bucket-name":  "scrt-bucket",
+			"key":          "/store.scrt",
+			"endpoint-url": "http://localhost:123456",
+			"region":       "fr-paris-75019",
+		},
+	})
+	if err != nil {
+		t.Error(err)
+	}
+
+	_, err = f.New(map[string]interface{}{
+		"s3-bucket-name": []int{},
+		"s3-key":         "/store.scrt",
+	})
+	if err == nil {
+		t.Errorf("expected error")
+	}
+
+	_, err = f.New(map[string]interface{}{
+		"s3-bucket-name": "scrt-bucket",
+		"s3-key":         []int{},
+	})
+	if err == nil {
+		t.Errorf("expected error")
+	}
+
+	_, err = f.New(map[string]interface{}{
+		"s3-bucket-name":  "scrt-bucket",
+		"s3-key":          "/store.scrt",
 		"s3-endpoint-url": []int{},
 	})
 	if err == nil {
 		t.Errorf("expected error")
 	}
 
-	_, err = f.New("s3://test-bucket/store.scrt", map[string]interface{}{
-		"s3-region": []int{},
+	_, err = f.New(map[string]interface{}{
+		"s3-bucket-name": "scrt-bucket",
+		"s3-key":         "/store.scrt",
+		"s3-region":      []int{},
 	})
 	if err == nil {
 		t.Errorf("expected error")

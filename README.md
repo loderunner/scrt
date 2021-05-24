@@ -138,9 +138,9 @@ Initialize a new store, with `scrt init`.
 
 ```shell
 scrt init --storage=local \
-          --location=~/.scrt/store.scrt \
-          --password=p4ssw0rd
-# local store initialized at ~/.scrt/store.scrt
+          --password=p4ssw0rd \
+          --local-path=~/.scrt/store.scrt
+# store initialized
 ```
 
 This will create an empty store, in a `store.scrt` file located in `.scrt` inside your home directory. The file is encrypted using a secret key derived from the given password.
@@ -159,8 +159,8 @@ Set your configuration in environment variables, so you don't have to type them 
 
 ```shell
 export SCRT_STORAGE=local
-export SCRT_LOCATION=~/.scrt/store.scrt
 export SCRT_PASSWORD=p4ssw0rd
+export SCRT_LOCAL_PATH=~/.scrt/store.scrt
 ```
 
 ## Using the store
@@ -196,6 +196,7 @@ Available Commands:
   init        Initialize a new store
   set         Associate a key to a value in a store
   get         Retrieve the value associated to key from a store
+  list        List all the keys in a store
   unset       Remove the value associated to key in a store
   storage     List storage types and options
   help        Help about any command
@@ -203,7 +204,6 @@ Available Commands:
 Flags:
   -c, --config string     configuration file
   -h, --help              help for scrt
-      --location string   store location
   -p, --password string   master password to unlock the store
       --storage string    storage type
   -v, --version           version for scrt
@@ -216,8 +216,6 @@ Use "scrt [command] --help" for more information about a command.
 **`-c`**, **`--config`:** Path to a YAML [Configuration file](#configuration-file)
 
 **`--storage`:** storage type, see [Storage types](#storage-types) for details.
-
-**`--location`:** location of the store, [storage](#storage-types)-dependent.
 
 **`-p`**, **`--password`:** password to the store. The argument will be used to derive a key, to decrypt and encrypt the data in the store.
 
@@ -237,19 +235,19 @@ List all available storage types and options
 scrt init [flags]
 ```
 
-Initialize a new store at the given location. If an item is already present at the location, the initialization will fail unless the `--overwrite` option is set.
+Initialize a new store. If an item is already present at the given location, the initialization will fail unless the `--overwrite` option is set.
 
 ### Example
 
 Create a store in a `store.scrt` file in the local filesystem, in the current working directory, using the password `"p4ssw0rd"`.
 
 ```shell
-scrt init --storage=local --location=./store.scrt --password=p4ssw0rd
+scrt init --storage=local --password=p4ssw0rd --local-path=./store.scrt
 ```
 
 ### Options
 
-**`--overwrite`:** when this flag is set, `scrt` will overwrite the item at the given location, if it exists, instead of returning an error. If no item exists at the given location, `--overwrite` has no effect.
+**`--overwrite`:** when this flag is set, `scrt` will overwrite the item at the given location, if it exists, instead of returning an error. If no item exists at the location, `--overwrite` has no effect.
 
 ## Storing a secret
 
@@ -346,37 +344,55 @@ Example:
 
 ```yaml
 storage: local
-location: ~/.scrt/store.scrt
 password: p4ssw0rd
+local:
+  path: ~/.scrt/store.scrt
 ```
 
-If the `--config` option is set, `scrt` will try to load the configuration from a file at the given path. Otherwise, it looks for any file named `.scrt`, `.scrt.yml` or `.scrt.yaml` in the current working directory, then recursively in the parent directory up to the root of the filesystem. If such a file is found, its values are loaded as configuration.
+If the `--config` option is given to the command-line, `scrt` will try to load the configuration from a file at the given path. Otherwise, it looks for any file named `.scrt`, `.scrt.yml` or `.scrt.yaml` in the current working directory, then recursively in the parent directory up to the root of the filesystem. If such a file is found, its values are loaded as configuration.
 
 This can be useful in configuring the location of a store for a project, by adding a `.scrt` file at the root of the project repository. `scrt` can then be used in CI and other DevOps tools.
 
-> :warning: Don't add the password to a public git repository! :warning:
+> :warning: Don't add the password to a configuration file in a public git repository! :warning:
+
+Storage type (`storage`) can be ignored in a configuration file. `scrt` will read the configuration under the key for the storage type (e.g. `local:`). _Defining configurations for multiple storage types in a single file will result in undefined behavior._
 
 ## Environment variables
 
 Each global option has an environment variable counterpart. Environment variables use the same name as the configuration option, in uppercase letters, prefixed with `SCRT_`.
 
 - `storage` ⇒ `SCRT_STORAGE`
-- `location` ⇒ `SCRT_LOCATION`
 - `password` ⇒ `SCRT_PASSWORD`
+- `local-path` ⇒ `SCRT_LOCAL_PATH`
 
 To configure a default store on your system, add the following to your `.bashrc` file (if using `bash`):
 
 ```bash
 export SCRT_STORAGE=local
-export SCRT_LOCATION=~/.scrt/store.scrt
 export SCRT_PASSWORD=p4ssw0rd
+export SCRT_LOCAL_PATH=~/.scrt/store.scrt
 ```
 
 > Refer to your shell interpreter's documentation to set environment variables if you don't use `bash` (`zsh`, `dash`, `tcsh`, etc.)
 
 # Storage types
 
-`scrt` supports various storage backends, independent of the secrets engine. Each storage type has a name, and location strings vary according to the chosen type.
+```
+Local:
+  local       store secrets to local filesystem
+Flags:
+      --local-path string   path to the store in the local filesystem
+
+S3:
+  s3          store secrets to AWS S3 or S3-compatible object storage
+Flags:
+      --s3-bucket-name string    name of the S3 bucket
+      --s3-endpoint-url string   override default S3 endpoint URL
+      --s3-key string            path of the store object in the bucket
+      --s3-region string         region of the S3 storage
+```
+
+`scrt` supports various storage backends, independent of the secrets engine. Each storage type has a name, and configuration options vary according to the chosen type.
 
 Storage types may support additional options. See the documentation below for details.
 
@@ -387,12 +403,12 @@ Use the `local` storage type to create and access a store on your local filesyst
 Example:
 
 ```shell
-scrt init --storage=local --location=/tmp/store.scrt --password=p4ssw0rd
+scrt init --storage=local --password=p4ssw0rd --local-path=/tmp/store.scrt
 ```
 
-### Location
+### Options
 
-With the `local` backend, the location string is a path on the filesystem.
+**`--local-path`:** the path to the store file on the local filesystem.
 
 ## S3
 
@@ -401,16 +417,19 @@ Use the `s3` storage type to create and access a store using [AWS S3](https://aw
 Example:
 
 ```shell
-scrt init --storage=s3 --location=s3://scrt-bucket/store.scrt --password=p4ssw0rd
+scrt init --storage=s3 \
+          --password=p4ssw0rd \
+          --s3-bucket-name=scrt-bucket \
+          --s3-key=/store.scrt
 ```
 
 > `scrt` uses your [AWS configuration (config files, environment variables)](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) if it can be found.
 
-### Location
-
-With the `s3` backend, the location string is an S3 URI of the form `s3://mybucket/mykey`.
-
 ### Extra options
+
+**`--s3-bucket-name`:** the name of the bucket to save to store to
+
+**`--s3-key`:** the key to the store object
 
 **`--s3-region`:** set the region for the S3 bucket
 

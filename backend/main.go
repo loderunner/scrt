@@ -14,7 +14,9 @@
 
 package backend
 
-import "github.com/spf13/pflag"
+import (
+	"github.com/spf13/pflag"
+)
 
 // Backends associates backend type names to constructor functions
 var Backends = map[string]Factory{}
@@ -29,8 +31,26 @@ type Backend interface {
 // Factory can instantiate a new Backend with New, and other static
 // backend-related functions.
 type Factory interface {
-	New(location string, conf map[string]interface{}) (Backend, error)
+	New(conf map[string]interface{}) (Backend, error)
 	Name() string
 	Description() string
 	Flags() *pflag.FlagSet
+}
+
+func readOpt(prefix, name string, conf map[string]interface{}) interface{} {
+	var backendOpts map[string]interface{}
+	l, ok := conf[prefix]
+	if ok {
+		backendOpts, _ = l.(map[string]interface{})
+	}
+	opt, ok := conf[prefix+"-"+name]
+	if opt == "" || !ok {
+		if backendOpts != nil {
+			opt, ok = backendOpts[name]
+		}
+	}
+	if opt == "" || !ok {
+		return nil
+	}
+	return opt
 }

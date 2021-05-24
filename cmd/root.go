@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/loderunner/scrt/backend"
 	"github.com/spf13/cobra"
@@ -43,10 +44,15 @@ var RootCmd = &cobra.Command{
 
 		// Validate configuration
 		if !viper.IsSet(configKeyStorage) {
-			return fmt.Errorf("missing storage type")
-		}
-		if !viper.IsSet(configKeyLocation) {
-			return fmt.Errorf("missing store location")
+			for k := range backend.Backends {
+				if viper.InConfig(k) {
+					viper.Set(configKeyStorage, k)
+					break
+				}
+			}
+			if !viper.IsSet(configKeyStorage) {
+				return fmt.Errorf("missing storage type")
+			}
 		}
 		if !viper.IsSet(configKeyPassword) {
 			return fmt.Errorf("missing password")
@@ -133,14 +139,10 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	RootCmd.PersistentFlags().String("location", "", "store location")
-	err = viper.BindPFlag(configKeyLocation, RootCmd.PersistentFlags().Lookup("location"))
-	if err != nil {
-		panic(err)
-	}
 
 	viper.SetEnvPrefix("scrt")
 	viper.AutomaticEnv()
+	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
 
 	cobra.OnInitialize()
 }

@@ -29,6 +29,8 @@ import (
 	"github.com/onsi/gomega/gexec"
 )
 
+var envReplacer = strings.NewReplacer("-", "_", ".", "_")
+
 func TestE2e(t *testing.T) {
 	if os.Getenv("SCRT_TEST_E2E") != "y" {
 		t.Log("Skipping e2e tests. Set environment variable SCRT_TEST_E2E=y to run e2e tests.")
@@ -59,36 +61,53 @@ var _ = Describe("scrt", func() {
 		tmpLocalDir, err = os.MkdirTemp("", "scrt-e2e-*")
 		Expect(err).NotTo(HaveOccurred())
 
-		tmpLocalLocations := [4]string{
-			filepath.Join(tmpLocalDir, "store-args.scrt"),
-			filepath.Join(tmpLocalDir, "store-env.scrt"),
-			filepath.Join(tmpLocalDir, "store-implicit-conf.scrt"),
-			filepath.Join(tmpLocalDir, "store-explicit-conf.scrt"),
+		extraArgs := [4]map[string]string{
+			{"local.path": filepath.Join(tmpLocalDir, "store-args.scrt")},
+			{"local.path": filepath.Join(tmpLocalDir, "store-env.scrt")},
+			{"local.path": filepath.Join(tmpLocalDir, "store-implicit-conf.scrt")},
+			{"local.path": filepath.Join(tmpLocalDir, "store-explicit-conf.scrt")},
 		}
 
 		runTestsForStorage(
 			"local",
 			"toto",
-			tmpLocalLocations,
-			nil,
+			extraArgs,
 		)
 	})
 	Context("for s3 backend", func() {
-		s3Locations := [4]string{
-			"s3://test-bucket/store-args.scrt",
-			"s3://test-bucket/store-env.scrt",
-			"s3://test-bucket/store-implicit-conf.scrt",
-			"s3://test-bucket/store-explicit-conf.scrt",
+		extraArgs := [4]map[string]string{
+			{
+				"s3.bucket-name":  "test-bucket",
+				"s3.key":          "/store-args.scrt",
+				"s3.endpoint-url": os.Getenv("SCRT_TEST_E2E_S3_ENDPOINT_URL"),
+				"s3.region":       os.Getenv("SCRT_TEST_E2E_S3_REGION"),
+			},
+
+			{
+				"s3.bucket-name":  "test-bucket",
+				"s3.key":          "/store-env.scrt",
+				"s3.endpoint-url": os.Getenv("SCRT_TEST_E2E_S3_ENDPOINT_URL"),
+				"s3.region":       os.Getenv("SCRT_TEST_E2E_S3_REGION"),
+			},
+
+			{
+				"s3.bucket-name":  "test-bucket",
+				"s3.key":          "/store-implicit-conf.scrt",
+				"s3.endpoint-url": os.Getenv("SCRT_TEST_E2E_S3_ENDPOINT_URL"),
+				"s3.region":       os.Getenv("SCRT_TEST_E2E_S3_REGION"),
+			},
+			{
+				"s3.bucket-name":  "test-bucket",
+				"s3.key":          "/store-explicit-conf.scrt",
+				"s3.endpoint-url": os.Getenv("SCRT_TEST_E2E_S3_ENDPOINT_URL"),
+				"s3.region":       os.Getenv("SCRT_TEST_E2E_S3_REGION"),
+			},
 		}
 
 		runTestsForStorage(
 			"s3",
 			"toto",
-			s3Locations,
-			map[string]string{
-				"s3-endpoint-url": os.Getenv("SCRT_TEST_E2E_S3_ENDPOINT_URL"),
-				"s3-region":       os.Getenv("SCRT_TEST_E2E_S3_REGION"),
-			},
+			extraArgs,
 		)
 	})
 })
@@ -102,15 +121,14 @@ func execute(args []string, env []string) *gexec.Session {
 	return session
 }
 
-func runTestsForStorage(storage, password string, locations [4]string, extraArgs map[string]string) {
+func runTestsForStorage(storage, password string, extraArgs [4]map[string]string) {
 	Context("with args", func() {
 		args := []string{
 			"--storage=" + storage,
 			"--password=" + password,
-			"--location=" + locations[0],
 		}
-		for k, v := range extraArgs {
-			args = append(args, "--"+k+"="+v)
+		for k, v := range extraArgs[0] {
+			args = append(args, "--"+strings.ReplaceAll(k, ".", "-")+"="+v)
 		}
 		runTests(args, []string{})
 	})
@@ -118,22 +136,32 @@ func runTestsForStorage(storage, password string, locations [4]string, extraArgs
 		env := []string{
 			"SCRT_STORAGE=" + storage,
 			"SCRT_PASSWORD=" + password,
-			"SCRT_LOCATION=" + locations[1],
 		}
-		for k, v := range extraArgs {
-			env = append(env, "SCRT_"+strings.ToUpper(k)+"="+v)
+		for k, v := range extraArgs[1] {
+			k = "SCRT_" + strings.ToUpper(envReplacer.Replace(k))
+			env = append(env, k+"="+v)
 		}
 		runTests([]string{}, env)
 	})
 	Context("with .scrt.yml implicit configuration file", func() {
 		BeforeEach(func() {
-			conf := map[string]string{
-				"storage":  storage,
+			conf := map[string]interface{}{
 				"password": password,
-				"location": locations[2],
 			}
-			for k, v := range extraArgs {
-				conf[k] = v
+			for k, v := range extraArgs[2] {
+				i := strings.Index(k, ".")
+				if i == -1 {
+					conf[k] = v
+				} else {
+					// Handle nested conf 1-layer deep
+					newK := k[:i]
+					subK := k[i+1:]
+					if subConf, ok := conf[newK]; ok {
+						(subConf.(map[string]interface{}))[subK] = v
+					} else {
+						conf[newK] = map[string]interface{}{subK: v}
+					}
+				}
 			}
 			yamlData, err := yaml.Marshal(conf)
 			Expect(err).NotTo(HaveOccurred())
@@ -147,13 +175,23 @@ func runTestsForStorage(storage, password string, locations [4]string, extraArgs
 	})
 	Context("with scrt.yml explicit configuration file", func() {
 		BeforeEach(func() {
-			conf := map[string]string{
-				"storage":  storage,
+			conf := map[string]interface{}{
 				"password": password,
-				"location": locations[3],
 			}
-			for k, v := range extraArgs {
-				conf[k] = v
+			for k, v := range extraArgs[3] {
+				i := strings.Index(k, ".")
+				if i == -1 {
+					conf[k] = v
+				} else {
+					// Handle nested conf 1-layer deep
+					newK := k[:i]
+					subK := k[i+1:]
+					if subConf, ok := conf[newK]; ok {
+						(subConf.(map[string]interface{}))[subK] = v
+					} else {
+						conf[newK] = map[string]interface{}{subK: v}
+					}
+				}
 			}
 			yamlData, err := yaml.Marshal(conf)
 			Expect(err).NotTo(HaveOccurred())
