@@ -19,7 +19,6 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"gitlab.com/loderunner/ask"
 
 	"github.com/loderunner/scrt/backend"
 	"github.com/loderunner/scrt/store"
@@ -41,15 +40,7 @@ var initCmd = &cobra.Command{
 			return fmt.Errorf("could not check store existence: %w", err)
 		}
 		if exists {
-			var overwrite bool
-			var err error
-			if cmd.Flags().Changed("overwrite") {
-				overwrite, err = cmd.Flags().GetBool("overwrite")
-			} else {
-				overwrite, err = ask.Boolf("store already exists. Do you want to overwrite it?").
-					Default(false).
-					Ask()
-			}
+			overwrite, err := cmd.Flags().GetBool("overwrite")
 			if err != nil {
 				return fmt.Errorf("could not read options: %w", err)
 			}
