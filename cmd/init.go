@@ -45,7 +45,7 @@ var initCmd = &cobra.Command{
 				return fmt.Errorf("could not read options: %w", err)
 			}
 			if !overwrite {
-				return fmt.Errorf("aborted")
+				return fmt.Errorf("store already exists, use --overwrite to force init")
 			}
 		}
 
