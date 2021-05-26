@@ -7,6 +7,7 @@ require (
 	github.com/go-git/go-billy/v5 v5.3.1
 	github.com/go-git/go-git/v5 v5.4.1
 	github.com/golang/mock v1.5.0
+	github.com/kevinburke/ssh_config v1.1.0 // indirect
 	github.com/magiconair/properties v1.8.5 // indirect
 	github.com/mattn/go-isatty v0.0.12
 	github.com/mitchellh/go-homedir v1.1.0

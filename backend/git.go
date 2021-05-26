@@ -28,6 +28,7 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/transport"
 	"github.com/go-git/go-git/v5/plumbing/transport/ssh"
 	"github.com/go-git/go-git/v5/storage/memory"
+	"github.com/kevinburke/ssh_config"
 	"github.com/spf13/pflag"
 )
 
@@ -175,28 +176,31 @@ func (g *gitBackend) clone() error {
 		return err
 	}
 	g.fs = memfs.New()
-	for _, auth := range auths {
+	if len(auths) > 0 {
+		for _, auth := range auths {
+			g.repo, err = git.Clone(
+				memory.NewStorage(),
+				g.fs,
+				&git.CloneOptions{
+					URL:   g.url,
+					Depth: 1,
+					Auth:  auth,
+				},
+			)
+			if err == nil {
+				return nil
+			}
+		}
+	} else {
 		g.repo, err = git.Clone(
 			memory.NewStorage(),
 			g.fs,
 			&git.CloneOptions{
 				URL:   g.url,
 				Depth: 1,
-				Auth:  auth,
 			},
 		)
-		if err == nil {
-			return nil
-		}
 	}
-	g.repo, err = git.Clone(
-		memory.NewStorage(),
-		g.fs,
-		&git.CloneOptions{
-			URL:   g.url,
-			Depth: 1,
-		},
-	)
 	return err
 }
 
@@ -209,7 +213,7 @@ func buildAuths(url string) ([]ssh.AuthMethod, error) {
 		return nil, nil
 	}
 
-	sshConfig := ssh.DefaultSSHConfig
+	sshConfig := ssh_config.DefaultUserSettings
 	if sshConfig == nil {
 		defaultAuth, err := ssh.DefaultAuthBuilder(e.User)
 		if err != nil {
@@ -228,13 +232,17 @@ func buildAuths(url string) ([]ssh.AuthMethod, error) {
 		}
 	}
 
-	idFile := sshConfig.Get(e.Host, "IdentityFile")
-	if idFile != "" {
+	idFiles := sshConfig.GetAll(e.Host, "IdentityFile")
+	for _, idFile := range idFiles {
 		publicKeyAuth, err := ssh.NewPublicKeysFromFile(e.User, idFile, "")
 		if err == nil {
 			auths = append(auths, publicKeyAuth)
 		}
 	}
 
-	return auths, nil
+	if len(auths) > 0 {
+		return auths, nil
+	}
+
+	return nil, fmt.Errorf("no valid authentication method")
 }
