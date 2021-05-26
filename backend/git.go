@@ -142,7 +142,7 @@ func (g gitBackend) Save(data []byte) error {
 		Email: "scrt@scrt.run",
 		When:  time.Now(),
 	}
-	_, err = w.Commit("update secrets", &git.CommitOptions{
+	_, err = w.Commit(defaultCommitMessage, &git.CommitOptions{
 		Author:    authorCommitter,
 		Committer: authorCommitter,
 	})
