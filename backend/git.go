@@ -113,7 +113,7 @@ func (g gitBackend) Exists() (bool, error) {
 }
 
 func (g gitBackend) Save(data []byte) error {
-	f, err := g.fs.OpenFile(g.path, os.O_CREATE|os.O_RDWR, 0700)
+	f, err := g.fs.OpenFile(g.path, os.O_CREATE|os.O_TRUNC|os.O_RDWR, 0700)
 	if err != nil {
 		return err
 	}
