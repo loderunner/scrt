@@ -24,6 +24,8 @@ import (
 	"github.com/go-git/go-billy/v5"
 	"github.com/go-git/go-billy/v5/memfs"
 	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/config"
+	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/go-git/go-git/v5/plumbing/transport"
 	"github.com/go-git/go-git/v5/plumbing/transport/ssh"
@@ -95,6 +97,10 @@ func newGit(conf map[string]interface{}) (Backend, error) {
 	}
 
 	err := g.clone()
+	// If the repo is empty, init a new repo
+	if err == transport.ErrEmptyRemoteRepository {
+		err = g.init()
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -150,7 +156,9 @@ func (g gitBackend) Save(data []byte) error {
 	if err != nil {
 		return err
 	}
-	err = g.repo.Push(&git.PushOptions{RemoteName: "origin"})
+	err = g.repo.Push(&git.PushOptions{
+		RemoteName: git.DefaultRemoteName,
+	})
 	if err != nil {
 		return err
 	}
@@ -175,11 +183,12 @@ func (g *gitBackend) clone() error {
 	if err != nil {
 		return err
 	}
+	storage := memory.NewStorage()
 	g.fs = memfs.New()
 	if len(auths) > 0 {
 		for _, auth := range auths {
 			g.repo, err = git.Clone(
-				memory.NewStorage(),
+				storage,
 				g.fs,
 				&git.CloneOptions{
 					URL:   g.url,
@@ -193,7 +202,7 @@ func (g *gitBackend) clone() error {
 		}
 	} else {
 		g.repo, err = git.Clone(
-			memory.NewStorage(),
+			storage,
 			g.fs,
 			&git.CloneOptions{
 				URL:   g.url,
@@ -201,7 +210,49 @@ func (g *gitBackend) clone() error {
 			},
 		)
 	}
+	if err != nil {
+		g.fs = nil
+	}
 	return err
+}
+
+func (g *gitBackend) init() error {
+	var err error
+
+	storage := memory.NewStorage()
+	g.fs = memfs.New()
+	g.repo, err = git.Init(storage, g.fs)
+	if err != nil {
+		return err
+	}
+
+	_, err = g.repo.CreateRemote(&config.RemoteConfig{
+		Name: git.DefaultRemoteName,
+		URLs: []string{g.url},
+	})
+	if err != nil {
+		return err
+	}
+
+	branchName := "main"
+	gitConfig, err := g.repo.ConfigScoped(config.SystemScope)
+	if err == nil {
+		n := gitConfig.Init.DefaultBranch
+		if n != "" {
+			branchName = n
+		}
+	}
+
+	ref := plumbing.NewSymbolicReference(
+		plumbing.HEAD,
+		plumbing.NewBranchReferenceName(branchName),
+	)
+	err = storage.SetReference(ref)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func buildAuths(url string) ([]ssh.AuthMethod, error) {
