@@ -99,7 +99,7 @@ jobs:
       # Prepare Git
       - name: Create git repo
         run: |
-          cd /tmp/repos \
+          cd /home/runner/repos \
           && git config --global init.defaultBranch main \
           && git init --bare scrt-test.git
       - name: Add public SSH key to container
