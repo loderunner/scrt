@@ -23,7 +23,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_PUBLISH_TOKEN }}
+          password: ${{ secrets.PUBLISH_GITHUB_TOKEN }}
       - name: Save public key to file
         run: 'echo "${{ secrets.SCRT_ID_RSA_PUB }}" > scrt_id_rsa.pub'
       - name: Build Git test container
@@ -34,7 +34,7 @@ jobs:
           tags: ghcr.io/${{ github.repository_owner }}/scrt-git-test:latest
           push: true
           secrets: |
-            GIT_AUTH_TOKEN=${{ secrets.GITHUB_PUBLISH_TOKEN }}
+            GIT_AUTH_TOKEN=${{ secrets.PUBLISH_GITHUB_TOKEN }}
 
   lint:
     runs-on: ubuntu-latest
