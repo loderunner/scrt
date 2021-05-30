@@ -83,11 +83,12 @@ jobs:
           - 9000:9000
       git:
         image: linuxserver/openssh-server
-        options: '--env PUBLIC_KEY="${{ secrets.SCRT_ID_RSA_PUB }}" --env USER_NAME=scrt --name=scrt-git'
+        options: '--env PUBLIC_KEY_FILE="/config/scrt_id_rsa.pub" --env USER_NAME=scrt --name=scrt-git'
         ports:
           - 2222:2222
         volumes:
-          - "/config/repos:${{ runner.temp }}/repos"
+          - "/tmp/repos:/config/repos"
+          - "/tmp/scrt_id_rsa.pub:/config/scrt_id_rsa.pub"
     needs:
       - lint
       # - build_docker_e2e_images
@@ -98,10 +99,12 @@ jobs:
       # Prepare Git
       - name: Create git repo
         run: |
-          cd ${{ runner.temp }}/repos \
+          cd /tmp/repos \
           && git config --global init.defaultBranch main \
           && git init --bare scrt-test.git
-      - name: Add SSH key
+      - name: Add public SSH key to container
+        run: 'echo "${{ secrets.SCRT_ID_RSA_PUB }}" > /tmp/scrt_id_rsa.pub'
+      - name: Add private SSH key
         uses: shimataro/ssh-key-action@v2
         with:
           key: ${{ secrets.SCRT_ID_RSA }}
