@@ -89,9 +89,9 @@ jobs:
         volumes:
           - "/home/runner/repos:/config/repos"
           - "/home/runner/scrt_id_rsa.pub:/config/scrt_id_rsa.pub"
-    needs:
-      - lint
-      # - build_docker_e2e_images
+    # needs:
+    #   - lint
+    #   - build_docker_e2e_images
     steps:
       # Prepare MinIO
       - name: Create test bucket
