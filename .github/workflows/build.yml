@@ -23,7 +23,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.PUBLISH_GITHUB_TOKEN }}
       - name: Save public key to file
         run: 'echo "${{ secrets.SCRT_ID_RSA_PUB }}" > scrt_id_rsa.pub'
       - name: Build Git test container
