@@ -83,7 +83,7 @@ jobs:
           - 9000:9000
       git:
         image: linuxserver/openssh-server
-        options: --env PUBLIC_KEY="${{ secrets.SCRT_ID_RSA_PUB }}" --env USER_NAME=scrt --name=scrt-git
+        options: '--env PUBLIC_KEY="${{ secrets.SCRT_ID_RSA_PUB }}" --env USER_NAME=scrt --name=scrt-git'
         ports:
           - 2222:2222
         volumes:
