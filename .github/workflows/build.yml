@@ -87,8 +87,8 @@ jobs:
         ports:
           - 2222:2222
         volumes:
-          - "/tmp/repos:/config/repos"
-          - "/tmp/scrt_id_rsa.pub:/config/scrt_id_rsa.pub"
+          - "/home/runner/repos:/config/repos"
+          - "/home/runner/scrt_id_rsa.pub:/config/scrt_id_rsa.pub"
     needs:
       - lint
       # - build_docker_e2e_images
@@ -103,7 +103,7 @@ jobs:
           && git config --global init.defaultBranch main \
           && git init --bare scrt-test.git
       - name: Add public SSH key to container
-        run: 'echo "${{ secrets.SCRT_ID_RSA_PUB }}" > /tmp/scrt_id_rsa.pub'
+        run: 'echo "${{ secrets.SCRT_ID_RSA_PUB }}" > /home/runner/scrt_id_rsa.pub'
       - name: Add private SSH key
         uses: shimataro/ssh-key-action@v2
         with:
