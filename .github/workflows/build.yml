@@ -89,8 +89,8 @@ jobs:
       git:
         image: ghcr.io/${{ github.repository_owner }}/scrt-git-test
         credentials:
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.PUBLISH_GITHUB_TOKEN }}
         options: '--env PUBLIC_KEY_FILE="/config/scrt_id_rsa.pub" --env USER_NAME=scrt --name=scrt-git'
         ports:
           - 2222:2222
