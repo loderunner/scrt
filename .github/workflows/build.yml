@@ -104,7 +104,8 @@ jobs:
       # Prepare Git
       - name: Get git container SSH public key
         id: git_ssh_key
-        run: ssh-keyscan -p 22222 -t rsa 127.0.0.1
+        run: |
+          ssh-keyscan -p 22222 -t rsa 127.0.0.1 >> $HOME/.ssh/known_hosts
       - name: Add private SSH key
         uses: shimataro/ssh-key-action@v2
         with:
@@ -117,7 +118,6 @@ jobs:
               Port 22222
               User scrt
               IdentityFile ~/.ssh/scrt_id_rsa
-              StrictHostKeyChecking no
       - name: Output SSH status for debug purposes
         run: |
           cat ~/.ssh/config
