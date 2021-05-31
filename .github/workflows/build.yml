@@ -114,6 +114,7 @@ jobs:
               Port 2222
               User scrt
               IdentityFile ~/.ssh/scrt_id_rsa
+              StrictHostKeyChecking no
       # Run tests
       - name: Set up Go
         uses: actions/setup-go@v2
