@@ -93,7 +93,7 @@ jobs:
           password: ${{ secrets.PUBLISH_GITHUB_TOKEN }}
         options: '--env PUBLIC_KEY_FILE="/config/scrt_id_rsa.pub" --env USER_NAME=scrt'
         ports:
-          - 2222:2222
+          - 22222:2222
     needs:
       #   - lint
       - build_docker_e2e_images
@@ -105,8 +105,8 @@ jobs:
       - name: Get git container SSH public key
         id: git_ssh_key
         run: |
-          ssh-keyscan -p 2222 -t rsa 127.0.0.1
-          echo ::set-output name=known_host::$(ssh-keyscan -p 2222 -t rsa 127.0.0.1)
+          ssh-keyscan -p 22222 -t rsa 127.0.0.1
+          echo ::set-output name=known_host::$(ssh-keyscan -p 22222 -t rsa 127.0.0.1)
       - name: Add private SSH key
         uses: shimataro/ssh-key-action@v2
         with:
@@ -116,7 +116,7 @@ jobs:
           config: |
             Host scrt-git-test
               HostName 127.0.0.1
-              Port 2222
+              Port 22222
               User scrt
               IdentityFile /home/runner/.ssh/scrt_id_rsa
       - name: Output SSH status for debug purposes
