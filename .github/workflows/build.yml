@@ -117,7 +117,7 @@ jobs:
               HostName 127.0.0.1
               Port 22222
               User scrt
-              IdentityFile ~/.ssh/scrt_id_rsa
+              IdentityFile /home/runner/.ssh/scrt_id_rsa
       - name: Output SSH status for debug purposes
         run: |
           cat ~/.ssh/config
