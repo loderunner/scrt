@@ -105,7 +105,7 @@ jobs:
       - name: Get git container SSH public key
         id: git_ssh_key
         run: |
-          ssh-keyscan -p 22222 -t rsa 127.0.0.1 >> $HOME/.ssh/known_hosts
+          echo ::set-output name=known_host::\"$(ssh-keyscan -p 2222 -t rsa 127.0.0.1)\"
       - name: Add private SSH key
         uses: shimataro/ssh-key-action@v2
         with:
