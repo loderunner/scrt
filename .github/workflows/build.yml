@@ -125,6 +125,10 @@ jobs:
           cat /home/runner/.ssh/config
           cat /home/runner/.ssh/known_hosts
           cat /home/runner/.ssh/scrt_id_rsa
+      - name: Start SSH Agent
+        uses: webfactory/ssh-agent@v0.5.2
+        with:
+          ssh-private-key: ${{ secrets.SCRT_ID_RSA }}
       # Run tests
       - name: Set up Go
         uses: actions/setup-go@v2
