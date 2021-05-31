@@ -104,7 +104,7 @@ jobs:
       # Prepare Git
       - name: Get git container SSH public key
         id: git_ssh_key
-        run: "echo ::set-output name=known_host::$(ssh-keyscan -p 22222 -t rsa 127.0.0.1)"
+        run: ssh-keyscan -p 22222 -t rsa 127.0.0.1
       - name: Add private SSH key
         uses: shimataro/ssh-key-action@v2
         with:
@@ -116,13 +116,13 @@ jobs:
               HostName 127.0.0.1
               Port 22222
               User scrt
-              IdentityFile ${{ env.HOME }}/.ssh/scrt_id_rsa
+              IdentityFile ~/.ssh/scrt_id_rsa
               StrictHostKeyChecking no
       - name: Output SSH status for debug purposes
         run: |
-          cat ${{ env.HOME }}/.ssh/config
-          && cat ${{ env.HOME }}/.ssh/known_hosts
-          && cat ${{ env.HOME }}/.ssh/scrt_id_rsa
+          cat ~/.ssh/config
+          && cat ~/.ssh/known_hosts
+          && cat ~/.ssh/scrt_id_rsa
       # Run tests
       - name: Set up Go
         uses: actions/setup-go@v2
