@@ -106,7 +106,8 @@ jobs:
         id: git_ssh_key
         run: |
           ssh-keyscan -p 22222 -t rsa 127.0.0.1
-          echo ::set-output name=known_host::$(ssh-keyscan -p 22222 -t rsa 127.0.0.1)
+          echo $(ssh-keyscan -p 22222 -t rsa 127.0.0.1)
+        # echo ::set-output name=known_host::$(ssh-keyscan -p 22222 -t rsa 127.0.0.1)
       - name: Add private SSH key
         uses: shimataro/ssh-key-action@v2
         with:
