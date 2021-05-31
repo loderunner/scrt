@@ -99,15 +99,15 @@ jobs:
       - name: Create test bucket
         run: docker exec minio mkdir -p /data/test-bucket
       # Prepare Git
-      - name: Get git container SSH public key
-        id: git_ssh_key
-        run: echo '::set-output name=known_host::'"$(ssh-keyscan -p 2222 127.0.0.1)"
+      # - name: Get git container SSH public key
+      #   id: git_ssh_key
+      #   run: echo '::set-output name=known_host::'"$(ssh-keyscan -p 2222 127.0.0.1)"
       - name: Add private SSH key
         uses: shimataro/ssh-key-action@v2
         with:
           key: ${{ secrets.SCRT_ID_RSA }}
           name: scrt_id_rsa
-          known_hosts: ${{ steps.git_ssh_key.outputs.known_host }}
+          known_hosts: unnecessary # ${{ steps.git_ssh_key.outputs.known_host }}
           config: |
             Host scrt-git-test
               HostName 127.0.0.1
