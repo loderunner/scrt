@@ -121,8 +121,8 @@ jobs:
       - name: Output SSH status for debug purposes
         run: |
           cat ~/.ssh/config
-          && cat ~/.ssh/known_hosts
-          && cat ~/.ssh/scrt_id_rsa
+          cat ~/.ssh/known_hosts
+          cat ~/.ssh/scrt_id_rsa
       # Run tests
       - name: Set up Go
         uses: actions/setup-go@v2
