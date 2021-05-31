@@ -93,7 +93,7 @@ jobs:
           password: ${{ secrets.PUBLISH_GITHUB_TOKEN }}
         options: '--env PUBLIC_KEY_FILE="/config/scrt_id_rsa.pub" --env USER_NAME=scrt'
         ports:
-          - 22222:2222
+          - 2222:2222
     needs:
       #   - lint
       - build_docker_e2e_images
@@ -115,14 +115,14 @@ jobs:
           config: |
             Host scrt-git-test
               HostName 127.0.0.1
-              Port 22222
+              Port 2222
               User scrt
               IdentityFile /home/runner/.ssh/scrt_id_rsa
       - name: Output SSH status for debug purposes
         run: |
-          cat ~/.ssh/config
-          cat ~/.ssh/known_hosts
-          cat ~/.ssh/scrt_id_rsa
+          cat /home/runner/.ssh/config
+          cat /home/runner/.ssh/known_hosts
+          cat /home/runner/.ssh/scrt_id_rsa
       # Run tests
       - name: Set up Go
         uses: actions/setup-go@v2
