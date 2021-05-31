@@ -120,6 +120,7 @@ jobs:
               Port 22222
               User scrt
               IdentityFile /home/runner/.ssh/scrt_id_rsa
+              StrictHostKeyChecking off
       - name: Output SSH status for debug purposes
         run: |
           cat /home/runner/.ssh/config
