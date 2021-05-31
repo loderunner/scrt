@@ -106,8 +106,6 @@ jobs:
         id: git_ssh_key
         run: |
           sleep 3
-          ssh-keyscan -p 22222 -t rsa 127.0.0.1
-          echo $(ssh-keyscan -v -p 22222 -t rsa 127.0.0.1)
           echo ::set-output name=known_host::$(ssh-keyscan -p 22222 -t rsa 127.0.0.1)
       - name: Add private SSH key
         uses: shimataro/ssh-key-action@v2
@@ -121,11 +119,10 @@ jobs:
               Port 22222
               User scrt
               IdentityFile /home/runner/.ssh/scrt_id_rsa
-              StrictHostKeyChecking off
       - name: Output SSH status for debug purposes
         run: |
           cat /home/runner/.ssh/config
-          # cat /home/runner/.ssh/known_hosts
+          cat /home/runner/.ssh/known_hosts
           cat /home/runner/.ssh/scrt_id_rsa
       # Run tests
       - name: Set up Go
