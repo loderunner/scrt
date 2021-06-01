@@ -315,26 +315,3 @@ func buildAuths(url string) ([]ssh.AuthMethod, error) {
 
 	return nil, fmt.Errorf("no valid authentication method")
 }
-
-func (g *gitBackend) checkout(branch string) error {
-	err := g.repo.Fetch(&git.FetchOptions{
-		RefSpecs: []config.RefSpec{"refs/*:refs/*", "HEAD:refs/heads/HEAD"},
-	})
-	if err != nil {
-		fmt.Printf("Failed fetch for git repo: %s", err)
-	}
-
-	w, err := g.repo.Worktree()
-	if err != nil {
-		return err
-	}
-	err = w.Checkout(&git.CheckoutOptions{
-		Branch: plumbing.NewBranchReferenceName(branch),
-		Force:  true,
-	})
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
