@@ -43,6 +43,7 @@ func init() {
 	gitFlagSet.String("git-url", "", "URL of the git repository")
 	gitFlagSet.String("git-path", "", "path of the store in the repository")
 	gitFlagSet.String("git-branch", "", "branch to checkout, commit and push to")
+	gitFlagSet.String("git-checkout", "", "tree-ish revision to checkout, e.g. commit or tag")
 }
 
 type gitBackend struct {
@@ -101,6 +102,15 @@ func newGit(conf map[string]interface{}) (Backend, error) {
 		}
 	}
 
+	var checkout string
+	opt = readOpt("git", "checkout", conf)
+	if opt != nil && opt != "" {
+		checkout, ok = opt.(string)
+		if !ok {
+			return nil, fmt.Errorf("checkout refspec is not a string: (%T)%s", opt, opt)
+		}
+	}
+
 	g := gitBackend{
 		path: path,
 	}
@@ -112,6 +122,13 @@ func newGit(conf map[string]interface{}) (Backend, error) {
 	}
 	if err != nil {
 		return nil, err
+	}
+
+	if checkout != "" {
+		err = g.checkout(checkout)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return g, nil
@@ -194,6 +211,10 @@ func (g *gitBackend) clone(url, branch string) error {
 	}
 	storage := memory.NewStorage()
 	g.fs = memfs.New()
+	var referenceName plumbing.ReferenceName = ""
+	if branch != "" {
+		referenceName = plumbing.NewBranchReferenceName(branch)
+	}
 	if len(auths) > 0 {
 		for _, auth := range auths {
 			g.repo, err = git.Clone(
@@ -201,8 +222,7 @@ func (g *gitBackend) clone(url, branch string) error {
 				g.fs,
 				&git.CloneOptions{
 					URL:           url,
-					ReferenceName: plumbing.NewBranchReferenceName(branch),
-					Depth:         1,
+					ReferenceName: referenceName,
 					Auth:          auth,
 				},
 			)
@@ -216,8 +236,7 @@ func (g *gitBackend) clone(url, branch string) error {
 			g.fs,
 			&git.CloneOptions{
 				URL:           url,
-				ReferenceName: plumbing.NewBranchReferenceName(branch),
-				Depth:         1,
+				ReferenceName: referenceName,
 			},
 		)
 	}
@@ -310,4 +329,20 @@ func buildAuths(url string) ([]ssh.AuthMethod, error) {
 	}
 
 	return nil, fmt.Errorf("no valid authentication method")
+}
+
+func (g *gitBackend) checkout(checkout string) error {
+	hash, err := g.repo.ResolveRevision(plumbing.Revision(checkout))
+	if err != nil {
+		return err
+	}
+
+	w, err := g.repo.Worktree()
+	if err != nil {
+		return err
+	}
+
+	return w.Checkout(&git.CheckoutOptions{
+		Hash: *hash,
+	})
 }
