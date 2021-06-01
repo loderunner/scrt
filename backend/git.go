@@ -42,12 +42,15 @@ func init() {
 	gitFlagSet = pflag.NewFlagSet("git", pflag.ContinueOnError)
 	gitFlagSet.String("git-url", "", "URL of the git repository")
 	gitFlagSet.String("git-path", "", "path of the store in the repository")
+	gitFlagSet.String("git-branch", "", "branch to checkout, commit and push to")
 }
 
 type gitBackend struct {
-	url, path string
-	repo      *git.Repository
-	fs        billy.Filesystem
+	url    string
+	path   string
+	branch string
+	repo   *git.Repository
+	fs     billy.Filesystem
 }
 
 type gitFactory struct{}
@@ -79,7 +82,7 @@ func newGit(conf map[string]interface{}) (Backend, error) {
 	}
 	url, ok := opt.(string)
 	if !ok {
-		return nil, fmt.Errorf("repository URL is not a string: (%T)%s", url, url)
+		return nil, fmt.Errorf("repository URL is not a string: (%T)%s", opt, opt)
 	}
 
 	opt = readOpt("git", "path", conf)
@@ -88,12 +91,22 @@ func newGit(conf map[string]interface{}) (Backend, error) {
 	}
 	path, ok := opt.(string)
 	if !ok {
-		return nil, fmt.Errorf("path is not a string: (%T)%s", url, url)
+		return nil, fmt.Errorf("path is not a string: (%T)%s", opt, opt)
+	}
+
+	var branch string
+	opt = readOpt("git", "branch", conf)
+	if opt != nil && opt != "" {
+		branch, ok = opt.(string)
+		if !ok {
+			return nil, fmt.Errorf("branch is not a string: (%T)%s", opt, opt)
+		}
 	}
 
 	g := gitBackend{
-		url:  url,
-		path: path,
+		url:    url,
+		path:   path,
+		branch: branch,
 	}
 
 	err := g.clone()
@@ -191,9 +204,10 @@ func (g *gitBackend) clone() error {
 				storage,
 				g.fs,
 				&git.CloneOptions{
-					URL:   g.url,
-					Depth: 1,
-					Auth:  auth,
+					URL:           g.url,
+					ReferenceName: plumbing.NewBranchReferenceName(g.branch),
+					Depth:         1,
+					Auth:          auth,
 				},
 			)
 			if err == nil {
@@ -205,8 +219,9 @@ func (g *gitBackend) clone() error {
 			storage,
 			g.fs,
 			&git.CloneOptions{
-				URL:   g.url,
-				Depth: 1,
+				URL:           g.url,
+				ReferenceName: plumbing.NewBranchReferenceName(g.branch),
+				Depth:         1,
 			},
 		)
 	}
@@ -234,18 +249,21 @@ func (g *gitBackend) init() error {
 		return err
 	}
 
-	branchName := "main"
-	gitConfig, err := g.repo.ConfigScoped(config.SystemScope)
-	if err == nil {
-		n := gitConfig.Init.DefaultBranch
-		if n != "" {
-			branchName = n
+	// Set default branch name, if not configured
+	if g.branch == "" {
+		g.branch = "main"
+		gitConfig, err := g.repo.ConfigScoped(config.SystemScope)
+		if err == nil {
+			n := gitConfig.Init.DefaultBranch
+			if n != "" {
+				g.branch = n
+			}
 		}
 	}
 
 	ref := plumbing.NewSymbolicReference(
 		plumbing.HEAD,
-		plumbing.NewBranchReferenceName(branchName),
+		plumbing.NewBranchReferenceName(g.branch),
 	)
 	err = storage.SetReference(ref)
 	if err != nil {

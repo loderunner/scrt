@@ -95,7 +95,7 @@ jobs:
         ports:
           - 22222:2222
     needs:
-      #   - lint
+      - lint
       - build_docker_e2e_images
     steps:
       # Prepare MinIO
@@ -147,6 +147,7 @@ jobs:
           SCRT_TEST_E2E_S3_ENDPOINT_URL: http://127.0.0.1:9000
           SCRT_TEST_E2E_S3_REGION: us-east-1
           SCRT_TEST_E2E_GIT_REPOSITORY_URL: scrt@scrt-git-test:repos/scrt-test.git
+          SCRT_TEST_E2E_GIT_BRANCH: main
           AWS_ACCESS_KEY_ID: minio
           AWS_SECRET_ACCESS_KEY: miniosecret
         run: go test ./e2e
