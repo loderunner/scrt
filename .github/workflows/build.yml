@@ -95,7 +95,7 @@ jobs:
         ports:
           - 22222:2222
     needs:
-      #   - lint
+      - lint
       - build_docker_e2e_images
     steps:
       # Prepare MinIO
