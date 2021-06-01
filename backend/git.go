@@ -46,11 +46,9 @@ func init() {
 }
 
 type gitBackend struct {
-	url    string
-	path   string
-	branch string
-	repo   *git.Repository
-	fs     billy.Filesystem
+	path string
+	repo *git.Repository
+	fs   billy.Filesystem
 }
 
 type gitFactory struct{}
@@ -104,15 +102,13 @@ func newGit(conf map[string]interface{}) (Backend, error) {
 	}
 
 	g := gitBackend{
-		url:    url,
-		path:   path,
-		branch: branch,
+		path: path,
 	}
 
-	err := g.clone()
+	err := g.clone(url, branch)
 	// If the repo is empty, init a new repo
 	if err == transport.ErrEmptyRemoteRepository {
-		err = g.init()
+		err = g.init(url, branch)
 	}
 	if err != nil {
 		return nil, err
@@ -191,8 +187,8 @@ func (g gitBackend) Load() ([]byte, error) {
 	return data, nil
 }
 
-func (g *gitBackend) clone() error {
-	auths, err := buildAuths(g.url)
+func (g *gitBackend) clone(url, branch string) error {
+	auths, err := buildAuths(url)
 	if err != nil {
 		return err
 	}
@@ -204,8 +200,8 @@ func (g *gitBackend) clone() error {
 				storage,
 				g.fs,
 				&git.CloneOptions{
-					URL:           g.url,
-					ReferenceName: plumbing.NewBranchReferenceName(g.branch),
+					URL:           url,
+					ReferenceName: plumbing.NewBranchReferenceName(branch),
 					Depth:         1,
 					Auth:          auth,
 				},
@@ -219,8 +215,8 @@ func (g *gitBackend) clone() error {
 			storage,
 			g.fs,
 			&git.CloneOptions{
-				URL:           g.url,
-				ReferenceName: plumbing.NewBranchReferenceName(g.branch),
+				URL:           url,
+				ReferenceName: plumbing.NewBranchReferenceName(branch),
 				Depth:         1,
 			},
 		)
@@ -231,7 +227,7 @@ func (g *gitBackend) clone() error {
 	return err
 }
 
-func (g *gitBackend) init() error {
+func (g *gitBackend) init(url, branch string) error {
 	var err error
 
 	storage := memory.NewStorage()
@@ -243,27 +239,27 @@ func (g *gitBackend) init() error {
 
 	_, err = g.repo.CreateRemote(&config.RemoteConfig{
 		Name: git.DefaultRemoteName,
-		URLs: []string{g.url},
+		URLs: []string{url},
 	})
 	if err != nil {
 		return err
 	}
 
 	// Set default branch name, if not configured
-	if g.branch == "" {
-		g.branch = "main"
+	if branch == "" {
+		branch = "main"
 		gitConfig, err := g.repo.ConfigScoped(config.SystemScope)
 		if err == nil {
 			n := gitConfig.Init.DefaultBranch
 			if n != "" {
-				g.branch = n
+				branch = n
 			}
 		}
 	}
 
 	ref := plumbing.NewSymbolicReference(
 		plumbing.HEAD,
-		plumbing.NewBranchReferenceName(g.branch),
+		plumbing.NewBranchReferenceName(branch),
 	)
 	err = storage.SetReference(ref)
 	if err != nil {
