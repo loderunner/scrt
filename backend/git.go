@@ -162,6 +162,7 @@ func (g gitBackend) Save(data []byte) error {
 	if err != nil {
 		return err
 	}
+
 	w, err := g.repo.Worktree()
 	if err != nil {
 		return err
@@ -170,11 +171,18 @@ func (g gitBackend) Save(data []byte) error {
 	if err != nil {
 		return err
 	}
+
+	gitConfig, err := g.repo.ConfigScoped(config.SystemScope)
+	if err != nil {
+		return err
+	}
+	user := gitConfig.User
 	authorCommitter := &object.Signature{
-		Name:  "scrt",
-		Email: "scrt@scrt.run",
+		Name:  user.Name,
+		Email: user.Email,
 		When:  time.Now(),
 	}
+
 	_, err = w.Commit(defaultCommitMessage, &git.CommitOptions{
 		Author:    authorCommitter,
 		Committer: authorCommitter,
