@@ -9,13 +9,6 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - name: Wait for build
-        uses: lewagon/wait-on-check-action@v0.2
-        with:
-          ref: main
-          running-workflow-name: "Build scrt"
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          wait-interval: 60 # seconds
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
