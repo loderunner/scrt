@@ -44,12 +44,14 @@ func init() {
 	gitFlagSet.String("git-path", "", "path of the store in the repository")
 	gitFlagSet.String("git-branch", "", "branch to checkout, commit and push to")
 	gitFlagSet.String("git-checkout", "", "tree-ish revision to checkout, e.g. commit or tag")
+	gitFlagSet.String("git-message", "", "commit message when updating the store")
 }
 
 type gitBackend struct {
-	path string
-	repo *git.Repository
-	fs   billy.Filesystem
+	path    string
+	message string
+	repo    *git.Repository
+	fs      billy.Filesystem
 }
 
 type gitFactory struct{}
@@ -107,12 +109,22 @@ func newGit(conf map[string]interface{}) (Backend, error) {
 	if opt != nil && opt != "" {
 		checkout, ok = opt.(string)
 		if !ok {
-			return nil, fmt.Errorf("checkout refspec is not a string: (%T)%s", opt, opt)
+			return nil, fmt.Errorf("checkout is not a string: (%T)%s", opt, opt)
+		}
+	}
+
+	message := defaultCommitMessage
+	opt = readOpt("git", "message", conf)
+	if opt != nil && opt != "" {
+		message, ok = opt.(string)
+		if !ok {
+			return nil, fmt.Errorf("message is not a string: (%T)%s", opt, opt)
 		}
 	}
 
 	g := gitBackend{
-		path: path,
+		path:    path,
+		message: message,
 	}
 
 	err := g.clone(url, branch)
@@ -151,10 +163,12 @@ func (g gitBackend) Save(data []byte) error {
 		return err
 	}
 	defer f.Close()
+
 	n, err := f.Write(data)
 	if err != nil {
 		return err
 	}
+
 	if n != len(data) {
 		return fmt.Errorf("wrote %d bytes, expected %d", n, len(data))
 	}
@@ -162,32 +176,45 @@ func (g gitBackend) Save(data []byte) error {
 	if err != nil {
 		return err
 	}
+
 	w, err := g.repo.Worktree()
 	if err != nil {
 		return err
 	}
+
 	_, err = w.Add(g.path)
 	if err != nil {
 		return err
 	}
-	authorCommitter := &object.Signature{
-		Name:  "scrt",
-		Email: "scrt@scrt.run",
-		When:  time.Now(),
-	}
-	_, err = w.Commit(defaultCommitMessage, &git.CommitOptions{
-		Author:    authorCommitter,
-		Committer: authorCommitter,
-	})
+
+	gitConfig, err := g.repo.ConfigScoped(config.SystemScope)
 	if err != nil {
 		return err
 	}
+	user := gitConfig.User
+	authorCommitter := &object.Signature{
+		Name:  user.Name,
+		Email: user.Email,
+		When:  time.Now(),
+	}
+	_, err = w.Commit(
+		g.message,
+		&git.CommitOptions{
+			Author:    authorCommitter,
+			Committer: authorCommitter,
+		},
+	)
+	if err != nil {
+		return err
+	}
+
 	err = g.repo.Push(&git.PushOptions{
 		RemoteName: git.DefaultRemoteName,
 	})
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -197,10 +224,12 @@ func (g gitBackend) Load() ([]byte, error) {
 		return nil, err
 	}
 	defer f.Close()
+
 	data, err := ioutil.ReadAll(f)
 	if err != nil {
 		return nil, err
 	}
+
 	return data, nil
 }
 
@@ -209,12 +238,14 @@ func (g *gitBackend) clone(url, branch string) error {
 	if err != nil {
 		return err
 	}
+
 	storage := memory.NewStorage()
 	g.fs = memfs.New()
 	var referenceName plumbing.ReferenceName = ""
 	if branch != "" {
 		referenceName = plumbing.NewBranchReferenceName(branch)
 	}
+
 	if len(auths) > 0 {
 		for _, auth := range auths {
 			g.repo, err = git.Clone(
@@ -240,9 +271,7 @@ func (g *gitBackend) clone(url, branch string) error {
 			},
 		)
 	}
-	if err != nil {
-		g.fs = nil
-	}
+
 	return err
 }
 
