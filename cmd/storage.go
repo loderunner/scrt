@@ -48,7 +48,8 @@ var storageCmd = &cobra.Command{
 			}
 		}
 		padLength := int(4 * math.Ceil(float64(maxNameLength+1)/4))
-		for name, factory := range backend.Backends {
+		for _, name := range backend.BackendNameList {
+			factory := backend.Backends[name]
 			fmt.Printf("%s:\n", factory.Name())
 			fmt.Printf(
 				"  %s%s\n",

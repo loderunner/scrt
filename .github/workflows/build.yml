@@ -11,6 +11,31 @@ on:
       - "**"
 
 jobs:
+  build_docker_e2e_images:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.PUBLISH_GITHUB_TOKEN }}
+      - name: Save public key to file
+        run: 'echo "${{ secrets.SCRT_ID_RSA_PUB }}" > scrt_id_rsa.pub'
+      - name: Build Git test container
+        uses: docker/build-push-action@v2
+        with:
+          file: .github/docker/Dockerfile_git+openssh
+          context: .
+          tags: ghcr.io/${{ github.repository_owner }}/scrt-git-test:latest
+          push: true
+          secrets: |
+            GIT_AUTH_TOKEN=${{ secrets.PUBLISH_GITHUB_TOKEN }}
+
   lint:
     runs-on: ubuntu-latest
     container: golangci/golangci-lint:v1.39-alpine
@@ -47,22 +72,64 @@ jobs:
       - name: Coveralls
         uses: coverallsapp/github-action@v1.1.2
         with:
-          github-token: ${{ secrets.github_token }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           path-to-lcov: coverage.lcov
 
   e2e:
     runs-on: ubuntu-latest
     services:
       minio:
-        # Use Bitnami image here because GitHub actions won't let us pass args to docker create
+        # Use Bitnami image here because default minio image runs the executable
+        # and GitHub actions won't let us pass args to docker create so we can't
+        # change the entrypoint
         image: bitnami/minio
         options: --name=minio
         ports:
           - 9000:9000
-    needs: lint
+      git_openssh:
+        image: ghcr.io/${{ github.repository_owner }}/scrt-git-test
+        credentials:
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.PUBLISH_GITHUB_TOKEN }}
+        options: '--env PUBLIC_KEY_FILE="/config/scrt_id_rsa.pub" --env USER_NAME=scrt'
+        ports:
+          - 22222:2222
+    needs:
+      - lint
+      - build_docker_e2e_images
     steps:
+      # Prepare MinIO
       - name: Create test bucket
         run: docker exec minio mkdir -p /data/test-bucket
+      # Prepare Git
+      - name: Get git container SSH public key
+        id: git_ssh_key
+        run: |
+          sleep 3
+          echo ::set-output name=known_host::$(ssh-keyscan -p 22222 -t ecdsa 127.0.0.1)
+      - name: Add private SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SCRT_ID_RSA }}
+          name: scrt_id_rsa
+          known_hosts: ${{ steps.git_ssh_key.outputs.known_host }}
+          config: |
+            Host scrt-git-test
+              HostName 127.0.0.1
+              Port 22222
+              User scrt
+              IdentitiesOnly yes
+              IdentityFile /home/runner/.ssh/scrt_id_rsa
+      - name: Output SSH status for debug purposes
+        run: |
+          cat /home/runner/.ssh/config
+          cat /home/runner/.ssh/known_hosts
+          cat /home/runner/.ssh/scrt_id_rsa
+      - name: Start SSH Agent
+        uses: webfactory/ssh-agent@v0.5.2
+        with:
+          ssh-private-key: ${{ secrets.SCRT_ID_RSA }}
+      # Run tests
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
@@ -74,11 +141,13 @@ jobs:
         with:
           path: ~/go/pkg/mod
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-      - name: Test
+      - name: Run tests
         env:
           SCRT_TEST_E2E: y
           SCRT_TEST_E2E_S3_ENDPOINT_URL: http://127.0.0.1:9000
           SCRT_TEST_E2E_S3_REGION: us-east-1
+          SCRT_TEST_E2E_GIT_REPOSITORY_URL: scrt@scrt-git-test:repos/scrt-test.git
+          SCRT_TEST_E2E_GIT_BRANCH: main
           AWS_ACCESS_KEY_ID: minio
           AWS_SECRET_ACCESS_KEY: miniosecret
         run: go test ./e2e

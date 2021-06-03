@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 
 - Configure region for S3 storage: `--s3-region`
+- Added a new storage type: Git
 
 ### Changed
 

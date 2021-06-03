@@ -30,6 +30,7 @@
 - [Storage types](#storage-types)
   - [Local](#local)
   - [S3](#s3)
+  - [Git](#git)
 - [FAQ](#faq)
 - [License](#license)
 
@@ -382,14 +383,25 @@ Local:
   local       store secrets to local filesystem
 Flags:
       --local-path string   path to the store in the local filesystem
+                            (required)
 
 S3:
   s3          store secrets to AWS S3 or S3-compatible object storage
 Flags:
-      --s3-bucket-name string    name of the S3 bucket
+      --s3-bucket-name string    name of the S3 bucket (required)
       --s3-endpoint-url string   override default S3 endpoint URL
       --s3-key string            path of the store object in the bucket
+                                 (required)
       --s3-region string         region of the S3 storage
+
+Git:
+  git         store secrets to a git repository
+Flags:
+      --git-branch string     branch to checkout, commit and push to on updates
+      --git-checkout string   tree-ish revision to checkout, e.g. commit or tag
+      --git-message string    commit message when updating the store
+      --git-path string       path of the store in the repository (required)
+      --git-url string        URL of the git repository (required)
 ```
 
 `scrt` supports various storage backends, independent of the secrets engine. Each storage type has a name, and configuration options vary according to the chosen type.
@@ -408,7 +420,7 @@ scrt init --storage=local --password=p4ssw0rd --local-path=/tmp/store.scrt
 
 ### Options
 
-**`--local-path`:** the path to the store file on the local filesystem.
+**`--local-path`** (required): the path to the store file on the local filesystem.
 
 ## S3
 
@@ -425,15 +437,42 @@ scrt init --storage=s3 \
 
 > `scrt` uses your [AWS configuration (config files, environment variables)](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) if it can be found.
 
-### Extra options
+### Options
 
-**`--s3-bucket-name`:** the name of the bucket to save to store to
+**`--s3-bucket-name`** (required): the name of the bucket to save to store to
 
-**`--s3-key`:** the key to the store object
+**`--s3-key`** (required): the key to the store object
 
 **`--s3-region`:** set the region for the S3 bucket
 
-**`--s3-endpoint-url`:** when using an S3-compatible object storage other than AWS, `scrt` requires the URL of the S3 API endpoint. Can be configured in the configuration file, or with the `SCRT_S3_ENDPOINT_URL` environment variable.
+**`--s3-endpoint-url`:** when using an S3-compatible object storage other than AWS, `scrt` requires the URL of the S3 API endpoint.
+
+## Git
+
+Use the `git` storage type to create and access a store in a git repository. `scrt` will clone the repository in memory, checkout the given branch (or the default branch if no branch is given), read the store in the file at the given path, and will commit and push any modifications to the remote.
+
+Example:
+
+```shell
+scrt init --storage=git \
+          --password=p4ssw0rd \
+          --git-url=git@github.com:githubuser/secrets.git \
+          --git-path=store.scrt
+```
+
+> `scrt` will initialize a new repo if none can be cloned.
+
+### Options
+
+**`--git-url`** (required): a git-compatible repository URL. Most git-compatible URLs and protocols can be used. See [`git clone` documentation](https://git-scm.com/docs/git-clone#_git_urls) to learn more.
+
+**`--git-path`** (required): the path to the store file inside the the git repository, relative to the repository root. A repository can contain multiple scrt stores, at different paths.
+
+**`--git-branch`:** the name of the branch to checkout after cloning (or initializing). If no branch is given, the default branch from the remote will be used, or `main` if a new repository is initialized.
+
+**`--git-checkout`:** a git revision to checkout. If specified, the revision will be checked out in a ["detached HEAD"](https://git-scm.com/docs/git-checkout#_detached_head) and pushing will not work; making updates (`init`, `set` or `unset`) will be impossible.
+
+**`--git-message`:** the message of the git commit. A default message will be used if this is not set.
 
 # FAQ
 

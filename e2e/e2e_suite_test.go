@@ -110,6 +110,36 @@ var _ = Describe("scrt", func() {
 			extraArgs,
 		)
 	})
+	Context("for git backend", func() {
+		extraArgs := [4]map[string]string{
+			{
+				"git.url":    os.Getenv("SCRT_TEST_E2E_GIT_REPOSITORY_URL"),
+				"git.branch": os.Getenv("SCRT_TEST_E2E_GIT_BRANCH"),
+				"git.path":   "store-args.scrt",
+			},
+			{
+				"git.url":    os.Getenv("SCRT_TEST_E2E_GIT_REPOSITORY_URL"),
+				"git.branch": os.Getenv("SCRT_TEST_E2E_GIT_BRANCH"),
+				"git.path":   "store-env.scrt",
+			},
+			{
+				"git.url":    os.Getenv("SCRT_TEST_E2E_GIT_REPOSITORY_URL"),
+				"git.branch": os.Getenv("SCRT_TEST_E2E_GIT_BRANCH"),
+				"git.path":   "store-implicit-conf.scrt",
+			},
+			{
+				"git.url":    os.Getenv("SCRT_TEST_E2E_GIT_REPOSITORY_URL"),
+				"git.branch": os.Getenv("SCRT_TEST_E2E_GIT_BRANCH"),
+				"git.path":   "store-explicit-conf.scrt",
+			},
+		}
+
+		runTestsForStorage(
+			"git",
+			"toto",
+			extraArgs,
+		)
+	})
 })
 
 func execute(args []string, env []string) *gexec.Session {
