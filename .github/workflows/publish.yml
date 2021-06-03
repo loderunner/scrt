@@ -15,7 +15,7 @@ jobs:
           ref: main
           running-workflow-name: "Build scrt"
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          wait-interval: 600 # seconds
+          wait-interval: 60 # seconds
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
