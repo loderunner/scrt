@@ -28,7 +28,7 @@ var localFlagSet *pflag.FlagSet
 
 func init() {
 	localFlagSet = pflag.NewFlagSet("local", pflag.ContinueOnError)
-	localFlagSet.String("local-path", "", "path to the store in the local filesystem")
+	localFlagSet.String("local-path", "", "path to the store in the local filesystem (required)")
 }
 
 type local struct {

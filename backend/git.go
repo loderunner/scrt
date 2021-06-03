@@ -40,9 +40,9 @@ const defaultCommitMessage = "update secrets"
 
 func init() {
 	gitFlagSet = pflag.NewFlagSet("git", pflag.ContinueOnError)
-	gitFlagSet.String("git-url", "", "URL of the git repository")
-	gitFlagSet.String("git-path", "", "path of the store in the repository")
-	gitFlagSet.String("git-branch", "", "branch to checkout, commit and push to")
+	gitFlagSet.String("git-url", "", "URL of the git repository (required)")
+	gitFlagSet.String("git-path", "", "path of the store in the repository (required)")
+	gitFlagSet.String("git-branch", "", "branch to checkout, commit and push to on updates")
 	gitFlagSet.String("git-checkout", "", "tree-ish revision to checkout, e.g. commit or tag")
 	gitFlagSet.String("git-message", "", "commit message when updating the store")
 }

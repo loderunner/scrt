@@ -382,14 +382,25 @@ Local:
   local       store secrets to local filesystem
 Flags:
       --local-path string   path to the store in the local filesystem
+                            (required)
 
 S3:
   s3          store secrets to AWS S3 or S3-compatible object storage
 Flags:
-      --s3-bucket-name string    name of the S3 bucket
+      --s3-bucket-name string    name of the S3 bucket (required)
       --s3-endpoint-url string   override default S3 endpoint URL
       --s3-key string            path of the store object in the bucket
+                                 (required)
       --s3-region string         region of the S3 storage
+
+Git:
+  git         store secrets to a git repository
+Flags:
+      --git-branch string     branch to checkout, commit and push to on updates
+      --git-checkout string   tree-ish revision to checkout, e.g. commit or tag
+      --git-message string    commit message when updating the store
+      --git-path string       path of the store in the repository (required)
+      --git-url string        URL of the git repository (required)
 ```
 
 `scrt` supports various storage backends, independent of the secrets engine. Each storage type has a name, and configuration options vary according to the chosen type.
@@ -408,7 +419,7 @@ scrt init --storage=local --password=p4ssw0rd --local-path=/tmp/store.scrt
 
 ### Options
 
-**`--local-path`:** the path to the store file on the local filesystem.
+**`--local-path`** (required): the path to the store file on the local filesystem.
 
 ## S3
 
@@ -425,11 +436,11 @@ scrt init --storage=s3 \
 
 > `scrt` uses your [AWS configuration (config files, environment variables)](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) if it can be found.
 
-### Extra options
+### Options
 
-**`--s3-bucket-name`:** the name of the bucket to save to store to
+**`--s3-bucket-name`** (required): the name of the bucket to save to store to
 
-**`--s3-key`:** the key to the store object
+**`--s3-key`** (required): the key to the store object
 
 **`--s3-region`:** set the region for the S3 bucket
 
