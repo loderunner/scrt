@@ -20,12 +20,16 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/apex/log"
+	"github.com/apex/log/handlers/cli"
+	"github.com/apex/log/handlers/discard"
 	"github.com/loderunner/scrt/backend"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
 var configFile string
+var verbose bool
 
 // RootCmd is the root command for scrt
 var RootCmd = &cobra.Command{
@@ -40,6 +44,13 @@ var RootCmd = &cobra.Command{
 		err := readConfig(cmd)
 		if err != nil {
 			return err
+		}
+
+		// Set logger
+		if verbose {
+			log.SetHandler(cli.Default)
+		} else {
+			log.SetHandler(discard.Default)
 		}
 
 		// Validate configuration
@@ -139,6 +150,7 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+	RootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
 
 	viper.SetEnvPrefix("scrt")
 	viper.AutomaticEnv()
