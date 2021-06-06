@@ -1,3 +1,4 @@
 dist/
 .scrt*
 key.gpg
+/scrt
