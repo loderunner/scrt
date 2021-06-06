@@ -17,6 +17,7 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/apex/log"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
@@ -47,6 +48,7 @@ var initCmd = &cobra.Command{
 			if !overwrite {
 				return fmt.Errorf("store already exists, use --overwrite to force init")
 			}
+			log.Info("overwriting existing store")
 		}
 
 		s := store.NewStore()

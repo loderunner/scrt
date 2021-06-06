@@ -90,8 +90,11 @@ line, it will be read from standard input.`,
 			}
 		}
 
-		if s.Has(key) && !overwrite {
-			return fmt.Errorf("value exists for key \"%s\", use --overwrite to force", key)
+		if s.Has(key) {
+			if !overwrite {
+				return fmt.Errorf("value exists for key \"%s\", use --overwrite to force", key)
+			}
+			log.WithField("key", key).Info("overwriting existing value")
 		}
 
 		err = s.Set(key, val)
