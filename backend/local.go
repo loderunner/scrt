@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"path/filepath"
 
+	"github.com/apex/log"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/afero"
 	"github.com/spf13/pflag"
@@ -76,6 +77,7 @@ func newLocal(conf map[string]interface{}) (Backend, error) {
 	if err != nil {
 		return nil, err
 	}
+	log.WithField("path", path).Infof("using local path")
 
 	fs := afero.NewOsFs()
 	_, err = fs.Stat(path)
@@ -87,6 +89,8 @@ func newLocal(conf map[string]interface{}) (Backend, error) {
 }
 
 func (l local) Exists() (bool, error) {
+	log.WithField("path", l.path).Info("checking store existence")
+
 	exists, err := afero.Exists(l.fs, l.path)
 	if err != nil {
 		return false, err
@@ -95,9 +99,11 @@ func (l local) Exists() (bool, error) {
 }
 
 func (l local) Save(data []byte) error {
+	log.WithField("path", l.path).Info("writing encrypted data to local storage")
 	return afero.WriteFile(l.fs, l.path, data, 0600)
 }
 
 func (l local) Load() ([]byte, error) {
+	log.WithField("path", l.path).Info("reading encrypted data from local storage")
 	return afero.ReadFile(l.fs, l.path)
 }
