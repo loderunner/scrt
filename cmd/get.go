@@ -18,7 +18,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/apex/log"
 	"github.com/mattn/go-isatty"
 
 	"github.com/loderunner/scrt/backend"
@@ -46,7 +45,6 @@ var getCmd = &cobra.Command{
 			return err
 		}
 
-		log.Info("checking if store exists")
 		exists, err := b.Exists()
 		if err != nil {
 			return fmt.Errorf("could not check store existence: %w", err)
@@ -55,20 +53,17 @@ var getCmd = &cobra.Command{
 			return fmt.Errorf("store does not exist")
 		}
 
-		log.Info("loading encrypted store data from storage")
 		data, err := b.Load()
 		if err != nil {
 			return fmt.Errorf("could not load data: %w", err)
 		}
 
-		log.Info("decrypting store")
 		password := []byte(viper.GetString(configKeyPassword))
 		s, err := store.ReadStore(password, data)
 		if err != nil {
 			return fmt.Errorf("could not read store from data: %w", err)
 		}
 
-		log.WithField("key", key).Infof("looking up value in store")
 		if !s.Has(key) {
 			return fmt.Errorf("no value for key: \"%s\"", key)
 		}

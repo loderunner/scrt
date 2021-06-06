@@ -17,7 +17,6 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/apex/log"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
@@ -43,7 +42,6 @@ var listCmd = &cobra.Command{
 			return err
 		}
 
-		log.Info("checking that store exists")
 		exists, err := b.Exists()
 		if err != nil {
 			return fmt.Errorf("could not check store existence: %w", err)
@@ -52,20 +50,17 @@ var listCmd = &cobra.Command{
 			return fmt.Errorf("store does not exist")
 		}
 
-		log.Info("loading encrypted store data from storage")
 		data, err := b.Load()
 		if err != nil {
 			return fmt.Errorf("could not load data from store: %w", err)
 		}
 
-		log.Info("decrypting store")
 		password := []byte(viper.GetString(configKeyPassword))
 		s, err := store.ReadStore(password, data)
 		if err != nil {
 			return fmt.Errorf("could not read store from data: %w", err)
 		}
 
-		log.Info("listing keys")
 		keys := s.List()
 
 		for _, k := range keys {

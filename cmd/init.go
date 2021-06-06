@@ -17,7 +17,6 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/apex/log"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
@@ -36,7 +35,6 @@ var initCmd = &cobra.Command{
 			return err
 		}
 
-		log.Info("checking that store exists")
 		exists, err := b.Exists()
 		if err != nil {
 			return fmt.Errorf("could not check store existence: %w", err)
@@ -51,17 +49,14 @@ var initCmd = &cobra.Command{
 			}
 		}
 
-		log.Info("initializing new store")
 		s := store.NewStore()
 		password := []byte(viper.GetString(configKeyPassword))
 
-		log.Info("encrypting store data")
 		data, err := store.WriteStore(password, s)
 		if err != nil {
 			return fmt.Errorf("could not write store to data: %w", err)
 		}
 
-		log.Info("writing encrypted data to storage")
 		err = b.Save(data)
 		if err != nil {
 			return fmt.Errorf("could not save data to store: %w", err)
