@@ -19,6 +19,7 @@ import (
 	"io"
 	"os"
 
+	"github.com/apex/log"
 	"github.com/loderunner/scrt/backend"
 	"github.com/loderunner/scrt/store"
 	"github.com/spf13/cobra"
@@ -48,9 +49,10 @@ line, it will be read from standard input.`,
 		var val []byte
 		var err error
 		if len(args) == 1 {
+			log.Info("reading value from standard input")
 			val, err = io.ReadAll(os.Stdin)
 			if err != nil {
-				return fmt.Errorf("could not read from stdin %w", err)
+				return fmt.Errorf("could not read from standard input %w", err)
 			}
 		} else {
 			val = []byte(args[1])
