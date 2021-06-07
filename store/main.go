@@ -23,7 +23,6 @@ import (
 // Store defines a key-value storage in scrt.
 type Store struct {
 	data map[string][]byte
-	salt []byte
 }
 
 const saltLength = 16
