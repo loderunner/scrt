@@ -19,7 +19,6 @@ import (
 	"io"
 	"os"
 
-	"github.com/apex/log"
 	"github.com/loderunner/scrt/backend"
 	"github.com/loderunner/scrt/store"
 	"github.com/spf13/cobra"
@@ -49,7 +48,7 @@ line, it will be read from standard input.`,
 		var val []byte
 		var err error
 		if len(args) == 1 {
-			log.Info("reading value from standard input")
+			logger.Info("reading value from standard input")
 			val, err = io.ReadAll(os.Stdin)
 			if err != nil {
 				return fmt.Errorf("could not read from standard input %w", err)
@@ -58,12 +57,12 @@ line, it will be read from standard input.`,
 			val = []byte(args[1])
 		}
 
-		b, err := backend.Backends[storage].New(viper.AllSettings())
+		b, err := backend.Backends[storage].NewContext(cmdContext, viper.AllSettings())
 		if err != nil {
 			return err
 		}
 
-		exists, err := b.Exists()
+		exists, err := b.ExistsContext(cmdContext)
 		if err != nil {
 			return fmt.Errorf("could not check store existence: %w", err)
 		}
@@ -71,13 +70,13 @@ line, it will be read from standard input.`,
 			return fmt.Errorf("store does not exist")
 		}
 
-		data, err := b.Load()
+		data, err := b.LoadContext(cmdContext)
 		if err != nil {
 			return fmt.Errorf("could not load data from store: %w", err)
 		}
 
 		password := []byte(viper.GetString(configKeyPassword))
-		s, err := store.ReadStore(password, data)
+		s, err := store.ReadStoreContext(cmdContext, password, data)
 		if err != nil {
 			return fmt.Errorf("could not read store from data: %w", err)
 		}
@@ -90,24 +89,24 @@ line, it will be read from standard input.`,
 			}
 		}
 
-		if s.Has(key) {
+		if s.HasContext(cmdContext, key) {
 			if !overwrite {
 				return fmt.Errorf("value exists for key \"%s\", use --overwrite to force", key)
 			}
-			log.WithField("key", key).Info("overwriting existing value")
+			logger.WithField("key", key).Info("overwriting existing value")
 		}
 
-		err = s.Set(key, val)
+		err = s.SetContext(cmdContext, key, val)
 		if err != nil {
 			return fmt.Errorf("could not set value: %w", err)
 		}
 
-		data, err = store.WriteStore(password, s)
+		data, err = store.WriteStoreContext(cmdContext, password, s)
 		if err != nil {
 			return fmt.Errorf("could not write store to data: %w", err)
 		}
 
-		err = b.Save(data)
+		err = b.SaveContext(cmdContext, data)
 		if err != nil {
 			return fmt.Errorf("could not save data to store: %w", err)
 		}

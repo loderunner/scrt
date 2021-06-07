@@ -15,6 +15,10 @@
 package backend
 
 import (
+	"context"
+
+	"github.com/apex/log"
+	"github.com/apex/log/handlers/discard"
 	"github.com/spf13/pflag"
 )
 
@@ -27,15 +31,25 @@ var BackendNameList = []string{"local", "s3", "git"}
 
 // Backend implements the common backend operations
 type Backend interface {
+	// Exists returns true if a store exists in the backend, false otherwise
 	Exists() (bool, error)
+	// Save persists encrypted data to the backend
 	Save(data []byte) error
+	// Load reads encrypted data from the backend
 	Load() ([]byte, error)
+
+	ExistsContext(ctx context.Context) (bool, error)
+	SaveContext(ctx context.Context, data []byte) error
+	LoadContext(ctx context.Context) ([]byte, error)
 }
 
 // Factory can instantiate a new Backend with New, and other static
 // backend-related functions.
 type Factory interface {
+	// New returns an initialized backend from the given configuration
 	New(conf map[string]interface{}) (Backend, error)
+	NewContext(ctx context.Context, conf map[string]interface{}) (Backend, error)
+
 	Name() string
 	Description() string
 	Flags() *pflag.FlagSet
@@ -57,4 +71,12 @@ func readOpt(prefix, name string, conf map[string]interface{}) interface{} {
 		return nil
 	}
 	return opt
+}
+
+func getLogger(ctx context.Context) log.Interface {
+	logger := log.FromContext(ctx)
+	if logger == log.Log {
+		logger = &log.Logger{Handler: discard.Default}
+	}
+	return logger
 }

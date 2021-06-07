@@ -15,13 +15,13 @@
 package backend
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"time"
 
-	"github.com/apex/log"
 	"github.com/go-git/go-billy/v5"
 	"github.com/go-git/go-billy/v5/memfs"
 	"github.com/go-git/go-git/v5"
@@ -58,7 +58,11 @@ type gitBackend struct {
 type gitFactory struct{}
 
 func (f gitFactory) New(conf map[string]interface{}) (Backend, error) {
-	return newGit(conf)
+	return f.NewContext(context.Background(), conf)
+}
+
+func (f gitFactory) NewContext(ctx context.Context, conf map[string]interface{}) (Backend, error) {
+	return newGit(ctx, conf)
 }
 
 func (f gitFactory) Name() string {
@@ -77,8 +81,8 @@ func init() {
 	Backends["git"] = gitFactory{}
 }
 
-func newGit(conf map[string]interface{}) (Backend, error) {
-	logger := log.NewEntry(log.Log.(*log.Logger))
+func newGit(ctx context.Context, conf map[string]interface{}) (Backend, error) {
+	logger := getLogger(ctx)
 
 	opt := readOpt("git", "url", conf)
 	if opt == nil || opt == "" {
@@ -136,18 +140,18 @@ func newGit(conf map[string]interface{}) (Backend, error) {
 		message: message,
 	}
 
-	err := g.clone(url, branch)
+	err := g.clone(ctx, url, branch)
 	// If the repo is empty, init a new repo
 	if err == transport.ErrEmptyRemoteRepository {
 		logger.Info("repository is empty")
-		err = g.init(url, branch)
+		err = g.init(ctx, url, branch)
 	}
 	if err != nil {
 		return nil, err
 	}
 
 	if checkout != "" {
-		err = g.checkout(checkout)
+		err = g.checkout(ctx, checkout)
 		if err != nil {
 			return nil, err
 		}
@@ -157,7 +161,12 @@ func newGit(conf map[string]interface{}) (Backend, error) {
 }
 
 func (g gitBackend) Exists() (bool, error) {
-	log.
+	return g.ExistsContext(context.Background())
+}
+func (g gitBackend) ExistsContext(ctx context.Context) (bool, error) {
+	logger := getLogger(ctx)
+
+	logger.
 		WithField("path", g.path).
 		Info("checking store existence")
 
@@ -172,7 +181,12 @@ func (g gitBackend) Exists() (bool, error) {
 }
 
 func (g gitBackend) Save(data []byte) error {
-	logger := log.WithField("path", g.path)
+	return g.SaveContext(context.Background(), data)
+}
+func (g gitBackend) SaveContext(ctx context.Context, data []byte) error {
+	logger := getLogger(ctx)
+
+	logger = logger.WithField("path", g.path)
 
 	logger.Info("opening file in git repository")
 	f, err := g.fs.OpenFile(g.path, os.O_CREATE|os.O_TRUNC|os.O_RDWR, 0700)
@@ -243,7 +257,12 @@ func (g gitBackend) Save(data []byte) error {
 }
 
 func (g gitBackend) Load() ([]byte, error) {
-	log.
+	return g.LoadContext(context.Background())
+}
+func (g gitBackend) LoadContext(ctx context.Context) ([]byte, error) {
+	logger := getLogger(ctx)
+
+	logger.
 		WithField("path", g.path).
 		Info("reading encrypted data from git repository")
 
@@ -261,13 +280,14 @@ func (g gitBackend) Load() ([]byte, error) {
 	return data, nil
 }
 
-func (g *gitBackend) clone(url, branch string) error {
-	auths, err := buildAuths(url)
+func (g *gitBackend) clone(ctx context.Context, url, branch string) error {
+	logger := getLogger(ctx)
+	auths, err := buildAuths(ctx, url)
 	if err != nil {
 		return err
 	}
 
-	logger := log.WithField("url", url)
+	logger = logger.WithField("url", url)
 	storage := memory.NewStorage()
 	g.fs = memfs.New()
 	var referenceName plumbing.ReferenceName = ""
@@ -306,10 +326,11 @@ func (g *gitBackend) clone(url, branch string) error {
 	return err
 }
 
-func (g *gitBackend) init(url, branch string) error {
+func (g *gitBackend) init(ctx context.Context, url, branch string) error {
+	logger := getLogger(ctx)
 	var err error
 
-	log.Info("initializing git repository in memory")
+	logger.Info("initializing git repository in memory")
 	storage := memory.NewStorage()
 	g.fs = memfs.New()
 	g.repo, err = git.Init(storage, g.fs)
@@ -317,7 +338,7 @@ func (g *gitBackend) init(url, branch string) error {
 		return err
 	}
 
-	log.WithField("url", url).Info("adding git remote")
+	logger.WithField("url", url).Info("adding git remote")
 	_, err = g.repo.CreateRemote(&config.RemoteConfig{
 		Name: git.DefaultRemoteName,
 		URLs: []string{url},
@@ -337,7 +358,7 @@ func (g *gitBackend) init(url, branch string) error {
 			}
 		}
 	}
-	log.WithField("branch", branch).Info("using git branch")
+	logger.WithField("branch", branch).Info("using git branch")
 
 	ref := plumbing.NewSymbolicReference(
 		plumbing.HEAD,
@@ -351,7 +372,8 @@ func (g *gitBackend) init(url, branch string) error {
 	return nil
 }
 
-func buildAuths(url string) ([]ssh.AuthMethod, error) {
+func buildAuths(ctx context.Context, url string) ([]ssh.AuthMethod, error) {
+	logger := getLogger(ctx)
 	e, err := transport.NewEndpoint(url)
 	if err != nil {
 		return nil, err
@@ -360,7 +382,7 @@ func buildAuths(url string) ([]ssh.AuthMethod, error) {
 		return nil, nil
 	}
 
-	log.Info("configuring SSH authentication methods")
+	logger.Info("configuring SSH authentication methods")
 
 	sshConfig := ssh_config.DefaultUserSettings
 	if sshConfig == nil {
@@ -368,7 +390,7 @@ func buildAuths(url string) ([]ssh.AuthMethod, error) {
 		if err != nil {
 			return nil, err
 		}
-		log.Info("SSH config not found, using default authentication")
+		logger.Info("SSH config not found, using default authentication")
 		return []ssh.AuthMethod{defaultAuth}, nil
 	}
 
@@ -376,18 +398,18 @@ func buildAuths(url string) ([]ssh.AuthMethod, error) {
 
 	identitiesOnly := sshConfig.Get(e.Host, "IdentitiesOnly")
 	if identitiesOnly != "yes" {
-		log.Info("using SSH agent authentication (if available)")
+		logger.Info("using SSH agent authentication (if available)")
 		sshAgentAuth, err := ssh.NewSSHAgentAuth(e.User)
 		if err == nil {
 			auths = append(auths, sshAgentAuth)
 		}
 	} else {
-		log.Info("using identity files only")
+		logger.Info("using identity files only")
 	}
 
 	idFiles := sshConfig.GetAll(e.Host, "IdentityFile")
 	for _, idFile := range idFiles {
-		logger := log.WithField("identity_file", idFile)
+		logger := logger.WithField("identity_file", idFile)
 		publicKeyAuth, err := ssh.NewPublicKeysFromFile(e.User, idFile, "")
 		if err == nil {
 			logger.Info("identity file found")
@@ -404,9 +426,10 @@ func buildAuths(url string) ([]ssh.AuthMethod, error) {
 	return nil, fmt.Errorf("no valid authentication method")
 }
 
-func (g *gitBackend) checkout(checkout string) error {
+func (g *gitBackend) checkout(ctx context.Context, checkout string) error {
+	logger := getLogger(ctx)
 
-	log.
+	logger.
 		WithField("revision", checkout).
 		Info("resolving revision to commit hash")
 
@@ -420,7 +443,7 @@ func (g *gitBackend) checkout(checkout string) error {
 		return err
 	}
 
-	log.WithField("hash", hash).Info("checking out hash on a detached HEAD")
+	logger.WithField("hash", hash).Info("checking out hash on a detached HEAD")
 	return w.Checkout(&git.CheckoutOptions{
 		Hash: *hash,
 	})

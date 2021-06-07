@@ -55,12 +55,16 @@ var RootCmd = &cobra.Command{
 			return err
 		}
 
-		// Set logger
+		// Set logger in context
 		if verbose {
-			log.SetHandler(cli.Default)
+			logger = &log.Logger{Handler: cli.Default}
 		} else {
-			log.SetHandler(discard.Default)
+			logger = &log.Logger{Handler: discard.Default}
 		}
+		cmdContext = log.NewContext(
+			cmdContext,
+			logger,
+		)
 
 		// Validate configuration
 		if !viper.IsSet(configKeyStorage) {
@@ -98,7 +102,7 @@ var RootCmd = &cobra.Command{
 
 		// Log configuration
 		if viper.ConfigFileUsed() != "" {
-			log.
+			logger.
 				WithField("path", viper.ConfigFileUsed()).
 				Infof("read configuration file")
 		}
@@ -109,7 +113,7 @@ var RootCmd = &cobra.Command{
 				settings[k] = v
 			}
 		}
-		log.
+		logger.
 			WithFields(fielder{fields: settings}).
 			Info("using configuration")
 

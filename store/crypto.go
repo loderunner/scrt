@@ -15,13 +15,13 @@
 package store
 
 import (
+	"context"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
 	"encoding/json"
 	"fmt"
 
-	"github.com/apex/log"
 	"golang.org/x/crypto/argon2"
 )
 
@@ -30,17 +30,24 @@ import (
 // decrypted of parsed. A json.Unmarshal error can mean either that the wrong
 // password was supplied, or that the Store is corrupted.
 func ReadStore(password []byte, data []byte) (Store, error) {
+	return ReadStoreContext(context.Background(), password, data)
+}
+
+// ReadStoreContext performs ReadStore with a context
+func ReadStoreContext(ctx context.Context, password []byte, data []byte) (Store, error) {
+	logger := getLogger(ctx)
+
 	if len(data) < saltLength+aes.BlockSize {
 		return Store{}, fmt.Errorf("invalid length")
 	}
 
-	log.Info("reading key salt")
+	logger.Info("reading key salt")
 	salt := data[:saltLength]
 
-	log.Info("deriving key from password")
+	logger.Info("deriving key from password")
 	key := argon2.IDKey(password, salt, 1, 64*1024, 4, 32)
 
-	log.Info("initializing block cipher")
+	logger.Info("initializing block cipher")
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		return Store{}, err
@@ -55,7 +62,7 @@ func ReadStore(password []byte, data []byte) (Store, error) {
 
 	ciphertext := data[saltLength+aesgcm.NonceSize():]
 
-	log.Info("decrypting store data")
+	logger.Info("decrypting store data")
 	plaintext, err := aesgcm.Open(nil, nonce, ciphertext, nil)
 	if err != nil {
 		return Store{}, err
@@ -63,7 +70,7 @@ func ReadStore(password []byte, data []byte) (Store, error) {
 
 	store := Store{}
 
-	log.Info("deserializing decrypted data")
+	logger.Info("deserializing decrypted data")
 	err = json.Unmarshal(plaintext, &store.data)
 	if err != nil {
 		return Store{}, err
@@ -76,17 +83,24 @@ func ReadStore(password []byte, data []byte) (Store, error) {
 // encrypt the Store and returns the encrypted data, or an error if the Store
 // could not be encoded to JSON or could not be encrypted.
 func WriteStore(password []byte, store Store) ([]byte, error) {
+	return WriteStoreContext(context.Background(), password, store)
+}
+
+// WriteStoreContext performs WriteStore with a context
+func WriteStoreContext(ctx context.Context, password []byte, store Store) ([]byte, error) {
+	logger := getLogger(ctx)
+
 	if store.data == nil {
 		return nil, fmt.Errorf("store data is nil")
 	}
 
-	log.Info("serializing store data")
+	logger.Info("serializing store data")
 	plaintext, err := json.Marshal(store.data)
 	if err != nil {
 		return nil, err
 	}
 
-	log.Info("generating random salt")
+	logger.Info("generating random salt")
 	salt := make([]byte, saltLength)
 	n, err := rand.Read(salt)
 	if err != nil {
@@ -96,10 +110,10 @@ func WriteStore(password []byte, store Store) ([]byte, error) {
 		return nil, fmt.Errorf("unexpected salt length: %d", n)
 	}
 
-	log.Info("deriving key from password")
+	logger.Info("deriving key from password")
 	key := argon2.IDKey(password, salt, 1, 64*1024, 4, 32)
 
-	log.Info("initializing block cipher")
+	logger.Info("initializing block cipher")
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, err
@@ -119,7 +133,7 @@ func WriteStore(password []byte, store Store) ([]byte, error) {
 		return nil, fmt.Errorf("unexpected nonce length: %d", n)
 	}
 
-	log.Info("encrypting serialized store data")
+	logger.Info("encrypting serialized store data")
 	ciphertext := aesgcm.Seal(plaintext[:0], nonce, plaintext, nil)
 
 	return append(salt, append(nonce, ciphertext...)...), nil

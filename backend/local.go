@@ -15,11 +15,11 @@
 package backend
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"path/filepath"
 
-	"github.com/apex/log"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/afero"
 	"github.com/spf13/pflag"
@@ -40,7 +40,10 @@ type local struct {
 type localFactory struct{}
 
 func (f localFactory) New(conf map[string]interface{}) (Backend, error) {
-	return newLocal(conf)
+	return f.NewContext(context.Background(), conf)
+}
+func (f localFactory) NewContext(ctx context.Context, conf map[string]interface{}) (Backend, error) {
+	return newLocal(ctx, conf)
 }
 
 func (f localFactory) Name() string {
@@ -59,7 +62,9 @@ func init() {
 	Backends["local"] = localFactory{}
 }
 
-func newLocal(conf map[string]interface{}) (Backend, error) {
+func newLocal(ctx context.Context, conf map[string]interface{}) (Backend, error) {
+	logger := getLogger(ctx)
+
 	opt := readOpt("local", "path", conf)
 	if opt == nil || opt == "" {
 		return nil, fmt.Errorf("missing path")
@@ -77,7 +82,7 @@ func newLocal(conf map[string]interface{}) (Backend, error) {
 	if err != nil {
 		return nil, err
 	}
-	log.WithField("path", path).Infof("using local path")
+	logger.WithField("path", path).Infof("using local path")
 
 	fs := afero.NewOsFs()
 	_, err = fs.Stat(path)
@@ -89,7 +94,12 @@ func newLocal(conf map[string]interface{}) (Backend, error) {
 }
 
 func (l local) Exists() (bool, error) {
-	log.WithField("path", l.path).Info("checking store existence")
+	return l.ExistsContext(context.Background())
+}
+
+func (l local) ExistsContext(ctx context.Context) (bool, error) {
+	logger := getLogger(ctx)
+	logger.WithField("path", l.path).Info("checking store existence")
 
 	exists, err := afero.Exists(l.fs, l.path)
 	if err != nil {
@@ -99,11 +109,21 @@ func (l local) Exists() (bool, error) {
 }
 
 func (l local) Save(data []byte) error {
-	log.WithField("path", l.path).Info("writing encrypted data to local storage")
+	return l.SaveContext(context.Background(), data)
+}
+
+func (l local) SaveContext(ctx context.Context, data []byte) error {
+	logger := getLogger(ctx)
+	logger.WithField("path", l.path).Info("writing encrypted data to local storage")
 	return afero.WriteFile(l.fs, l.path, data, 0600)
 }
 
 func (l local) Load() ([]byte, error) {
-	log.WithField("path", l.path).Info("reading encrypted data from local storage")
+	return l.LoadContext(context.Background())
+}
+
+func (l local) LoadContext(ctx context.Context) ([]byte, error) {
+	logger := getLogger(ctx)
+	logger.WithField("path", l.path).Info("reading encrypted data from local storage")
 	return afero.ReadFile(l.fs, l.path)
 }

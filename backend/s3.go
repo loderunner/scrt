@@ -16,11 +16,11 @@ package backend
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"io/ioutil"
 
-	"github.com/apex/log"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -47,7 +47,11 @@ type s3Backend struct {
 type s3Factory struct{}
 
 func (f s3Factory) New(conf map[string]interface{}) (Backend, error) {
-	return newS3(conf)
+	return f.NewContext(context.Background(), conf)
+}
+
+func (f s3Factory) NewContext(ctx context.Context, conf map[string]interface{}) (Backend, error) {
+	return newS3(ctx, conf)
 }
 
 func (f s3Factory) Name() string {
@@ -66,10 +70,10 @@ func init() {
 	Backends["s3"] = s3Factory{}
 }
 
-func newS3(conf map[string]interface{}) (Backend, error) {
-	cfgs := []*aws.Config{}
+func newS3(ctx context.Context, conf map[string]interface{}) (Backend, error) {
+	logger := getLogger(ctx)
 
-	logger := log.NewEntry(log.Log.(*log.Logger))
+	cfgs := []*aws.Config{}
 
 	opt := readOpt("s3", "bucket-name", conf)
 	if opt == nil || opt == "" {
@@ -131,7 +135,12 @@ func newS3(conf map[string]interface{}) (Backend, error) {
 }
 
 func (s s3Backend) Exists() (bool, error) {
-	log.
+	return s.ExistsContext(context.Background())
+}
+
+func (s s3Backend) ExistsContext(ctx context.Context) (bool, error) {
+	logger := getLogger(ctx)
+	logger.
 		WithField("bucket", s.bucket).
 		WithField("key", s.key).
 		Info("checking store existence")
@@ -154,7 +163,12 @@ func (s s3Backend) Exists() (bool, error) {
 }
 
 func (s s3Backend) Save(data []byte) error {
-	log.
+	return s.SaveContext(context.Background(), data)
+}
+
+func (s s3Backend) SaveContext(ctx context.Context, data []byte) error {
+	logger := getLogger(ctx)
+	logger.
 		WithField("bucket", s.bucket).
 		WithField("key", s.key).
 		Info("writing encrypted data to S3 storage")
@@ -171,7 +185,12 @@ func (s s3Backend) Save(data []byte) error {
 }
 
 func (s s3Backend) Load() ([]byte, error) {
-	log.
+	return s.LoadContext(context.Background())
+}
+
+func (s s3Backend) LoadContext(ctx context.Context) ([]byte, error) {
+	logger := getLogger(ctx)
+	logger.
 		WithField("bucket", s.bucket).
 		WithField("key", s.key).
 		Info("reading encrypted data from S3 storage")

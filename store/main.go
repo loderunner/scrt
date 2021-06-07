@@ -15,68 +15,16 @@
 package store
 
 import (
-	"fmt"
+	"context"
 
 	"github.com/apex/log"
+	"github.com/apex/log/handlers/discard"
 )
 
-// Store defines a key-value storage in scrt.
-type Store struct {
-	data map[string][]byte
-}
-
-const saltLength = 16
-
-// NewStore initializes a new Store.
-func NewStore() Store {
-	log.Info("creating new store")
-	return Store{
-		data: make(map[string][]byte),
+func getLogger(ctx context.Context) log.Interface {
+	logger := log.FromContext(ctx)
+	if logger == log.Log {
+		logger = &log.Logger{Handler: discard.Default}
 	}
-}
-
-// Has returns true if a value is associated to key in the Store.
-func (s Store) Has(key string) bool {
-	log.WithField("key", key).Info("checking key existence")
-	_, ok := s.data[key]
-	return ok
-}
-
-// List returns all the keys is the Store
-func (s Store) List() []string {
-	log.Info("listing keys")
-	keys := make([]string, len(s.data))
-	i := 0
-	for k := range s.data {
-		keys[i] = k
-		i++
-	}
-	return keys
-}
-
-// Get returns the value associated to key in the Store, or an error if none is
-// associated.
-func (s Store) Get(key string) ([]byte, error) {
-	log.WithField("key", key).Info("retrieving value for key")
-	if val, ok := s.data[key]; ok {
-		return val, nil
-	}
-	return nil, fmt.Errorf("no value for \"%s\"", key)
-}
-
-// Set associates the value to key in the Store, or an error if val is
-// invalid.
-func (s Store) Set(key string, val []byte) error {
-	log.WithField("key", key).Info("setting value for key")
-	if val == nil {
-		return fmt.Errorf("cannot set value")
-	}
-	s.data[key] = val
-	return nil
-}
-
-// Unset removes any value associated to key in the Store.
-func (s Store) Unset(key string) {
-	log.WithField("key", key).Info("unsetting value for key")
-	delete(s.data, key)
+	return logger
 }

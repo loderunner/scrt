@@ -17,6 +17,7 @@
 package cmd
 
 import (
+	context "context"
 	"os"
 
 	"github.com/loderunner/scrt/backend"
@@ -54,6 +55,10 @@ type mockFactory struct {
 }
 
 func (f mockFactory) New(conf map[string]interface{}) (backend.Backend, error) {
+	return f.NewContext(context.Background(), conf)
+}
+
+func (f mockFactory) NewContext(ctx context.Context, conf map[string]interface{}) (backend.Backend, error) {
 	return f.b, nil
 }
 

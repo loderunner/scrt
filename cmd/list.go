@@ -37,12 +37,12 @@ var listCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		storage := viper.GetString(configKeyStorage)
 
-		b, err := backend.Backends[storage].New(viper.AllSettings())
+		b, err := backend.Backends[storage].NewContext(cmdContext, viper.AllSettings())
 		if err != nil {
 			return err
 		}
 
-		exists, err := b.Exists()
+		exists, err := b.ExistsContext(cmdContext)
 		if err != nil {
 			return fmt.Errorf("could not check store existence: %w", err)
 		}
@@ -50,18 +50,18 @@ var listCmd = &cobra.Command{
 			return fmt.Errorf("store does not exist")
 		}
 
-		data, err := b.Load()
+		data, err := b.LoadContext(cmdContext)
 		if err != nil {
 			return fmt.Errorf("could not load data from store: %w", err)
 		}
 
 		password := []byte(viper.GetString(configKeyPassword))
-		s, err := store.ReadStore(password, data)
+		s, err := store.ReadStoreContext(cmdContext, password, data)
 		if err != nil {
 			return fmt.Errorf("could not read store from data: %w", err)
 		}
 
-		keys := s.List()
+		keys := s.ListContext(cmdContext)
 
 		for _, k := range keys {
 			fmt.Println(k)
