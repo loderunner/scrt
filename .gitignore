@@ -2,3 +2,5 @@ dist/
 .scrt*
 key.gpg
 /scrt
+/scrt_id_rsa
+/scrt_id_rsa.pub
