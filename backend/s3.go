@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"io/ioutil"
 
+	"github.com/apex/log"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -68,6 +69,8 @@ func init() {
 func newS3(conf map[string]interface{}) (Backend, error) {
 	cfgs := []*aws.Config{}
 
+	logEntry := log.NewEntry(log.Log.(*log.Logger))
+
 	opt := readOpt("s3", "bucket-name", conf)
 	if opt == nil || opt == "" {
 		return nil, fmt.Errorf("missing bucket name")
@@ -76,6 +79,7 @@ func newS3(conf map[string]interface{}) (Backend, error) {
 	if !ok {
 		return nil, fmt.Errorf("bucket name is not a string: (%T)%s", bucket, bucket)
 	}
+	logEntry = logEntry.WithField("bucket", bucket)
 
 	opt = readOpt("s3", "key", conf)
 	if opt == nil || opt == "" {
@@ -85,6 +89,7 @@ func newS3(conf map[string]interface{}) (Backend, error) {
 	if !ok {
 		return nil, fmt.Errorf("key is not a string: (%T)%s", key, key)
 	}
+	logEntry = logEntry.WithField("key", key)
 
 	opt = readOpt("s3", "endpoint-url", conf)
 	if opt != nil && opt != "" {
@@ -94,6 +99,7 @@ func newS3(conf map[string]interface{}) (Backend, error) {
 		}
 		cfg := aws.NewConfig().WithEndpoint(endpoint).WithS3ForcePathStyle(true)
 		cfgs = append(cfgs, cfg)
+		logEntry = logEntry.WithField("endpoint URL", endpoint)
 	}
 
 	opt = readOpt("s3", "region", conf)
@@ -104,7 +110,10 @@ func newS3(conf map[string]interface{}) (Backend, error) {
 		}
 		cfg := aws.NewConfig().WithRegion(region)
 		cfgs = append(cfgs, cfg)
+		logEntry = logEntry.WithField("region", region)
 	}
+
+	logEntry.Info("using S3 object")
 
 	sess, err := session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
@@ -122,6 +131,11 @@ func newS3(conf map[string]interface{}) (Backend, error) {
 }
 
 func (s s3Backend) Exists() (bool, error) {
+	log.
+		WithField("bucket", s.bucket).
+		WithField("key", s.key).
+		Info("checking store existence")
+
 	req := (&s3.GetObjectInput{}).
 		SetBucket(s.bucket).
 		SetKey(s.key)
@@ -140,6 +154,11 @@ func (s s3Backend) Exists() (bool, error) {
 }
 
 func (s s3Backend) Save(data []byte) error {
+	log.
+		WithField("bucket", s.bucket).
+		WithField("key", s.key).
+		Info("writing encrypted data to S3 storage")
+
 	req := (&s3.PutObjectInput{}).
 		SetBucket(s.bucket).
 		SetKey(s.key).
@@ -152,6 +171,11 @@ func (s s3Backend) Save(data []byte) error {
 }
 
 func (s s3Backend) Load() ([]byte, error) {
+	log.
+		WithField("bucket", s.bucket).
+		WithField("key", s.key).
+		Info("reading encrypted data from S3 storage")
+
 	req := (&s3.GetObjectInput{}).
 		SetBucket(s.bucket).
 		SetKey(s.key)
