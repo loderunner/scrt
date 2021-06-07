@@ -69,7 +69,7 @@ func init() {
 func newS3(conf map[string]interface{}) (Backend, error) {
 	cfgs := []*aws.Config{}
 
-	logEntry := log.NewEntry(log.Log.(*log.Logger))
+	logger := log.NewEntry(log.Log.(*log.Logger))
 
 	opt := readOpt("s3", "bucket-name", conf)
 	if opt == nil || opt == "" {
@@ -79,7 +79,7 @@ func newS3(conf map[string]interface{}) (Backend, error) {
 	if !ok {
 		return nil, fmt.Errorf("bucket name is not a string: (%T)%s", bucket, bucket)
 	}
-	logEntry = logEntry.WithField("bucket", bucket)
+	logger = logger.WithField("bucket", bucket)
 
 	opt = readOpt("s3", "key", conf)
 	if opt == nil || opt == "" {
@@ -89,7 +89,7 @@ func newS3(conf map[string]interface{}) (Backend, error) {
 	if !ok {
 		return nil, fmt.Errorf("key is not a string: (%T)%s", key, key)
 	}
-	logEntry = logEntry.WithField("key", key)
+	logger = logger.WithField("key", key)
 
 	opt = readOpt("s3", "endpoint-url", conf)
 	if opt != nil && opt != "" {
@@ -99,7 +99,7 @@ func newS3(conf map[string]interface{}) (Backend, error) {
 		}
 		cfg := aws.NewConfig().WithEndpoint(endpoint).WithS3ForcePathStyle(true)
 		cfgs = append(cfgs, cfg)
-		logEntry = logEntry.WithField("endpoint URL", endpoint)
+		logger = logger.WithField("endpoint URL", endpoint)
 	}
 
 	opt = readOpt("s3", "region", conf)
@@ -110,10 +110,10 @@ func newS3(conf map[string]interface{}) (Backend, error) {
 		}
 		cfg := aws.NewConfig().WithRegion(region)
 		cfgs = append(cfgs, cfg)
-		logEntry = logEntry.WithField("region", region)
+		logger = logger.WithField("region", region)
 	}
 
-	logEntry.Info("using S3 object")
+	logger.Info("using S3 object")
 
 	sess, err := session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
