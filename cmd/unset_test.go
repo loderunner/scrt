@@ -50,9 +50,9 @@ func TestUnsetCmd(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	mockBackend.EXPECT().Exists().Return(true, nil)
-	mockBackend.EXPECT().Load().Return(data, nil)
-	mockBackend.EXPECT().Save(gomock.Any())
+	mockBackend.EXPECT().ExistsContext(ctxMatcher).Return(true, nil)
+	mockBackend.EXPECT().LoadContext(ctxMatcher).Return(data, nil)
+	mockBackend.EXPECT().SaveContext(ctxMatcher, gomock.Any())
 
 	args := []string{"hello"}
 	err = unsetCmd.Args(unsetCmd, args)
@@ -84,9 +84,9 @@ func TestUnsetCmdNoValue(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	mockBackend.EXPECT().Exists().Return(true, nil)
-	mockBackend.EXPECT().Load().Return(data, nil)
-	mockBackend.EXPECT().Save(gomock.Any())
+	mockBackend.EXPECT().ExistsContext(ctxMatcher).Return(true, nil)
+	mockBackend.EXPECT().LoadContext(ctxMatcher).Return(data, nil)
+	mockBackend.EXPECT().SaveContext(ctxMatcher, gomock.Any())
 
 	args := []string{"hello"}
 	err = unsetCmd.Args(unsetCmd, args)
@@ -110,7 +110,7 @@ func TestUnsetCmdNotExists(t *testing.T) {
 	viper.Set(configKeyPassword, "toto")
 	viper.Set(configKeyStorage, "mock")
 
-	mockBackend.EXPECT().Exists().Return(false, nil)
+	mockBackend.EXPECT().ExistsContext(ctxMatcher).Return(false, nil)
 
 	args := []string{"hello"}
 	err := unsetCmd.Args(unsetCmd, args)
@@ -134,8 +134,8 @@ func TestUnsetCmdFailedLoad(t *testing.T) {
 	viper.Set(configKeyPassword, "toto")
 	viper.Set(configKeyStorage, "mock")
 
-	mockBackend.EXPECT().Exists().Return(true, nil)
-	mockBackend.EXPECT().Load().Return(nil, fmt.Errorf("error"))
+	mockBackend.EXPECT().ExistsContext(ctxMatcher).Return(true, nil)
+	mockBackend.EXPECT().LoadContext(ctxMatcher).Return(nil, fmt.Errorf("error"))
 
 	args := []string{"hello"}
 	err := unsetCmd.Args(unsetCmd, args)
@@ -167,9 +167,9 @@ func TestUnsetCmdFailedSave(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	mockBackend.EXPECT().Exists().Return(true, nil)
-	mockBackend.EXPECT().Load().Return(data, nil)
-	mockBackend.EXPECT().Save(gomock.Any()).Return(fmt.Errorf("error"))
+	mockBackend.EXPECT().ExistsContext(ctxMatcher).Return(true, nil)
+	mockBackend.EXPECT().LoadContext(ctxMatcher).Return(data, nil)
+	mockBackend.EXPECT().SaveContext(ctxMatcher, gomock.Any()).Return(fmt.Errorf("error"))
 
 	args := []string{"hello"}
 	err = unsetCmd.Args(unsetCmd, args)
