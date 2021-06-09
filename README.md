@@ -22,7 +22,7 @@
   - [Initializing a store](#initializing-a-store)
   - [Storing a secret](#storing-a-secret)
   - [Retrieving a secret](#retrieving-a-secret)
-  - [Listing all keys](#listing-all-keys)
+  - [Listing all secrets](#listing-all-secrets)
   - [Deleting a secret](#deleting-a-secret)
 - [Configuration](#configuration-1)
   - [Configuration file](#configuration-file)
@@ -37,7 +37,7 @@
 # Features
 
 - Stateless command-line tool for Linux/Windows/Darwin
-- All cryptography happens in the client: no passwords, keys or plaintext data over the wire, no key management included
+- All cryptography happens in the client, on your computer: no passwords, keys or plaintext data over the wire, no key management included
 - Key/value interface: `get`/`set`/`unset`
 - Configuration from command-line, configuration file or environment variables (no unexpected defaults!)
 - Multiple backend choices:
@@ -291,17 +291,17 @@ scrt get greeting
 # Output: Hello World
 ```
 
-## Listing all keys
+## Listing all secrets
 
 ```
 scrt list
 ```
 
-List all the keys in the store.
+List the keys of all the secrets in the store.
 
 ### Example
 
-List all the keys in the store, using implicit store configuration (configuration file or environment variables).
+List the keys of all the secrets in the store, using implicit store configuration (configuration file or environment variables).
 
 ```shell
 scrt list
