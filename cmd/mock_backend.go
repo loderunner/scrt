@@ -5,6 +5,7 @@
 package cmd
 
 import (
+	context "context"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
@@ -48,6 +49,21 @@ func (mr *MockBackendMockRecorder) Exists() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Exists", reflect.TypeOf((*MockBackend)(nil).Exists))
 }
 
+// ExistsContext mocks base method.
+func (m *MockBackend) ExistsContext(arg0 context.Context) (bool, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ExistsContext", arg0)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ExistsContext indicates an expected call of ExistsContext.
+func (mr *MockBackendMockRecorder) ExistsContext(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExistsContext", reflect.TypeOf((*MockBackend)(nil).ExistsContext), arg0)
+}
+
 // Load mocks base method.
 func (m *MockBackend) Load() ([]byte, error) {
 	m.ctrl.T.Helper()
@@ -63,6 +79,21 @@ func (mr *MockBackendMockRecorder) Load() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Load", reflect.TypeOf((*MockBackend)(nil).Load))
 }
 
+// LoadContext mocks base method.
+func (m *MockBackend) LoadContext(arg0 context.Context) ([]byte, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "LoadContext", arg0)
+	ret0, _ := ret[0].([]byte)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// LoadContext indicates an expected call of LoadContext.
+func (mr *MockBackendMockRecorder) LoadContext(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LoadContext", reflect.TypeOf((*MockBackend)(nil).LoadContext), arg0)
+}
+
 // Save mocks base method.
 func (m *MockBackend) Save(arg0 []byte) error {
 	m.ctrl.T.Helper()
@@ -75,4 +106,18 @@ func (m *MockBackend) Save(arg0 []byte) error {
 func (mr *MockBackendMockRecorder) Save(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Save", reflect.TypeOf((*MockBackend)(nil).Save), arg0)
+}
+
+// SaveContext mocks base method.
+func (m *MockBackend) SaveContext(arg0 context.Context, arg1 []byte) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SaveContext", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SaveContext indicates an expected call of SaveContext.
+func (mr *MockBackendMockRecorder) SaveContext(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveContext", reflect.TypeOf((*MockBackend)(nil).SaveContext), arg0, arg1)
 }

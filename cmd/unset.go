@@ -37,12 +37,12 @@ var unsetCmd = &cobra.Command{
 		storage := viper.GetString(configKeyStorage)
 		key := args[0]
 
-		b, err := backend.Backends[storage].New(viper.AllSettings())
+		b, err := backend.Backends[storage].NewContext(cmdContext, viper.AllSettings())
 		if err != nil {
 			return err
 		}
 
-		exists, err := b.Exists()
+		exists, err := b.ExistsContext(cmdContext)
 		if err != nil {
 			return fmt.Errorf("could not check store existence: %w", err)
 		}
@@ -50,25 +50,25 @@ var unsetCmd = &cobra.Command{
 			return fmt.Errorf("store does not exist")
 		}
 
-		data, err := b.Load()
+		data, err := b.LoadContext(cmdContext)
 		if err != nil {
 			return fmt.Errorf("could not load data from store: %w", err)
 		}
 
 		password := []byte(viper.GetString(configKeyPassword))
-		s, err := store.ReadStore(password, data)
+		s, err := store.ReadStoreContext(cmdContext, password, data)
 		if err != nil {
 			return fmt.Errorf("could not read store from data: %w", err)
 		}
 
-		s.Unset(key)
+		s.UnsetContext(cmdContext, key)
 
-		data, err = store.WriteStore(password, s)
+		data, err = store.WriteStoreContext(cmdContext, password, s)
 		if err != nil {
 			return fmt.Errorf("could not write store to data: %w", err)
 		}
 
-		err = b.Save(data)
+		err = b.SaveContext(cmdContext, data)
 		if err != nil {
 			return fmt.Errorf("could not save data to store: %w", err)
 		}

@@ -57,8 +57,8 @@ func TestGetCmd(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	mockBackend.EXPECT().Exists().Return(true, nil)
-	mockBackend.EXPECT().Load().Return(data, nil)
+	mockBackend.EXPECT().ExistsContext(ctxMatcher).Return(true, nil)
+	mockBackend.EXPECT().LoadContext(ctxMatcher).Return(data, nil)
 
 	args := []string{"hello"}
 	err = getCmd.Args(getCmd, args)
@@ -90,7 +90,7 @@ func TestGetCmdNotExists(t *testing.T) {
 	viper.Reset()
 	viper.Set(configKeyStorage, "mock")
 
-	mockBackend.EXPECT().Exists().Return(false, nil)
+	mockBackend.EXPECT().ExistsContext(ctxMatcher).Return(false, nil)
 
 	args := []string{"hello"}
 	err := getCmd.Args(getCmd, args)
@@ -113,8 +113,8 @@ func TestGetCmdFailedLoad(t *testing.T) {
 	viper.Reset()
 	viper.Set(configKeyStorage, "mock")
 
-	mockBackend.EXPECT().Exists().Return(true, nil)
-	mockBackend.EXPECT().Load().Return(nil, fmt.Errorf("error"))
+	mockBackend.EXPECT().ExistsContext(ctxMatcher).Return(true, nil)
+	mockBackend.EXPECT().LoadContext(ctxMatcher).Return(nil, fmt.Errorf("error"))
 
 	args := []string{"hello"}
 	err := getCmd.Args(getCmd, args)
@@ -139,8 +139,8 @@ func TestGetCmdFailedInvalidData(t *testing.T) {
 
 	data := []byte("toto")
 
-	mockBackend.EXPECT().Exists().Return(true, nil)
-	mockBackend.EXPECT().Load().Return(data, nil)
+	mockBackend.EXPECT().ExistsContext(ctxMatcher).Return(true, nil)
+	mockBackend.EXPECT().LoadContext(ctxMatcher).Return(data, nil)
 
 	args := []string{"hello"}
 	err := getCmd.Args(getCmd, args)
@@ -172,8 +172,8 @@ func TestGetCmdFailedNoValue(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	mockBackend.EXPECT().Exists().Return(true, nil)
-	mockBackend.EXPECT().Load().Return(data, nil)
+	mockBackend.EXPECT().ExistsContext(ctxMatcher).Return(true, nil)
+	mockBackend.EXPECT().LoadContext(ctxMatcher).Return(data, nil)
 
 	args := []string{"hello"}
 	err = getCmd.Args(getCmd, args)

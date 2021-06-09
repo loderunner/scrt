@@ -14,7 +14,16 @@
 
 package cmd
 
+import (
+	"context"
+
+	"github.com/apex/log"
+)
+
 const (
 	configKeyPassword = "password"
 	configKeyStorage  = "storage"
 )
+
+var cmdContext = context.Background()
+var logger log.Interface

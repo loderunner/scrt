@@ -17,10 +17,16 @@
 package cmd
 
 import (
+	"context"
 	"os"
+	"reflect"
+	"testing"
 
+	"github.com/apex/log"
+	"github.com/apex/log/handlers/memory"
+	"github.com/golang/mock/gomock"
 	"github.com/loderunner/scrt/backend"
-	pflag "github.com/spf13/pflag"
+	"github.com/spf13/pflag"
 )
 
 var osStdin, osStdout *os.File
@@ -49,11 +55,22 @@ func restore() {
 	hijackStdout.Close()
 }
 
+var ctxMatcher = gomock.AssignableToTypeOf(reflect.TypeOf((*context.Context)(nil)).Elem())
+
+func TestMain(m *testing.M) {
+	logger = &log.Logger{Handler: memory.New()}
+	os.Exit(m.Run())
+}
+
 type mockFactory struct {
 	b backend.Backend
 }
 
 func (f mockFactory) New(conf map[string]interface{}) (backend.Backend, error) {
+	return f.NewContext(context.Background(), conf)
+}
+
+func (f mockFactory) NewContext(ctx context.Context, conf map[string]interface{}) (backend.Backend, error) {
 	return f.b, nil
 }
 

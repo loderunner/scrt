@@ -18,14 +18,27 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 
+	"github.com/apex/log"
+	"github.com/apex/log/handlers/cli"
+	"github.com/apex/log/handlers/discard"
 	"github.com/loderunner/scrt/backend"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
 var configFile string
+var verbose bool
+
+type fielder struct {
+	fields map[string]interface{}
+}
+
+func (f fielder) Fields() log.Fields {
+	return f.fields
+}
 
 // RootCmd is the root command for scrt
 var RootCmd = &cobra.Command{
@@ -41,6 +54,17 @@ var RootCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
+
+		// Set logger in context
+		if verbose {
+			logger = &log.Logger{Handler: cli.Default}
+		} else {
+			logger = &log.Logger{Handler: discard.Default}
+		}
+		cmdContext = log.NewContext(
+			cmdContext,
+			logger,
+		)
 
 		// Validate configuration
 		if !viper.IsSet(configKeyStorage) {
@@ -75,6 +99,23 @@ var RootCmd = &cobra.Command{
 		if err != nil {
 			return cmd.FlagErrorFunc()(cmd, err)
 		}
+
+		// Log configuration
+		if viper.ConfigFileUsed() != "" {
+			logger.
+				WithField("path", viper.ConfigFileUsed()).
+				Infof("read configuration file")
+		}
+		settings := make(map[string]interface{})
+		for k, v := range viper.AllSettings() {
+			// Do not log password or unset settings
+			if k != configKeyPassword && !reflect.ValueOf(v).IsZero() {
+				settings[k] = v
+			}
+		}
+		logger.
+			WithFields(fielder{fields: settings}).
+			Info("using configuration")
 
 		// Silence usage on error, since errors are runtime, not config, from
 		// this point onwards
@@ -139,6 +180,7 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+	RootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
 
 	viper.SetEnvPrefix("scrt")
 	viper.AutomaticEnv()

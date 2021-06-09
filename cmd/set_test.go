@@ -46,9 +46,9 @@ func TestSetCmd(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	mockBackend.EXPECT().Exists().Return(true, nil)
-	mockBackend.EXPECT().Load().Return(data, nil)
-	mockBackend.EXPECT().Save(gomock.Any())
+	mockBackend.EXPECT().ExistsContext(ctxMatcher).Return(true, nil)
+	mockBackend.EXPECT().LoadContext(ctxMatcher).Return(data, nil)
+	mockBackend.EXPECT().SaveContext(ctxMatcher, gomock.Any())
 
 	args := []string{"hello", "world"}
 	err = setCmd.Args(setCmd, args)
@@ -84,9 +84,9 @@ func TestSetCmdStdin(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	mockBackend.EXPECT().Exists().Return(true, nil)
-	mockBackend.EXPECT().Load().Return(data, nil)
-	mockBackend.EXPECT().Save(gomock.Any())
+	mockBackend.EXPECT().ExistsContext(ctxMatcher).Return(true, nil)
+	mockBackend.EXPECT().LoadContext(ctxMatcher).Return(data, nil)
+	mockBackend.EXPECT().SaveContext(ctxMatcher, gomock.Any())
 
 	_, err = hijackStdin.WriteString("world")
 	if err != nil {
@@ -116,7 +116,7 @@ func TestSetCmdNotExists(t *testing.T) {
 	viper.Set(configKeyPassword, "toto")
 	viper.Set(configKeyStorage, "mock")
 
-	mockBackend.EXPECT().Exists().Return(false, nil)
+	mockBackend.EXPECT().ExistsContext(ctxMatcher).Return(false, nil)
 
 	args := []string{"hello", "world"}
 	err := setCmd.Args(setCmd, args)
@@ -140,8 +140,8 @@ func TestSetCmdFailedLoad(t *testing.T) {
 	viper.Set(configKeyPassword, "toto")
 	viper.Set(configKeyStorage, "mock")
 
-	mockBackend.EXPECT().Exists().Return(true, nil)
-	mockBackend.EXPECT().Load().Return(nil, fmt.Errorf("error"))
+	mockBackend.EXPECT().ExistsContext(ctxMatcher).Return(true, nil)
+	mockBackend.EXPECT().LoadContext(ctxMatcher).Return(nil, fmt.Errorf("error"))
 
 	args := []string{"hello", "world"}
 	err := setCmd.Args(setCmd, args)
@@ -167,8 +167,8 @@ func TestSetCmdFailedInvalidData(t *testing.T) {
 
 	data := []byte("toto")
 
-	mockBackend.EXPECT().Exists().Return(true, nil)
-	mockBackend.EXPECT().Load().Return(data, nil)
+	mockBackend.EXPECT().ExistsContext(ctxMatcher).Return(true, nil)
+	mockBackend.EXPECT().LoadContext(ctxMatcher).Return(data, nil)
 
 	args := []string{"hello", "world"}
 	err := setCmd.Args(setCmd, args)
@@ -204,8 +204,8 @@ func TestSetCmdFailedNoOverwrite(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	mockBackend.EXPECT().Exists().Return(true, nil)
-	mockBackend.EXPECT().Load().Return(data, nil)
+	mockBackend.EXPECT().ExistsContext(ctxMatcher).Return(true, nil)
+	mockBackend.EXPECT().LoadContext(ctxMatcher).Return(data, nil)
 
 	args := []string{"hello", "world"}
 	err = setCmd.Args(setCmd, args)
@@ -241,9 +241,9 @@ func TestSetCmdOverwrite(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	mockBackend.EXPECT().Exists().Return(true, nil)
-	mockBackend.EXPECT().Load().Return(data, nil)
-	mockBackend.EXPECT().Save(gomock.Any())
+	mockBackend.EXPECT().ExistsContext(ctxMatcher).Return(true, nil)
+	mockBackend.EXPECT().LoadContext(ctxMatcher).Return(data, nil)
+	mockBackend.EXPECT().SaveContext(ctxMatcher, gomock.Any())
 
 	err = setCmd.Flags().Set("overwrite", "true")
 	if err != nil {
@@ -279,9 +279,9 @@ func TestSetCmdFailedSave(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	mockBackend.EXPECT().Exists().Return(true, nil)
-	mockBackend.EXPECT().Load().Return(data, nil)
-	mockBackend.EXPECT().Save(gomock.Any()).Return(fmt.Errorf("error"))
+	mockBackend.EXPECT().ExistsContext(ctxMatcher).Return(true, nil)
+	mockBackend.EXPECT().LoadContext(ctxMatcher).Return(data, nil)
+	mockBackend.EXPECT().SaveContext(ctxMatcher, gomock.Any()).Return(fmt.Errorf("error"))
 
 	args := []string{"hello", "world"}
 	err = setCmd.Args(setCmd, args)

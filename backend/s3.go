@@ -16,6 +16,7 @@ package backend
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -46,7 +47,11 @@ type s3Backend struct {
 type s3Factory struct{}
 
 func (f s3Factory) New(conf map[string]interface{}) (Backend, error) {
-	return newS3(conf)
+	return f.NewContext(context.Background(), conf)
+}
+
+func (f s3Factory) NewContext(ctx context.Context, conf map[string]interface{}) (Backend, error) {
+	return newS3(ctx, conf)
 }
 
 func (f s3Factory) Name() string {
@@ -65,7 +70,9 @@ func init() {
 	Backends["s3"] = s3Factory{}
 }
 
-func newS3(conf map[string]interface{}) (Backend, error) {
+func newS3(ctx context.Context, conf map[string]interface{}) (Backend, error) {
+	logger := getLogger(ctx)
+
 	cfgs := []*aws.Config{}
 
 	opt := readOpt("s3", "bucket-name", conf)
@@ -76,6 +83,7 @@ func newS3(conf map[string]interface{}) (Backend, error) {
 	if !ok {
 		return nil, fmt.Errorf("bucket name is not a string: (%T)%s", bucket, bucket)
 	}
+	logger = logger.WithField("bucket", bucket)
 
 	opt = readOpt("s3", "key", conf)
 	if opt == nil || opt == "" {
@@ -85,6 +93,7 @@ func newS3(conf map[string]interface{}) (Backend, error) {
 	if !ok {
 		return nil, fmt.Errorf("key is not a string: (%T)%s", key, key)
 	}
+	logger = logger.WithField("key", key)
 
 	opt = readOpt("s3", "endpoint-url", conf)
 	if opt != nil && opt != "" {
@@ -94,6 +103,7 @@ func newS3(conf map[string]interface{}) (Backend, error) {
 		}
 		cfg := aws.NewConfig().WithEndpoint(endpoint).WithS3ForcePathStyle(true)
 		cfgs = append(cfgs, cfg)
+		logger = logger.WithField("endpoint URL", endpoint)
 	}
 
 	opt = readOpt("s3", "region", conf)
@@ -104,7 +114,10 @@ func newS3(conf map[string]interface{}) (Backend, error) {
 		}
 		cfg := aws.NewConfig().WithRegion(region)
 		cfgs = append(cfgs, cfg)
+		logger = logger.WithField("region", region)
 	}
+
+	logger.Info("using S3 object")
 
 	sess, err := session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
@@ -122,6 +135,16 @@ func newS3(conf map[string]interface{}) (Backend, error) {
 }
 
 func (s s3Backend) Exists() (bool, error) {
+	return s.ExistsContext(context.Background())
+}
+
+func (s s3Backend) ExistsContext(ctx context.Context) (bool, error) {
+	logger := getLogger(ctx)
+	logger.
+		WithField("bucket", s.bucket).
+		WithField("key", s.key).
+		Info("checking store existence")
+
 	req := (&s3.GetObjectInput{}).
 		SetBucket(s.bucket).
 		SetKey(s.key)
@@ -140,6 +163,16 @@ func (s s3Backend) Exists() (bool, error) {
 }
 
 func (s s3Backend) Save(data []byte) error {
+	return s.SaveContext(context.Background(), data)
+}
+
+func (s s3Backend) SaveContext(ctx context.Context, data []byte) error {
+	logger := getLogger(ctx)
+	logger.
+		WithField("bucket", s.bucket).
+		WithField("key", s.key).
+		Info("writing encrypted data to S3 storage")
+
 	req := (&s3.PutObjectInput{}).
 		SetBucket(s.bucket).
 		SetKey(s.key).
@@ -152,6 +185,16 @@ func (s s3Backend) Save(data []byte) error {
 }
 
 func (s s3Backend) Load() ([]byte, error) {
+	return s.LoadContext(context.Background())
+}
+
+func (s s3Backend) LoadContext(ctx context.Context) ([]byte, error) {
+	logger := getLogger(ctx)
+	logger.
+		WithField("bucket", s.bucket).
+		WithField("key", s.key).
+		Info("reading encrypted data from S3 storage")
+
 	req := (&s3.GetObjectInput{}).
 		SetBucket(s.bucket).
 		SetKey(s.key)

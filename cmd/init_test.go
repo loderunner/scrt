@@ -36,8 +36,8 @@ func TestInitCmd(t *testing.T) {
 	viper.Set(configKeyPassword, "toto")
 	viper.Set(configKeyStorage, "mock")
 
-	mockBackend.EXPECT().Exists().Return(false, nil)
-	mockBackend.EXPECT().Save(gomock.Any())
+	mockBackend.EXPECT().ExistsContext(ctxMatcher).Return(false, nil)
+	mockBackend.EXPECT().SaveContext(ctxMatcher, gomock.Any())
 
 	args := []string{"path"}
 	err := initCmd.RunE(initCmd, args)
@@ -57,7 +57,7 @@ func TestInitOverwrite(t *testing.T) {
 	viper.Set(configKeyPassword, "toto")
 	viper.Set(configKeyStorage, "mock")
 
-	mockBackend.EXPECT().Exists().Return(true, nil)
+	mockBackend.EXPECT().ExistsContext(ctxMatcher).Return(true, nil)
 
 	args := []string{"path"}
 	err := initCmd.RunE(initCmd, args)
@@ -65,8 +65,8 @@ func TestInitOverwrite(t *testing.T) {
 		t.Fatal("expected error")
 	}
 
-	mockBackend.EXPECT().Exists().Return(true, nil)
-	mockBackend.EXPECT().Save(gomock.Any())
+	mockBackend.EXPECT().ExistsContext(ctxMatcher).Return(true, nil)
+	mockBackend.EXPECT().SaveContext(ctxMatcher, gomock.Any())
 
 	err = initCmd.Flags().Set("overwrite", "true")
 	if err != nil {
