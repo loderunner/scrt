@@ -43,6 +43,7 @@
 - Multiple backend choices:
   - Local filesystem
   - S3 (or S3-compatible object storage)
+  - Git repository
   - More to come...
 
 # Installation
