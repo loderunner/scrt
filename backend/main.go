@@ -50,8 +50,12 @@ type Factory interface {
 	New(conf map[string]interface{}) (Backend, error)
 	NewContext(ctx context.Context, conf map[string]interface{}) (Backend, error)
 
+	// Name returns a human-readable name for the backend
 	Name() string
+	// Description returns a short, human-readable description of the backend
 	Description() string
+	// Flags returns a pflag FlagSet containing the options related to the
+	// backend
 	Flags() *pflag.FlagSet
 }
 
