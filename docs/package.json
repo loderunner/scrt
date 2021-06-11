@@ -1,0 +1,23 @@
+{
+  "name": "scrt-docs",
+  "version": "0.3.2",
+  "description": "scrt documentation website",
+  "main": "index.js",
+  "scripts": {
+    "serve": "vuepress dev docs",
+    "build": "vuepress build docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/loderunner/scrt.git"
+  },
+  "author": "Charles Francoise <scrt@scrt.run>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/loderunner/scrt/issues"
+  },
+  "homepage": "https://github.com/loderunner/scrt#readme",
+  "devDependencies": {
+    "vuepress": "^2.0.0-beta.17"
+  }
+}
