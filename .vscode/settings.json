@@ -1,5 +1,13 @@
 {
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "eslint.validate": ["javascript", "typescript"],
   "markdown.extension.toc.levels": "1..2",
+  "eslint.workingDirectories": ["./docs"],
   "go.testEnvVars": {
     "SCRT_TEST_E2E": "y",
     "SCRT_TEST_E2E_S3_ENDPOINT_URL": "http://127.0.0.1:9000",
