@@ -29,7 +29,7 @@ nfpms:
     replacements:
       386: i386
       amd64: x86_64
-    homepage: https://github.com/loderunner/scrt
+    homepage: https://scrt.run
     maintainer: Charles Francoise <scrt@scrt.run>
     description: A secret manager for the command-line
     license: Apache 2.0
@@ -51,7 +51,7 @@ brews:
     commit_author:
       name: Charles Francoise
       email: scrt@scrt.run
-    homepage: "https://github.com/loderunner/scrt"
+    homepage: "https://scrt.run"
     description: "A secret manager for the command-line"
     license: "Apache-2.0"
     install: bin.install "scrt"
