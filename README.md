@@ -62,8 +62,8 @@ sudo cp scrt_1.2.3_linux_x86_64/scrt /usr/local/bin/scrt
 Configure the apt repository:
 
 ```shell
-echo "deb https://loderunner.github.io/scrt-apt /" | sudo tee /etc/apt/sources.list.d/scrt.list
-curl "https://loderunner.github.io/scrt-apt/key.gpg" | sudo apt-key add -
+echo "deb https://apt.scrt.run /" | sudo tee /etc/apt/sources.list.d/scrt.list
+curl "https://apt.scrt.run/key.gpg" | sudo apt-key add -
 ```
 
 Install the binary package:
@@ -75,16 +75,16 @@ sudo apt install scrt
 
 ## `yum` (RHEL/CentOS)
 
-Configure the yum repository:
+Configure the yum repository, in `/etc/yum.repos.d/scrt.repo`:
 
 ```ini
 [scrt]
 name=scrt
-baseurl=https://loderunner.github.io/scrt-yum
+baseurl=https://yum.scrt.run
 repo_gpgcheck=1
 gpgcheck=1
 enabled=1
-gpgkey=https://loderunner.github.io/scrt-yum/key.gpg
+gpgkey=https://yum.scrt.run/key.gpg
 sslverify=1
 metadata_expire=300
 ```
