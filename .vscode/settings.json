@@ -6,5 +6,8 @@
     "SCRT_TEST_E2E_S3_REGION": "us-east-1",
     "AWS_ACCESS_KEY_ID": "minio",
     "AWS_SECRET_ACCESS_KEY": "miniosecret"
+  },
+  "yaml.schemas": {
+    "https://json.schemastore.org/github-workflow.json": ".github/workflows/build.yml"
   }
 }

@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/mattn/go-isatty"
+	isatty "github.com/mattn/go-isatty"
 
 	"github.com/loderunner/scrt/backend"
 	"github.com/loderunner/scrt/store"
