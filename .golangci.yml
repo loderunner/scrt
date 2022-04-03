@@ -3,8 +3,28 @@ run:
 
 linters:
   enable:
-    - golint
+    - deadcode
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - structcheck
+    - typecheck
+    - unused
+    - varcheck
+    - errchkjson
+    - errorlint
+    - goconst
+    - godot
+    - goerr113
     - gofmt
+    - goimports
+    - misspell
+    - prealloc
+    - revive
+    - unconvert
+    - whitespace
 
 issues:
   include:
