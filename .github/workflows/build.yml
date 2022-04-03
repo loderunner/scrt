@@ -38,17 +38,17 @@ jobs:
 
   lint:
     runs-on: ubuntu-latest
-    container: golangci/golangci-lint:v1.39-alpine
     steps:
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.18
       - name: Checkout
         uses: actions/checkout@v2.3.4
-      - name: Cache Go modules
-        uses: actions/cache@v2
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v2
         with:
-          path: ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-      - name: Run linters
-        run: golangci-lint run
+          version: v1.45.2
 
   test:
     runs-on: ubuntu-latest
