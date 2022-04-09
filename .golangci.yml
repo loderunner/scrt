@@ -15,9 +15,7 @@ linters:
     - varcheck
     - errchkjson
     - errorlint
-    - goconst
     - godot
-    - goerr113
     - gofmt
     - goimports
     - misspell

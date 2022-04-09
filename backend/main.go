@@ -22,14 +22,14 @@ import (
 	"github.com/spf13/pflag"
 )
 
-// Backends associates backend type names to constructor functions
+// Backends associates backend type names to constructor functions.
 var Backends = map[string]Factory{}
 
 // BackendNameList is an ordered list of backend names for listing in help
-// message
+// message.
 var BackendNameList = []string{"local", "s3", "git"}
 
-// Backend implements the common backend operations
+// Backend implements the common backend operations.
 type Backend interface {
 	// Exists returns true if a store exists in the backend, false otherwise
 	Exists() (bool, error)
