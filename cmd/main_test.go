@@ -32,7 +32,7 @@ import (
 var osStdin, osStdout *os.File
 var hijackStdin, hijackStdout *os.File
 
-// hijack stdin and stdout for testing
+// hijack stdin and stdout for testing.
 func hijack() {
 	var err error
 	osStdin = os.Stdin
@@ -47,7 +47,7 @@ func hijack() {
 	}
 }
 
-// restore stdin and stdout. Usually deferred right after hijacking
+// restore stdin and stdout. Usually deferred right after hijacking.
 func restore() {
 	os.Stdin = osStdin
 	os.Stdout = osStdout

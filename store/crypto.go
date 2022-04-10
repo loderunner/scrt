@@ -33,7 +33,7 @@ func ReadStore(password []byte, data []byte) (Store, error) {
 	return ReadStoreContext(context.Background(), password, data)
 }
 
-// ReadStoreContext performs ReadStore with a context
+// ReadStoreContext performs ReadStore with a context.
 func ReadStoreContext(ctx context.Context, password []byte, data []byte) (Store, error) {
 	logger := getLogger(ctx)
 
@@ -86,7 +86,7 @@ func WriteStore(password []byte, store Store) ([]byte, error) {
 	return WriteStoreContext(context.Background(), password, store)
 }
 
-// WriteStoreContext performs WriteStore with a context
+// WriteStoreContext performs WriteStore with a context.
 func WriteStoreContext(ctx context.Context, password []byte, store Store) ([]byte, error) {
 	logger := getLogger(ctx)
 
