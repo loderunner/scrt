@@ -80,7 +80,6 @@ func TestS3Exists(t *testing.T) {
 }
 
 func TestS3SaveLoad(t *testing.T) {
-
 	s := store.NewStore()
 	data, _ := store.WriteStore([]byte("password"), s)
 

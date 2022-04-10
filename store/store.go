@@ -31,7 +31,7 @@ func NewStore() Store {
 	return NewStoreContext(context.Background())
 }
 
-// NewStoreContext performs NewStore with a context
+// NewStoreContext performs NewStore with a context.
 func NewStoreContext(ctx context.Context) Store {
 	logger := getLogger(ctx)
 	logger.Info("creating new store")
@@ -45,7 +45,7 @@ func (s Store) Has(key string) bool {
 	return s.HasContext(context.Background(), key)
 }
 
-// HasContext performs Has with a context
+// HasContext performs Has with a context.
 func (s Store) HasContext(ctx context.Context, key string) bool {
 	logger := getLogger(ctx)
 	logger.WithField("key", key).Info("checking key existence")
@@ -53,12 +53,12 @@ func (s Store) HasContext(ctx context.Context, key string) bool {
 	return ok
 }
 
-// List returns all the keys is the Store
+// List returns all the keys is the Store.
 func (s Store) List() []string {
 	return s.ListContext(context.Background())
 }
 
-// ListContext performs List with a context
+// ListContext performs List with a context.
 func (s Store) ListContext(ctx context.Context) []string {
 	logger := getLogger(ctx)
 	logger.Info("listing keys")
@@ -77,7 +77,7 @@ func (s Store) Get(key string) ([]byte, error) {
 	return s.GetContext(context.Background(), key)
 }
 
-// GetContext performs Get with a context
+// GetContext performs Get with a context.
 func (s Store) GetContext(ctx context.Context, key string) ([]byte, error) {
 	logger := getLogger(ctx)
 	logger.WithField("key", key).Info("retrieving value for key")
@@ -93,7 +93,7 @@ func (s Store) Set(key string, val []byte) error {
 	return s.SetContext(context.Background(), key, val)
 }
 
-// SetContext performs Set with a context
+// SetContext performs Set with a context.
 func (s Store) SetContext(ctx context.Context, key string, val []byte) error {
 	logger := getLogger(ctx)
 	logger.WithField("key", key).Info("setting value for key")
@@ -109,7 +109,7 @@ func (s Store) Unset(key string) {
 	s.UnsetContext(context.Background(), key)
 }
 
-// UnsetContext performs Unset with a context
+// UnsetContext performs Unset with a context.
 func (s Store) UnsetContext(ctx context.Context, key string) {
 	logger := getLogger(ctx)
 	logger.WithField("key", key).Info("unsetting value for key")

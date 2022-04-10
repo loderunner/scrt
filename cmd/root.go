@@ -15,6 +15,7 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -40,7 +41,7 @@ func (f fielder) Fields() log.Fields {
 	return f.fields
 }
 
-// RootCmd is the root command for scrt
+// RootCmd is the root command for scrt.
 var RootCmd = &cobra.Command{
 	Use:   "scrt",
 	Short: "A secret manager for the command-line",
@@ -146,7 +147,7 @@ func readConfig(cmd *cobra.Command) error {
 
 	err := viper.ReadInConfig()
 	if err != nil {
-		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+		if !errors.As(err, &viper.ConfigFileNotFoundError{}) {
 			return err
 		}
 	}

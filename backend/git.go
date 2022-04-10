@@ -142,7 +142,7 @@ func newGit(ctx context.Context, conf map[string]interface{}) (Backend, error) {
 
 	err := g.clone(ctx, url, branch)
 	// If the repo is empty, init a new repo
-	if err == transport.ErrEmptyRemoteRepository {
+	if errors.Is(err, transport.ErrEmptyRemoteRepository) {
 		logger.Info("repository is empty")
 		err = g.init(ctx, url, branch)
 	}
@@ -290,7 +290,7 @@ func (g *gitBackend) clone(ctx context.Context, url, branch string) error {
 	logger = logger.WithField("url", url)
 	storage := memory.NewStorage()
 	g.fs = memfs.New()
-	var referenceName plumbing.ReferenceName = ""
+	var referenceName plumbing.ReferenceName
 	if branch != "" {
 		logger = logger.WithField("branch", branch)
 		referenceName = plumbing.NewBranchReferenceName(branch)

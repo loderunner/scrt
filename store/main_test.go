@@ -165,7 +165,6 @@ func TestSetGet(t *testing.T) {
 }
 
 func TestSetGetBinary(t *testing.T) {
-
 	n, err := rand.Read(testBinaryVal)
 	if n != 256 {
 		t.Fatalf("expected 256 bytes, got %d", n)

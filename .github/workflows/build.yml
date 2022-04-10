@@ -3,12 +3,12 @@ name: Build scrt
 on:
   push:
     branches:
-      - "main"
+      - 'main'
     tags-ignore:
-      - "*"
+      - '*'
   pull_request:
     branches:
-      - "**"
+      - '**'
 
 jobs:
   build_docker_e2e_images:
@@ -31,24 +31,24 @@ jobs:
         with:
           file: .github/docker/Dockerfile_git+openssh
           context: .
-          tags: ghcr.io/${{ github.repository_owner }}/scrt-git-test:latest
+          tags: ghcr.io/${{ github.repository_owner }}/scrt-git-test:${{ github.sha }}
           push: true
           secrets: |
             GIT_AUTH_TOKEN=${{ secrets.PUBLISH_GITHUB_TOKEN }}
 
   lint:
     runs-on: ubuntu-latest
-    container: golangci/golangci-lint:v1.39-alpine
     steps:
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.18
       - name: Checkout
         uses: actions/checkout@v2.3.4
-      - name: Cache Go modules
-        uses: actions/cache@v2
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v2
         with:
-          path: ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-      - name: Run linters
-        run: golangci-lint run
+          version: v1.45.2
 
   test:
     runs-on: ubuntu-latest
@@ -57,7 +57,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
-          go-version: 1.16
+          go-version: 1.18
       - name: Checkout
         uses: actions/checkout@v2.3.4
       - name: Cache Go modules
@@ -87,7 +87,7 @@ jobs:
         ports:
           - 9000:9000
       git_openssh:
-        image: ghcr.io/${{ github.repository_owner }}/scrt-git-test
+        image: ghcr.io/${{ github.repository_owner }}/scrt-git-test:${{ github.sha }}
         credentials:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.PUBLISH_GITHUB_TOKEN }}
@@ -133,7 +133,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
-          go-version: 1.16
+          go-version: 1.18
       - name: Checkout
         uses: actions/checkout@v2.3.4
       - name: Cache Go modules
@@ -159,7 +159,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
-          go-version: 1.16
+          go-version: 1.18
       - name: Checkout
         uses: actions/checkout@v2.3.4
       - name: Cache Go modules
