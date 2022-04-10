@@ -46,7 +46,7 @@ jobs:
     permissions: {}
     steps:
       - name: Set up Go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v3
         with:
           go-version: 1.18
       - name: Checkout
@@ -62,7 +62,7 @@ jobs:
     needs: lint
     steps:
       - name: Set up Go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v3
         with:
           go-version: 1.18
       - name: Checkout
@@ -140,7 +140,7 @@ jobs:
           ssh-private-key: ${{ secrets.SCRT_ID_RSA }}
       # Run tests
       - name: Set up Go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v3
         with:
           go-version: 1.18
       - name: Checkout
@@ -167,7 +167,7 @@ jobs:
     needs: lint
     steps:
       - name: Set up Go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v3
         with:
           go-version: 1.18
       - name: Checkout
