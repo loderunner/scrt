@@ -36,6 +36,8 @@ jobs:
           context: .
           tags: ghcr.io/${{ github.repository_owner }}/scrt-git-test:${{ github.sha }}
           push: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           secrets: |
             GIT_AUTH_TOKEN=${{ secrets.GITHUB_TOKEN }}
 
