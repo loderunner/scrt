@@ -37,7 +37,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PUBLISH_GITHUB_TOKEN }}
           NFPM_LINUX_PACKAGES_PASSPHRASE: ${{ secrets.NFPM_LINUX_PACKAGES_PASSPHRASE }}
       - name: Upload release artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: dist
           path: dist
