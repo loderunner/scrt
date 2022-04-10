@@ -9,6 +9,11 @@ on:
   pull_request:
     branches:
       - '**'
+  pull_request_target:
+    types:
+      - opened
+      - edited
+      - synchronize
 
 jobs:
   conventional_pr_title:
