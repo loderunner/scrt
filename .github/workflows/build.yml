@@ -11,8 +11,11 @@ on:
       - '**'
 
 jobs:
-  build_docker_e2e_images:
+  build_docker_e2e_image:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -23,7 +26,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
-          password: ${{ secrets.PUBLISH_GITHUB_TOKEN }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Save public key to file
         run: 'echo "${{ secrets.SCRT_ID_RSA_PUB }}" > scrt_id_rsa.pub'
       - name: Build Git test container
@@ -33,11 +36,14 @@ jobs:
           context: .
           tags: ghcr.io/${{ github.repository_owner }}/scrt-git-test:${{ github.sha }}
           push: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           secrets: |
-            GIT_AUTH_TOKEN=${{ secrets.PUBLISH_GITHUB_TOKEN }}
+            GIT_AUTH_TOKEN=${{ secrets.GITHUB_TOKEN }}
 
   lint:
     runs-on: ubuntu-latest
+    permissions: {}
     steps:
       - name: Set up Go
         uses: actions/setup-go@v2
@@ -52,6 +58,7 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    permissions: {}
     needs: lint
     steps:
       - name: Set up Go
@@ -77,6 +84,7 @@ jobs:
 
   e2e:
     runs-on: ubuntu-latest
+    permissions: {}
     services:
       minio:
         # Use Bitnami image here because default minio image runs the executable
@@ -96,7 +104,7 @@ jobs:
           - 22222:2222
     needs:
       - lint
-      - build_docker_e2e_images
+      - build_docker_e2e_image
     steps:
       # Prepare MinIO
       - name: Create test bucket
@@ -154,6 +162,7 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
+    permissions: {}
     needs: lint
     steps:
       - name: Set up Go
