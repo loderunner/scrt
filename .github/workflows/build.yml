@@ -148,7 +148,7 @@ jobs:
           cat /home/runner/.ssh/known_hosts
           cat /home/runner/.ssh/scrt_id_rsa
       - name: Start SSH Agent
-        uses: webfactory/ssh-agent@v0.5.2
+        uses: webfactory/ssh-agent@v0.5.4
         with:
           ssh-private-key: ${{ secrets.SCRT_ID_RSA }}
       # Run tests
