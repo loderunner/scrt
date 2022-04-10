@@ -5,13 +5,19 @@ updates:
     rebase-strategy: auto
     schedule:
       interval: daily
+    commit-message:
+      prefix: chore(deps)
   - package-ecosystem: docker
     directory: /
     rebase-strategy: auto
     schedule:
       interval: daily
+    commit-message:
+      prefix: chore(deps)
   - package-ecosystem: github-actions
     directory: /
     rebase-strategy: auto
     schedule:
       interval: daily
+    commit-message:
+      prefix: chore(deps)
