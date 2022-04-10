@@ -84,7 +84,8 @@ jobs:
 
   e2e:
     runs-on: ubuntu-latest
-    permissions: {}
+    permissions:
+      packages: read
     services:
       minio:
         # Use Bitnami image here because default minio image runs the executable
@@ -98,7 +99,7 @@ jobs:
         image: ghcr.io/${{ github.repository_owner }}/scrt-git-test:${{ github.sha }}
         credentials:
           username: ${{ github.repository_owner }}
-          password: ${{ secrets.PUBLISH_GITHUB_TOKEN }}
+          password: ${{ secrets.GITHUB_TOKEN }}
         options: '--env PUBLIC_KEY_FILE="/config/scrt_id_rsa.pub" --env USER_NAME=scrt'
         ports:
           - 22222:2222
