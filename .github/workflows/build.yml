@@ -13,7 +13,8 @@ on:
 jobs:
   build_docker_e2e_image:
     runs-on: ubuntu-latest
-    permissions: {}
+    permissions:
+      packages: write
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -39,6 +40,7 @@ jobs:
 
   lint:
     runs-on: ubuntu-latest
+    permissions: {}
     steps:
       - name: Set up Go
         uses: actions/setup-go@v2
@@ -53,6 +55,7 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    permissions: {}
     needs: lint
     steps:
       - name: Set up Go
@@ -78,6 +81,7 @@ jobs:
 
   e2e:
     runs-on: ubuntu-latest
+    permissions: {}
     services:
       minio:
         # Use Bitnami image here because default minio image runs the executable
@@ -155,6 +159,7 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
+    permissions: {}
     needs: lint
     steps:
       - name: Set up Go

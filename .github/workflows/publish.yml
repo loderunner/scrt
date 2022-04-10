@@ -8,6 +8,7 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    permissions: {}
     steps:
       - name: Set up Go
         uses: actions/setup-go@v2
@@ -43,6 +44,7 @@ jobs:
 
   publish-apt:
     runs-on: ubuntu-latest
+    permissions: {}
     needs:
       - release
     steps:
@@ -73,6 +75,7 @@ jobs:
 
   publish-yum:
     runs-on: ubuntu-18.04 # createrepo is missing in Ubuntu 20.04 / restored in 22
+    permissions: {}
     needs:
       - release
     steps:
@@ -103,6 +106,7 @@ jobs:
 
   dockerhub-description:
     runs-on: ubuntu-latest
+    permissions: {}
     needs:
       - release
     steps:
