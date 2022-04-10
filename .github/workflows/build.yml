@@ -6,28 +6,16 @@ on:
       - 'main'
     tags-ignore:
       - '*'
-  pull_request_target:
-    types:
-      - opened
-      - edited
-      - synchronize
+  pull_request:
+    branches:
+      - '**'
 
 jobs:
-  conventional_pr_title:
-    runs-on: ubuntu-latest
-    permissions: {}
-    steps:
-      - uses: amannn/action-semantic-pull-request@v4
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   build_docker_e2e_image:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
-    needs:
-      - conventional_pr_title
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -56,8 +44,6 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     permissions: {}
-    needs:
-      - conventional_pr_title
     steps:
       - name: Set up Go
         uses: actions/setup-go@v3
