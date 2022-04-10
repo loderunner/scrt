@@ -147,7 +147,7 @@ func readConfig(cmd *cobra.Command) error {
 
 	err := viper.ReadInConfig()
 	if err != nil {
-		if !errors.Is(err, viper.ConfigFileNotFoundError{}) {
+		if !errors.As(err, &viper.ConfigFileNotFoundError{}) {
 			return err
 		}
 	}
