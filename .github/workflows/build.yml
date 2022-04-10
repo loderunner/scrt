@@ -13,8 +13,7 @@ on:
 jobs:
   build_docker_e2e_image:
     runs-on: ubuntu-latest
-    permissions:
-      packages: write
+    permissions: {}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
