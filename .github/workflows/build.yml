@@ -6,9 +6,6 @@ on:
       - 'main'
     tags-ignore:
       - '*'
-  pull_request:
-    branches:
-      - '**'
   pull_request_target:
     types:
       - opened
