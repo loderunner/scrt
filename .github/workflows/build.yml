@@ -98,7 +98,7 @@ jobs:
           - 22222:2222
     needs:
       - lint
-      - build_docker_e2e_images
+      - build_docker_e2e_image
     steps:
       # Prepare MinIO
       - name: Create test bucket
