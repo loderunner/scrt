@@ -84,7 +84,8 @@ jobs:
 
   e2e:
     runs-on: ubuntu-latest
-    permissions: {}
+    permissions:
+      packages: read
     services:
       minio:
         # Use Bitnami image here because default minio image runs the executable
