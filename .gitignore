@@ -2,3 +2,7 @@ dist/
 .scrt*
 key.gpg
 /scrt
+
+node_modules
+.temp
+.cache
