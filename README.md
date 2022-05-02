@@ -65,7 +65,7 @@ Configure the apt repository:
 
 ```shell
 echo "deb https://apt.scrt.run /" | sudo tee /etc/apt/sources.list.d/scrt.list
-curl "https://apt.scrt.run/key.gpg" | sudo apt-key add -
+curl "https://apt.scrt.run/key.gpg" | gpg --dearmor > /etc/apt/trusted.gpg.d/scrt.gpg
 ```
 
 Install the binary package:
