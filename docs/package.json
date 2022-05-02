@@ -3,8 +3,8 @@
   "version": "0.3.2",
   "description": "Documentation site for scrt",
   "scripts": {
-    "dev": "vuepress dev docs",
-    "build": "vuepress build docs"
+    "dev": "vuepress dev",
+    "build": "vuepress build"
   },
   "repository": {
     "type": "git",
