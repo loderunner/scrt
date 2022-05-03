@@ -1,22 +1,11 @@
 {
   "name": "scrt-docs",
-  "version": "0.3.2",
-  "description": "Documentation site for scrt",
+  "private": true,
   "scripts": {
-    "dev": "vuepress dev",
-    "build": "vuepress build"
+    "dev": "vuepress-cli dev",
+    "build": "vuepress-cli build"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/loderunner/scrt.git"
-  },
-  "author": "charles.francoise@gmail.com",
-  "license": "Apache-2.0",
-  "bugs": {
-    "url": "https://github.com/loderunner/scrt/issues"
-  },
-  "homepage": "https://scrt.run",
   "dependencies": {
-    "vuepress": "^2.0.0-beta.42"
+    "vuepress": "^2.0.0-beta.43"
   }
 }
