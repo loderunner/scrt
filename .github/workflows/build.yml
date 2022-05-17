@@ -149,7 +149,12 @@ jobs:
           echo ::set-output name=known_host::$(ssh-keyscan -p 22222 -t ecdsa 127.0.0.1)
       - name: Get SSH private key
         id: git_ssh_private_key
-        run: echo "::set-output name=private_key::$(cat .github/docker/scrt_id_rsa)"
+        uses: actions/github-script@v5
+        with:
+          script: |
+            const fs = require('fs')
+            const buf = fs.readFileSync('.github/docker/scrt_id_rsa')
+            core.setOutput('private_key', buf.toString())
       - name: Add private SSH key
         uses: shimataro/ssh-key-action@v2
         with:
