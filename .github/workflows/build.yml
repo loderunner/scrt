@@ -113,6 +113,18 @@ jobs:
       - lint
       - build_docker_e2e_image
     steps:
+      # Setup Go and checkout
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.18
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Cache Go modules
+        uses: actions/cache@v3
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
       # Prepare MinIO
       - name: Create test bucket
         run: docker exec minio mkdir -p /data/test-bucket
@@ -161,17 +173,6 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SCRT_ID_RSA }}
       # Run tests
-      - name: Set up Go
-        uses: actions/setup-go@v3
-        with:
-          go-version: 1.18
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Cache Go modules
-        uses: actions/cache@v3
-        with:
-          path: ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
       - name: Run tests
         env:
           SCRT_TEST_E2E: y
