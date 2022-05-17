@@ -105,7 +105,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: git-openssh-image
-          path: /tmp/git-openssh-image.tar
+          path: /tmp
       - name: Run git-openssh container
         run: |
           docker load --input /tmp/git-openssh-image.tar
