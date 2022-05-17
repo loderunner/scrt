@@ -29,7 +29,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
       - name: Save public key to file
-        run: 'echo "${{ secrets.SCRT_ID_RSA_PUB }}" > scrt_id_rsa.pub'
+        run: 'cp .github/docker/scrt_id_rsa.pub ./scrt_id_rsa.pub'
       - name: Build Git test container
         uses: docker/build-push-action@v3
         with:
@@ -131,16 +131,19 @@ jobs:
             -p 22222:2222 \
             scrt-git-test:${{ github.sha }}
       - name: Get git container SSH public key
-        id: git_ssh_key
+        id: git_ssh_public_key
         run: |
           sleep 3
           echo ::set-output name=known_host::$(ssh-keyscan -p 22222 -t ecdsa 127.0.0.1)
+      - name: Get SSH private key
+        id: git_ssh_private_key
+        run: echo "::set-output name=private_key::$(cat .github/docker/scrt_id_rsa)"
       - name: Add private SSH key
         uses: shimataro/ssh-key-action@v2
         with:
-          key: ${{ secrets.SCRT_ID_RSA }}
+          key: ${{ steps.git_ssh_private_key.outputs.private_key }}
           name: scrt_id_rsa
-          known_hosts: ${{ steps.git_ssh_key.outputs.known_host }}
+          known_hosts: ${{ steps.git_ssh_public_key.outputs.known_host }}
           config: |
             Host scrt-git-test
               HostName 127.0.0.1
