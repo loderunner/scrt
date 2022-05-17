@@ -109,7 +109,7 @@ jobs:
       - name: Run git-openssh container
         run: |
           docker load --input /tmp/git-openssh-image.tar
-          docker run \
+          docker run -d \
             --env PUBLIC_KEY_FILE="/config/scrt_id_rsa.pub" \
             --env USER_NAME=scrt \
             -p 22222:2222 \
