@@ -171,7 +171,7 @@ jobs:
       - name: Start SSH Agent
         uses: webfactory/ssh-agent@v0.5.4
         with:
-          ssh-private-key: ${{ secrets.SCRT_ID_RSA }}
+          ssh-private-key: ${{ steps.git_ssh_private_key.outputs.private_key }}
       # Run tests
       - name: Run tests
         env:
