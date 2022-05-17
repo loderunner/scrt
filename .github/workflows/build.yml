@@ -75,8 +75,10 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
       - name: Test
         run: go test -race -covermode=atomic -coverprofile=coverage.out ./...
+      - name: Install gcov2lcov
+        run: go install github.com/jandelgado/gcov2lcov@latest
       - name: Convert coverage.out to coverage.lcov
-        uses: jandelgado/gcov2lcov-action@v1.0.8
+        run: gcov2lcov -infile coverage.out -outfile coverage.lcov
       - name: Coveralls
         uses: coverallsapp/github-action@1.1.3
         with:
