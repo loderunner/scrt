@@ -21,12 +21,6 @@ jobs:
         uses: actions/checkout@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Save public key to file
         run: 'echo "${{ secrets.SCRT_ID_RSA_PUB }}" > scrt_id_rsa.pub'
       - name: Build Git test container
@@ -34,12 +28,13 @@ jobs:
         with:
           file: .github/docker/Dockerfile_git+openssh
           context: .
-          tags: ghcr.io/${{ github.repository_owner }}/scrt-git-test:${{ github.sha }}
-          push: true
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          secrets: |
-            GIT_AUTH_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          tags: scrt-git-test:${{ github.sha }}
+          outputs: type=docker,dest=/tmp/git-openssh-image.tar
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: git-openssh-image
+          path: /tmp/git-openssh-image.tar
 
   lint:
     runs-on: ubuntu-latest
@@ -98,14 +93,6 @@ jobs:
         options: --name=minio
         ports:
           - 9000:9000
-      git_openssh:
-        image: ghcr.io/${{ github.repository_owner }}/scrt-git-test:${{ github.sha }}
-        credentials:
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-        options: '--env PUBLIC_KEY_FILE="/config/scrt_id_rsa.pub" --env USER_NAME=scrt'
-        ports:
-          - 22222:2222
     needs:
       - lint
       - build_docker_e2e_image
@@ -114,6 +101,19 @@ jobs:
       - name: Create test bucket
         run: docker exec minio mkdir -p /data/test-bucket
       # Prepare Git
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: git-openssh-image
+          path: /tmp/git-openssh-image.tar
+      - name: Run git-openssh container
+        run: |
+          docker load --input /tmp/git-openssh-image.tar
+          docker run \
+            --env PUBLIC_KEY_FILE="/config/scrt_id_rsa.pub" \
+            --env USER_NAME=scrt \
+            -p 22222:2222 \
+            scrt-git-test:${{ github.sha }}
       - name: Get git container SSH public key
         id: git_ssh_key
         run: |
