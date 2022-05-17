@@ -64,8 +64,8 @@ sudo cp scrt_1.2.3_linux_x86_64/scrt /usr/local/bin/scrt
 Configure the apt repository:
 
 ```shell
-echo "deb https://apt.scrt.run /" | sudo tee /etc/apt/sources.list.d/scrt.list
-curl "https://apt.scrt.run/key.gpg" | sudo apt-key add -
+echo "deb [signed-by=/usr/share/keyrings/scrt-archive-keyring.gpg] https://apt.scrt.run /" | sudo tee /etc/apt/sources.list.d/scrt.list
+curl "https://apt.scrt.run/key.gpg" | gpg --dearmor | sudo tee /usr/share/keyrings/scrt-archive-keyring.gpg > /dev/null
 ```
 
 Install the binary package:
