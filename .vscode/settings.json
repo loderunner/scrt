@@ -1,5 +1,7 @@
 {
   "markdown.extension.toc.levels": "1..2",
+  "prettier.prettierPath": "docs/node_modules/prettier",
+  "eslint.workingDirectories": ["docs"],
   "go.testEnvVars": {
     "SCRT_TEST_E2E": "y",
     "SCRT_TEST_E2E_S3_ENDPOINT_URL": "http://127.0.0.1:9000",
