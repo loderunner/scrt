@@ -149,7 +149,7 @@ jobs:
           echo ::set-output name=known_host::$(ssh-keyscan -p 22222 -t ecdsa 127.0.0.1)
       - name: Get SSH private key
         id: git_ssh_private_key
-        uses: actions/github-script@v5
+        uses: actions/github-script@v6
         with:
           script: |
             const fs = require('fs')
