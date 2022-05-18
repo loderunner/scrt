@@ -130,7 +130,7 @@ jobs:
         run: docker exec minio mkdir -p /data/test-bucket
       # Prepare Git
       - name: Download artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: git-openssh-image
           path: /tmp
