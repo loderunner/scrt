@@ -225,6 +225,7 @@ jobs:
         with:
           node-version-file: 'docs/.nvmrc'
           cache: 'npm'
+          cache-dependency-path: docs/package-lock.json
       - name: Install dependencies
         run: npm ci
       - name: Build static website
