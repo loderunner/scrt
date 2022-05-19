@@ -212,8 +212,8 @@ jobs:
   publish-docs:
     runs-on: ubuntu-latest
     permissions: {}
-    needs:
-      - release
+    # needs:
+    #   - release
     defaults:
       run:
         working-directory: docs
