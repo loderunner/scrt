@@ -208,3 +208,34 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
       - name: Build
         run: go build -v .
+
+  publish-docs:
+    runs-on: ubuntu-latest
+    permissions: {}
+    needs:
+      - release
+    defaults:
+      run:
+        working-directory: docs
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Build static website
+        run: npm run build
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v3
+        with:
+          ref: 'gh-pages'
+          path: '${{ env.HOME }}/gh-pages'
+      - name: Rsync built pages
+        run: rsync -avh --delete --exclude CNAME ./docs/.vuepress/dist/ ${{ env.HOME }}/gh-pages/docs/
+      - name: Push website to Github
+        working-directory: '${{ env.HOME }}/gh-pages'
+        run: git add . && git commit -m 'update documentation' && git push
