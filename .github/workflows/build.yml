@@ -211,7 +211,8 @@ jobs:
 
   publish-docs:
     runs-on: ubuntu-latest
-    permissions: {}
+    permissions:
+      contents: write
     # needs:
     #   - release
     steps:
