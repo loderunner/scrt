@@ -214,9 +214,6 @@ jobs:
     permissions: {}
     # needs:
     #   - release
-    defaults:
-      run:
-        working-directory: docs
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -227,16 +224,18 @@ jobs:
           cache: 'npm'
           cache-dependency-path: docs/package-lock.json
       - name: Install dependencies
+        working-directory: docs
         run: npm ci
       - name: Build static website
+        working-directory: docs
         run: npm run build
       - name: Checkout gh-pages branch
         uses: actions/checkout@v3
         with:
           ref: 'gh-pages'
-          path: '${{ github.workspace }}/../gh-pages'
+          path: 'gh-pages'
       - name: Rsync built pages
-        run: rsync -avh --delete --exclude CNAME .vuepress/dist/ ${{ github.workspace }}/../gh-pages/docs/
+        run: rsync -avh --delete --exclude CNAME docs/.vuepress/dist/ gh-pages/docs/
       - name: Push website to Github
-        working-directory: '${{ github.workspace }}/../gh-pages'
+        working-directory: 'gh-pages'
         run: git add . && git commit -m 'update documentation' && git push
