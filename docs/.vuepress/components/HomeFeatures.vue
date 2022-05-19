@@ -17,6 +17,7 @@ const features = computed(() => {
 <template>
   <div v-if="features.length" class="features">
     <div v-for="feature in features" :key="feature.title" class="feature">
+      <img v-if="feature.image" :src="feature.image" />
       <h2>{{ feature.title }}</h2>
       <p>{{ feature.details }}</p>
     </div>
