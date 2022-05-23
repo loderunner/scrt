@@ -5,9 +5,9 @@ heroText: null
 tagline: A command-line secret manager for developers, sysadmins, and devops.
 heroImage: /images/hero.png
 actions:
-  # - text: Get Started
-  #   link: /guide/getting-started.html
-  #   type: primary
+  - text: Get Started
+    link: /guide/installation.html
+    type: primary
   - text: GitHub
     link: //github.com/loderunner/scrt
     type: secondary
