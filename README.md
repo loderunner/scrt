@@ -52,11 +52,11 @@
 
 ## Download binary release
 
-Download the latest finary release for your platform from the [releases page](https://github.com/loderunner/scrt/releases). Decompress the archive to the desired location. E.g.
+Download the latest binary release for your platform from the [releases page](https://github.com/loderunner/scrt/releases). Decompress the archive to the desired location. E.g.
 
 ```shell
-tar xzvf scrt_1.2.3_linux_x86_64.tar.gz
-sudo cp scrt_1.2.3_linux_x86_64/scrt /usr/local/bin/scrt
+tar xzvf scrt_0.3.2_linux_x86_64.tar.gz
+sudo cp scrt_0.3.2_linux_x86_64/scrt /usr/local/bin/scrt
 ```
 
 ## `apt` (Debian/Ubuntu)
@@ -64,8 +64,11 @@ sudo cp scrt_1.2.3_linux_x86_64/scrt /usr/local/bin/scrt
 Configure the apt repository:
 
 ```shell
-echo "deb [signed-by=/usr/share/keyrings/scrt-archive-keyring.gpg] https://apt.scrt.run /" | sudo tee /etc/apt/sources.list.d/scrt.list
-curl "https://apt.scrt.run/key.gpg" | gpg --dearmor | sudo tee /usr/share/keyrings/scrt-archive-keyring.gpg > /dev/null
+echo "deb [signed-by=/usr/share/keyrings/scrt-archive-keyring.gpg] https://apt.scrt.run /" \
+  | sudo tee /etc/apt/sources.list.d/scrt.list
+curl "https://apt.scrt.run/key.gpg" \
+  | gpg --dearmor \
+  | sudo tee /usr/share/keyrings/scrt-archive-keyring.gpg > /dev/null
 ```
 
 Install the binary package:
