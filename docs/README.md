@@ -2,7 +2,7 @@
 home: true
 title: Home
 heroText: null
-tagline: The secret manager for the command line
+tagline: A command-line secret manager for developers, sysadmins, and devops.
 heroImage: /images/hero.png
 actions:
   # - text: Get Started
