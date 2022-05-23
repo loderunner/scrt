@@ -1,0 +1,12 @@
+{
+  "name": "scrt-docs",
+  "private": true,
+  "scripts": {
+    "dev": "vuepress-cli dev",
+    "build": "vuepress-cli build"
+  },
+  "dependencies": {
+    "prettier": "^2.6.2",
+    "vuepress": "^2.0.0-beta.43"
+  }
+}

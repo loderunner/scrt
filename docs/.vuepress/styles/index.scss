@@ -1,0 +1,11 @@
+:root,
+html.dark {
+  --c-brand: #76e5ac;
+  --c-brand-light: #50c98b;
+
+  .home .feature img {
+    max-width: 100%;
+    padding: 10% 30%;
+    box-sizing: border-box;
+  }
+}

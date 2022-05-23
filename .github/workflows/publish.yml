@@ -112,10 +112,48 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Push description to Ducker Hub
+      - name: Push description to Docker Hub
         uses: peter-evans/dockerhub-description@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
           repository: loderunner/scrt
           readme-filepath: ./DOCKER.md
+
+  publish-docs:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    needs:
+      - release
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: 'docs/.nvmrc'
+          cache: 'npm'
+          cache-dependency-path: docs/package-lock.json
+      - name: Install dependencies
+        working-directory: docs
+        run: npm ci
+      - name: Build static website
+        working-directory: docs
+        run: npm run build
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v3
+        with:
+          ref: 'gh-pages'
+          path: 'gh-pages'
+      - name: Rsync built pages
+        run: rsync -avh --delete --exclude CNAME docs/.vuepress/dist/ gh-pages/docs/
+      - name: Push website to Github
+        working-directory: 'gh-pages'
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add .
+          git commit -m "Update documentation"
+          git push

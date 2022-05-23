@@ -1,4 +1,4 @@
-![scrt logo](scrt-logo.png)
+![scrt logo](./docs/.vuepress/public/images/hero.png)
 
 [![Workflow status](https://img.shields.io/github/workflow/status/loderunner/scrt/Build%20scrt?style=flat-square)](https://github.com/loderunner/scrt/actions/workflows/build.yml) [![Coverage Status](https://img.shields.io/coveralls/github/loderunner/scrt?style=flat-square)](https://coveralls.io/github/loderunner/scrt?branch=main) [![Go reference](https://img.shields.io/static/v1?label=%E2%80%8B&message=reference&color=00add8&logo=go&style=flat-square)](https://pkg.go.dev/github.com/loderunner/scrt)
 
@@ -38,10 +38,10 @@
 
 # Features
 
-- Stateless command-line tool for Linux/Windows/Darwin
+- Daemonless command-line tool for Linux/Windows/macOS: no background process required
 - All cryptography happens in the client, on your computer: no passwords, keys or plaintext data over the wire, no key management included
 - Key/value interface: `get`/`set`/`unset`
-- Configuration from command-line, configuration file or environment variables (no unexpected defaults!)
+- Configuration from command line, configuration file or environment variables (no unexpected defaults!)
 - Multiple backend choices:
   - Local filesystem
   - S3 (or S3-compatible object storage)
@@ -143,11 +143,11 @@ Initialize a new store, with `scrt init`.
 ```shell
 scrt init --storage=local \
           --password=p4ssw0rd \
-          --local-path=~/.scrt/store.scrt
+          --local-path=store.scrt
 # store initialized
 ```
 
-This will create an empty store, in a `store.scrt` file located in `.scrt` inside your home directory. The file is encrypted using a secret key derived from the given password.
+This will create an empty store, in a `store.scrt` file. The file is encrypted using a secret key derived from the given password.
 
 The content of the file is unreadable:
 
@@ -164,7 +164,7 @@ Set your configuration in environment variables, so you don't have to type them 
 ```shell
 export SCRT_STORAGE=local
 export SCRT_PASSWORD=p4ssw0rd
-export SCRT_LOCAL_PATH=~/.scrt/store.scrt
+export SCRT_LOCAL_PATH=store.scrt
 ```
 
 ## Using the store
