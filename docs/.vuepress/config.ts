@@ -145,7 +145,11 @@ const head: HeadConfig[] = [
 const navbar: NavbarConfig = [
   {
     text: 'Guide',
-    link: '/guide/',
+    link: '/guide',
+  },
+  {
+    text: 'Reference',
+    children: ['/reference/configuration.md'],
   },
 ]
 
@@ -153,7 +157,13 @@ const sidebar: SidebarConfig = {
   '/guide': [
     {
       text: 'Guide',
-      children: ['/guide/README.md', '/guide/installation.md'],
+      children: [
+        '/guide/README.md',
+        '/guide/installation.md',
+        '/guide/getting-started.md',
+        '/guide/configuration.md',
+        '/guide/faq.md',
+      ],
     },
   ],
 }
