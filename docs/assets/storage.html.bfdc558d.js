@@ -1,0 +1,1 @@
+const e={key:"v-510424f0",path:"/reference/commands/storage.html",title:"storage",lang:"en-US",frontmatter:{sidebarDepth:0},excerpt:"",headers:[],git:{updatedTime:1653411824e3,contributors:[{name:"Charles Francoise",email:"charles.francoise@gmail.com",commits:1}]},filePathRelative:"reference/commands/storage.md"};export{e as data};
