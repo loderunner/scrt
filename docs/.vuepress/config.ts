@@ -149,7 +149,26 @@ const navbar: NavbarConfig = [
   },
   {
     text: 'Reference',
-    children: ['/reference/configuration.md'],
+    children: [
+      {
+        text: 'Commands',
+        children: [
+          '/reference/commands/global.md',
+          '/reference/commands/init.md',
+          '/reference/commands/set.md',
+          '/reference/commands/get.md',
+          '/reference/commands/unset.md',
+        ],
+      },
+      {
+        text: 'Storage',
+        children: [
+          '/reference/storage/local.md',
+          '/reference/storage/s3.md',
+          '/reference/storage/git.md',
+        ],
+      },
+    ],
   },
 ]
 
@@ -163,6 +182,26 @@ const sidebar: SidebarConfig = {
         '/guide/getting-started.md',
         '/guide/configuration.md',
         '/guide/faq.md',
+      ],
+    },
+  ],
+  '/reference': [
+    {
+      text: 'Commands',
+      children: [
+        '/reference/commands/global.md',
+        '/reference/commands/init.md',
+        '/reference/commands/set.md',
+        '/reference/commands/get.md',
+        '/reference/commands/unset.md',
+      ],
+    },
+    {
+      text: 'Storage',
+      children: [
+        '/reference/storage/local.md',
+        '/reference/storage/s3.md',
+        '/reference/storage/git.md',
       ],
     },
   ],
@@ -182,6 +221,11 @@ export default defineUserConfig({
     navbar,
     sidebar,
   }),
+  markdown: {
+    code: {
+      lineNumbers: false,
+    },
+  },
 
   alias: {
     '@theme/HomeFeatures.vue': path.resolve(
