@@ -168,6 +168,16 @@ const navbar: NavbarConfig = [
           '/reference/storage/git.md',
         ],
       },
+      {
+        text: 'Configuration',
+        children: [
+          { text: 'Global', link: '/reference/configuration/README.md#global' },
+          {
+            text: 'Storage',
+            link: '/reference/configuration/README.md#storage',
+          },
+        ],
+      },
     ],
   },
 ]
@@ -202,6 +212,16 @@ const sidebar: SidebarConfig = {
         '/reference/storage/local.md',
         '/reference/storage/s3.md',
         '/reference/storage/git.md',
+      ],
+    },
+    {
+      text: 'Configuration',
+      children: [
+        { text: 'Global', link: '/reference/configuration/README.md#global' },
+        {
+          text: 'Storage',
+          link: '/reference/configuration/README.md#storage',
+        },
       ],
     },
   ],
