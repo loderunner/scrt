@@ -20,15 +20,15 @@ Available Commands:
   unset       Remove the value associated to key in a store
   storage     List storage types and options
   help        Help about any command
+  completion  Generate the autocompletion script for the specified shell
 
 Flags:
   -c, --config string     configuration file
   -h, --help              help for scrt
   -p, --password string   master password to unlock the store
       --storage string    storage type
-  -v, --version           version for scrt
-
-Use "scrt [command] --help" for more information about a command.
+  -v, --verbose           verbose output
+      --version           version for scrt
 ```
 
 ### Global options
