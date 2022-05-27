@@ -1,2 +1,0 @@
-import{_ as t,o as a,c as s,F as r,a as e,e as o}from"./app.3fd7ff3b.js";const c={},n=e("h1",{id:"storage",tabindex:"-1"},[e("a",{class:"header-anchor",href:"#storage","aria-hidden":"true"},"#"),o(" storage")],-1),l=e("div",{class:"language-text ext-text"},[e("pre",{class:"language-text"},[e("code",null,`scrt storage
-`)])],-1),i=e("p",null,"List available storage types and storage-specific options. See storage references for details.",-1);function _(d,g){return a(),s(r,null,[n,l,i],64)}var h=t(c,[["render",_],["__file","storage.html.vue"]]);export{h as default};
