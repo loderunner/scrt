@@ -3,6 +3,8 @@ import { defineClientAppSetup, usePageData } from '@vuepress/client'
 import type { AnalyticsPageData } from '../node'
 
 export default defineClientAppSetup(() => {
+  if (__VUEPRESS_SSR__) return
+
   const pageData = usePageData<AnalyticsPageData>()
   const { analytics } = pageData.value
 

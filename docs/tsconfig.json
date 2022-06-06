@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "types": ["@vuepress/client/types"]
+  },
+  "include": [".vuepress/**/*.ts"],
+  "exclude": [
+    ".vuepress/dist/**/*.ts",
+    ".vuepress/.cache/**/*.ts",
+    ".vuepress/.temp/**/*.ts"
+  ]
+}
