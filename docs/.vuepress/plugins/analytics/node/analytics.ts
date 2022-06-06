@@ -18,9 +18,9 @@ export const analyticsPlugin =
       name: 'analytics-plugin',
     }
 
-    // if (app.env.isDev) {
-    //   return plugin
-    // }
+    if (app.env.isDev) {
+      return plugin
+    }
 
     return {
       ...plugin,
