@@ -2,6 +2,7 @@ import { defineUserConfig } from 'vuepress'
 import { defaultTheme } from '@vuepress/theme-default'
 import { viteBundler } from 'vuepress-vite'
 import path from 'path'
+import { analyticsPlugin } from './plugins/analytics/node/analytics'
 
 import type { HeadConfig, NavbarConfig, SidebarConfig } from 'vuepress-vite'
 
@@ -233,6 +234,13 @@ export default defineUserConfig({
       lineNumbers: false,
     },
   },
+
+  plugins: [
+    analyticsPlugin({
+      dataDomain: 'scrt.run',
+      src: 'https://analytics.scrt.run/js/plausible.js',
+    }),
+  ],
 
   alias: {
     '@theme/HomeFeatures.vue': path.resolve(
