@@ -48,6 +48,7 @@ brews:
     tap:
       owner: loderunner
       name: homebrew-scrt
+    url_template: 'https://homebrew.scrt.run/{{ .Tag }}/{{ .ArtifactName }}'
     commit_author:
       name: Charles Francoise
       email: scrt@scrt.run
