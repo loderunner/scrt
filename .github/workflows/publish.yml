@@ -29,7 +29,7 @@ jobs:
       - name: Create key file
         run: 'echo "${{ secrets.GPG_KEY }}" > key.gpg'
       - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v2
+        uses: goreleaser/goreleaser-action@v3
         with:
           version: latest
           args: release --rm-dist --release-notes=CHANGELOG.md
