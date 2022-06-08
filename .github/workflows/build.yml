@@ -208,3 +208,29 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
       - name: Build
         run: go build -v .
+
+  lint-docs:
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup node
+        uses: ./.github/actions/setup
+      - name: Build static website
+        working-directory: docs
+        run: npm run lint
+
+  build-docs:
+    runs-on: ubuntu-latest
+    permissions: {}
+    needs:
+      - 'lint-docs'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup node
+        uses: ./.github/actions/setup
+      - name: Build static website
+        working-directory: docs
+        run: npm run build
