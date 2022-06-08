@@ -234,3 +234,12 @@ jobs:
       - name: Build static website
         working-directory: docs
         run: npm run build
+
+  test-release-notes:
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Create release notes
+        run: VERSION=v0.3.3 sed -n "/^## ${VERSION:1}/,/^##[^#]/p" ../CHANGELOG.md | sed '$d'
