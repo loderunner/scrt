@@ -216,7 +216,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Setup node
-        uses: ./.github/actions/setup
+        uses: ./.github/actions/setup-node
       - name: Build static website
         working-directory: docs
         run: npm run lint
@@ -230,7 +230,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Setup node
-        uses: ./.github/actions/setup
+        uses: ./.github/actions/setup-node
       - name: Build static website
         working-directory: docs
         run: npm run build
