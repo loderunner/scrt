@@ -3,7 +3,7 @@ name: Publish scrt
 on:
   push:
     tags:
-      - '*'
+      - 'v[0-9]+.[0-9]+.[0-9]+*'
 
 jobs:
   release:
@@ -28,11 +28,13 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
       - name: Create key file
         run: 'echo "${{ secrets.GPG_KEY }}" > key.gpg'
+      - name: Create release notes
+        run: sed -n "/^## ${GITHUB_REF_NAME:1}/,/^##[^#]/p" CHANGELOG.md | sed '$d' > release_notes.md
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v3
         with:
           version: latest
-          args: release --rm-dist --release-notes=CHANGELOG.md
+          args: release --rm-dist --release-notes=release_notes.md
         env:
           GITHUB_TOKEN: ${{ secrets.PUBLISH_GITHUB_TOKEN }}
           NFPM_LINUX_PACKAGES_PASSPHRASE: ${{ secrets.NFPM_LINUX_PACKAGES_PASSPHRASE }}
