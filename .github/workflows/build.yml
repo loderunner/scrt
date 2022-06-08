@@ -242,4 +242,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Create release notes
-        run: VERSION=v0.3.3 sed -n "/^## ${VERSION:1}/,/^##[^#]/p" CHANGELOG.md | sed '$d'
+        run: VERSION_TAG=v0.3.3 echo ${VERSION_TAG:1}
+      - name: Create release notes
+        run: VERSION_TAG=v0.3.3 sed -n "/^## ${VERSION_TAG:1}/,/^##[^#]/p" CHANGELOG.md | sed '$d'
