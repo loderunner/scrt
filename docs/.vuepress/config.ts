@@ -1,7 +1,9 @@
-import { defineUserConfig } from 'vuepress'
-import { defaultTheme } from '@vuepress/theme-default'
-import { viteBundler } from 'vuepress-vite'
 import path from 'path'
+
+import { defaultTheme } from '@vuepress/theme-default'
+import { defineUserConfig } from 'vuepress'
+import { viteBundler } from 'vuepress-vite'
+
 import { analyticsPlugin } from './plugins/analytics/node/analytics'
 
 import type { HeadConfig, NavbarConfig, SidebarConfig } from 'vuepress-vite'

@@ -1,0 +1,6 @@
+out/
+coverage/
+.cache/
+.temp/
+dist/
+!.vuepress

@@ -1,6 +1,6 @@
 import path from 'path'
 
-import type { App, Plugin, PluginObject, Page } from 'vuepress'
+import type { App, Page, Plugin, PluginObject } from 'vuepress'
 
 interface Options {
   dataDomain: string

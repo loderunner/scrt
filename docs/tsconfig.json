@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
     "esModuleInterop": true,
-    "types": ["@vuepress/client/types"]
+    "types": ["@vuepress/client/types"],
+    "jsx": "preserve"
   },
-  "include": [".vuepress/**/*.ts"],
+  "include": [".vuepress/**/*.ts", ".vuepress/**/*.vue"],
   "exclude": [
     ".vuepress/dist/**/*.ts",
     ".vuepress/.cache/**/*.ts",
