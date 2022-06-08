@@ -241,7 +241,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Echo truncated ref name
+        run: echo "${GITHUB_REF_NAME:1}"
+      - name: Echo sed script
+        run: export VERSION_TAG=v0.3.3 && echo "/^## ${VERSION_TAG:1}/,/^##[^#]/p"
       - name: Create release notes
-        run: VERSION_TAG=v0.3.3 echo "/^## ${VERSION_TAG:1}/,/^##[^#]/p"
-      - name: Create release notes
-        run: VERSION_TAG=v0.3.3 sed -n "/^## ${VERSION_TAG:1}/,/^##[^#]/p" CHANGELOG.md | sed '$d'
+        run: export VERSION_TAG=v0.3.3 && sed -n "/^## ${VERSION_TAG:1}/,/^##[^#]/p" CHANGELOG.md | sed '$d'
