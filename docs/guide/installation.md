@@ -28,7 +28,7 @@ sudo apt update
 sudo apt install scrt
 ```
 
-## yum (RHEL/CentOS)
+## yum (RHEL/CentOS/Rocky Linux)
 
 Configure the yum repository, in `/etc/yum.repos.d/scrt.repo`:
 
