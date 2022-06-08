@@ -1,3 +1,7 @@
+---
+description: Frequently Asked Questions about scrt, the secret manager.
+---
+
 # Frequently Asked Questions
 
 ### How do you pronounce `scrt`?

@@ -251,8 +251,7 @@ export default defineUserConfig({
     }),
     seoPlugin({
       hostname: 'scrt.run',
-      fallBackImage: '/images/social.png',
-      autoDescription: true,
+      fallBackImage: 'https://scrt.run/images/social.png',
     }),
   ],
 

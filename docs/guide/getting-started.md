@@ -1,3 +1,7 @@
+---
+description: Get started with scrt, a command-line secret manager for developers, sysadmins and devops. Follow the steps to create your first secrets store, and start securely setting and retrieving secrets.
+---
+
 # Getting Started
 
 This examples in this section will help you set up and start using scrt with a store in a local file.
