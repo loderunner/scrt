@@ -1,0 +1,15 @@
+name: Setup Node
+description: Setup node and install dependencies
+runs:
+  using: composite
+  steps:
+    - name: Setup node
+      uses: actions/setup-node@v3
+      with:
+        node-version-file: 'docs/.nvmrc'
+        cache: 'npm'
+        cache-dependency-path: docs/package-lock.json
+    - name: Install dependencies
+      shell: sh
+      working-directory: docs
+      run: npm ci
