@@ -5,8 +5,13 @@ import { computed } from 'vue'
 
 import type { DefaultThemeHomePageFrontmatter } from '@vuepress/theme-default/lib/shared/index'
 
+type Feature = DefaultThemeHomePageFrontmatter['features'][number] & {
+  image?: string
+}
+type Features = Feature[]
+
 const frontmatter = usePageFrontmatter<DefaultThemeHomePageFrontmatter>()
-const features = computed(() => {
+const features = computed<Features>(() => {
   if (isArray(frontmatter.value.features)) {
     return frontmatter.value.features
   }
