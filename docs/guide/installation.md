@@ -1,5 +1,5 @@
 ---
-description: Find out how to install scrt secret manager on Linux, macOS or Windows. Download a binary release, install from an apt or yum repository, install with Homebrew, or build from source.
+description: Find out how to install scrt, a command-line secret manager for developers, sysadmins and devops, on Linux, macOS or Windows. Download a binary release, install from an apt or yum repository, install with Homebrew, or build from source.
 ---
 
 # Installation
