@@ -13,7 +13,6 @@ import type { HeadConfig, NavbarConfig, SidebarConfig } from 'vuepress-vite'
 const title = 'scrt'
 const description =
   'A command-line secret manager for developers, sysadmins, and devops'
-const baseURL = 'https://scrt.run'
 
 const head: HeadConfig[] = [
   [
