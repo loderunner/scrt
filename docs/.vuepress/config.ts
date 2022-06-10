@@ -9,6 +9,7 @@ import { viteBundler } from 'vuepress-vite'
 
 import { analyticsPlugin } from './plugins/analytics/node/analytics'
 
+import type { ArticleJSONLD, SeoContent } from 'vuepress-plugin-seo2'
 import type { HeadConfig, NavbarConfig, SidebarConfig } from 'vuepress-vite'
 
 const title = 'scrt'
@@ -253,6 +254,12 @@ export default defineUserConfig({
     seoPlugin({
       hostname: 'scrt.run',
       fallBackImage: 'https://scrt.run/images/social.png',
+      ogp: (ogp, page): SeoContent => {
+        return {
+          ...ogp,
+          'og:title': `${page.title} | ${title}`,
+        }
+      },
     }),
     sitemapPlugin({
       hostname: 'https://scrt.run',
