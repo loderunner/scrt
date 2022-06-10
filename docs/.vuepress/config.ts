@@ -4,6 +4,7 @@ import { docsearchPlugin } from '@vuepress/plugin-docsearch'
 import { defaultTheme } from '@vuepress/theme-default'
 import { defineUserConfig } from 'vuepress'
 import { seoPlugin } from 'vuepress-plugin-seo2'
+import { sitemapPlugin } from 'vuepress-plugin-sitemap2'
 import { viteBundler } from 'vuepress-vite'
 
 import { analyticsPlugin } from './plugins/analytics/node/analytics'
@@ -252,6 +253,9 @@ export default defineUserConfig({
     seoPlugin({
       hostname: 'scrt.run',
       fallBackImage: 'https://scrt.run/images/social.png',
+    }),
+    sitemapPlugin({
+      hostname: 'https://scrt.run',
     }),
   ],
 
