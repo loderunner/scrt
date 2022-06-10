@@ -60,3 +60,7 @@ export SCRT_LOCAL_PATH=~/.scrt/store.scrt
 ::: tip
 Refer to your shell interpreter's documentation to set environment variables if you don't use `bash` (`zsh`, `dash`, `tcsh`, etc.)
 :::
+
+#### Related pages
+
+- [Reference > Configuration](../reference/configuration/README.md)
