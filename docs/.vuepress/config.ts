@@ -1,5 +1,6 @@
 import path from 'path'
 
+import { docsearchPlugin } from '@vuepress/plugin-docsearch'
 import { defaultTheme } from '@vuepress/theme-default'
 import { defineUserConfig } from 'vuepress'
 import { viteBundler } from 'vuepress-vite'
@@ -241,6 +242,11 @@ export default defineUserConfig({
     analyticsPlugin({
       dataDomain: 'scrt.run',
       src: 'https://analytics.scrt.run/js/plausible.js',
+    }),
+    docsearchPlugin({
+      appId: '1P1YUYMXKH',
+      apiKey: 'a8c981fb63c6241fb8f73fbba6139e97',
+      indexName: 'scrt',
     }),
   ],
 
