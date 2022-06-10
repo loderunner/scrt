@@ -8,4 +8,10 @@ html.dark {
     padding: 10% 30%;
     box-sizing: border-box;
   }
+
+  .home .hero h1 {
+    font-size: 2.3rem;
+    font-weight: 500;
+    color: var(--c-text-lightest);
+  }
 }
