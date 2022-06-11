@@ -1,3 +1,7 @@
+---
+description: Frequently Asked Questions about scrt, a command-line secret manager for developers, sysadmins and devops.
+---
+
 # Frequently Asked Questions
 
 ### How do you pronounce `scrt`?

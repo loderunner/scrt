@@ -1,8 +1,9 @@
 ---
 home: true
 title: Home
-heroText: null
-tagline: A command-line secret manager for developers, sysadmins, and devops.
+heroText: A command-line secret manager for developers, sysadmins, and devops
+tagline: null
+description: A command-line secret manager for developers, sysadmins, and devops
 heroImage: /images/hero.png
 actions:
   - text: Get Started

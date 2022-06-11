@@ -1,6 +1,10 @@
+---
+description: scrt is a secret manager for the command line. You can encrypt and decrypt secrets from the command line, choosing between a variety of secure storage backends, locally, or remotely over the network. The purpose of scrt is to provide developers, sysadmins and devops with a reliable and secure tool to manage secrets in projects, while avoiding GUI-centered tools, expensive cloud-based services and complex self-hosted solutions.
+---
+
 # Introduction
 
-**scrt** is a secret manager for the command line. You can encrypt and decrypt secrets from the command line, choosing between a variety of secure storage backends, locally or remotely available over the network.
+**scrt** is a secret manager for the command line. You can encrypt and decrypt secrets from the command line, choosing between a variety of secure storage backends, locally, or remotely over the network.
 
 The purpose of scrt is to provide developers, sysadmins and devops with a reliable and secure tool to manage secrets in projects, while avoiding GUI-centered tools, expensive cloud-based services and complex self-hosted solutions.
 

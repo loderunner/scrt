@@ -1,3 +1,7 @@
+---
+description: Learn to configure scrt, a command-line secret manager for developers, sysadmins and devops. Use configuration files and environment variables to configure scrt for usage in your projects.
+---
+
 # Configuration
 
 Repeating the global options each time the `scrt` command is invoked can be verbose. Also, some options — like the store password — shouldn't be used on the command line on a shared computer, to avoid security issues.
@@ -56,3 +60,7 @@ export SCRT_LOCAL_PATH=~/.scrt/store.scrt
 ::: tip
 Refer to your shell interpreter's documentation to set environment variables if you don't use `bash` (`zsh`, `dash`, `tcsh`, etc.)
 :::
+
+#### Related pages
+
+- [Reference > Configuration](../reference/configuration/README.md)

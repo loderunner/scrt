@@ -1,3 +1,7 @@
+---
+description: Find out how to install scrt, a command-line secret manager for developers, sysadmins and devops, on Linux, macOS or Windows. Download a binary release, install from an apt or yum repository, install with Homebrew, or build from source.
+---
+
 # Installation
 
 ## Download binary release
@@ -5,8 +9,8 @@
 Download the latest binary release for your platform from the [releases page](https://github.com/loderunner/scrt/releases). Decompress the archive to the desired location. E.g.
 
 ```shell
-tar xzvf scrt_0.3.2_linux_x86_64.tar.gz
-sudo cp scrt_0.3.2_linux_x86_64/scrt /usr/local/bin/scrt
+tar xzvf scrt_0.3.3_linux_x86_64.tar.gz
+sudo cp scrt_0.3.3_linux_x86_64/scrt /usr/local/bin/scrt
 ```
 
 ## apt (Debian/Ubuntu)

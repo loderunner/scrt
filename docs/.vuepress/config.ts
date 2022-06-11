@@ -3,15 +3,18 @@ import path from 'path'
 import { docsearchPlugin } from '@vuepress/plugin-docsearch'
 import { defaultTheme } from '@vuepress/theme-default'
 import { defineUserConfig } from 'vuepress'
+import { seoPlugin } from 'vuepress-plugin-seo2'
+import { sitemapPlugin } from 'vuepress-plugin-sitemap2'
 import { viteBundler } from 'vuepress-vite'
 
 import { analyticsPlugin } from './plugins/analytics/node/analytics'
 
+import type { SeoContent } from 'vuepress-plugin-seo2'
 import type { HeadConfig, NavbarConfig, SidebarConfig } from 'vuepress-vite'
 
 const title = 'scrt'
-const description = 'The secret manager for the command line'
-const baseURL = 'https://scrt.run'
+const description =
+  'A command-line secret manager for developers, sysadmins, and devops'
 
 const head: HeadConfig[] = [
   [
@@ -128,22 +131,22 @@ const head: HeadConfig[] = [
     { name: 'msapplication-TileImage', content: '/images/favicon-144.png' },
   ],
   ['meta', { name: 'theme-color', content: '#ffffff' }],
-  ['meta', { property: 'og:type', content: 'website' }],
-  ['meta', { property: 'og:url', content: baseURL }],
-  ['meta', { property: 'og:title', content: title }],
-  ['meta', { property: 'og:description', content: description }],
-  ['meta', { property: 'og:image', content: `${baseURL}/images/social.png` }],
-  ['meta', { property: 'twitter:card', content: 'summary_large_image' }],
-  ['meta', { property: 'twitter:url', content: baseURL }],
-  ['meta', { property: 'twitter:title', content: title }],
-  ['meta', { property: 'twitter:description', content: description }],
-  [
-    'meta',
-    {
-      property: 'twitter:image',
-      content: `${baseURL}/images/social.png`,
-    },
-  ],
+  // ['meta', { property: 'og:type', content: 'website' }],
+  // ['meta', { property: 'og:url', content: baseURL }],
+  // ['meta', { property: 'og:title', content: title }],
+  // ['meta', { property: 'og:description', content: description }],
+  // ['meta', { property: 'og:image', content: `${baseURL}/images/social.png` }],
+  // ['meta', { property: 'twitter:card', content: 'summary_large_image' }],
+  // ['meta', { property: 'twitter:url', content: baseURL }],
+  // ['meta', { property: 'twitter:title', content: title }],
+  // ['meta', { property: 'twitter:description', content: description }],
+  // [
+  //   'meta',
+  //   {
+  //     property: 'twitter:image',
+  //     content: `${baseURL}/images/social.png`,
+  //   },
+  // ],
 ]
 
 const navbar: NavbarConfig = [
@@ -247,6 +250,20 @@ export default defineUserConfig({
       appId: '1P1YUYMXKH',
       apiKey: 'a8c981fb63c6241fb8f73fbba6139e97',
       indexName: 'scrt',
+    }),
+    seoPlugin({
+      hostname: 'scrt.run',
+      canonical: 'https://scrt.run',
+      fallBackImage: 'https://scrt.run/images/social.png',
+      ogp: (ogp, page): SeoContent => {
+        return {
+          ...ogp,
+          'og:title': `${page.title} | ${title}`,
+        }
+      },
+    }),
+    sitemapPlugin({
+      hostname: 'https://scrt.run',
     }),
   ],
 
