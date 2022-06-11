@@ -253,6 +253,7 @@ export default defineUserConfig({
     }),
     seoPlugin({
       hostname: 'scrt.run',
+      canonical: 'https://scrt.run',
       fallBackImage: 'https://scrt.run/images/social.png',
       ogp: (ogp, page): SeoContent => {
         return {
