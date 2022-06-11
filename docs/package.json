@@ -7,7 +7,7 @@
     "lint": "eslint --max-warnings=0 --ext .js,.json,.ts,.vue ."
   },
   "dependencies": {
-    "@typescript-eslint/eslint-plugin": "5.16.0",
+    "@typescript-eslint/eslint-plugin": "5.27.1",
     "@typescript-eslint/parser": "5.27.1",
     "@vuepress/plugin-docsearch": "2.0.0-beta.46",
     "eslint": "8.17.0",
