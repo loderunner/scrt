@@ -9,7 +9,7 @@ import { viteBundler } from 'vuepress-vite'
 
 import { analyticsPlugin } from './plugins/analytics/node/analytics'
 
-import type { ArticleJSONLD, SeoContent } from 'vuepress-plugin-seo2'
+import type { SeoContent } from 'vuepress-plugin-seo2'
 import type { HeadConfig, NavbarConfig, SidebarConfig } from 'vuepress-vite'
 
 const title = 'scrt'
