@@ -177,9 +177,7 @@ const navbar: NavbarConfig = [
       },
       {
         text: 'Configuration',
-        children: [
-          { text: 'Reference', link: '/reference/configuration/README.md' },
-        ],
+        children: [{ text: 'Reference', link: '/reference/configuration/' }],
       },
     ],
   },
@@ -200,24 +198,29 @@ const sidebar: SidebarConfig = {
   ],
   '/reference': [
     {
-      text: 'Commands',
+      text: 'Reference',
       children: [
-        '/reference/commands/global.md',
-        '/reference/commands/init.md',
-        '/reference/commands/set.md',
-        '/reference/commands/get.md',
-        '/reference/commands/unset.md',
+        {
+          text: 'Commands',
+          children: [
+            '/reference/commands/global.md',
+            '/reference/commands/init.md',
+            '/reference/commands/set.md',
+            '/reference/commands/get.md',
+            '/reference/commands/unset.md',
+          ],
+        },
+        {
+          text: 'Storage',
+          children: [
+            '/reference/storage/local.md',
+            '/reference/storage/s3.md',
+            '/reference/storage/git.md',
+          ],
+        },
+        '/reference/configuration/README.md',
       ],
     },
-    {
-      text: 'Storage',
-      children: [
-        '/reference/storage/local.md',
-        '/reference/storage/s3.md',
-        '/reference/storage/git.md',
-      ],
-    },
-    '/reference/configuration/README.md',
   ],
 }
 
