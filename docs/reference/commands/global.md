@@ -35,6 +35,6 @@ Flags:
 
 **`-c`**, **`--config`:** Path to a YAML [Configuration file](/guide/configuration.md)
 
-**`--storage`:** storage type, see [Storage types](/reference/storage.md) for details.
+**`--storage`:** storage type, see Reference for details.
 
 **`-p`**, **`--password`:** password to the store. The argument will be used to derive a key, to decrypt and encrypt the data in the store.
