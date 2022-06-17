@@ -17,7 +17,7 @@
     "eslint-plugin-vue": "9.1.1",
     "prettier": "2.7.1",
     "vuepress": "2.0.0-beta.48",
-    "vuepress-plugin-seo2": "2.0.0-beta.82",
+    "vuepress-plugin-seo2": "2.0.0-beta.83",
     "vuepress-plugin-sitemap2": "2.0.0-beta.82"
   }
 }
