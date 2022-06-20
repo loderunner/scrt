@@ -24,7 +24,7 @@ export const analyticsPlugin =
 
     return {
       ...plugin,
-      clientAppSetupFiles: [path.resolve(__dirname, '../client/enhance.ts')],
+      clientConfigFile: path.resolve(__dirname, '../client/enhance.ts'),
       extendsPage: (page: Page<AnalyticsPageData>) => {
         page.data.analytics = { ...options }
       },

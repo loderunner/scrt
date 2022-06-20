@@ -245,10 +245,6 @@ export default defineUserConfig({
   },
 
   plugins: [
-    analyticsPlugin({
-      dataDomain: 'scrt.run',
-      src: 'https://analytics.scrt.run/js/plausible.js',
-    }),
     docsearchPlugin({
       appId: '1P1YUYMXKH',
       apiKey: 'a8c981fb63c6241fb8f73fbba6139e97',
@@ -267,6 +263,10 @@ export default defineUserConfig({
     }),
     sitemapPlugin({
       hostname: 'https://scrt.run',
+    }),
+    analyticsPlugin({
+      dataDomain: 'scrt.run',
+      src: 'https://analytics.scrt.run/js/plausible.js',
     }),
   ],
 
