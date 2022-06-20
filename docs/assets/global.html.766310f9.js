@@ -1,4 +1,4 @@
-import{_ as n,r as s,o as a,c as l,a as e,b as r,w as i,d as c,e as t}from"./app.0486a86a.js";const d={},h=c(`<h1 id="global" tabindex="-1"><a class="header-anchor" href="#global" aria-hidden="true">#</a> Global</h1><p>Use <code>scrt --help</code> to output a full help message.</p><div class="language-text ext-text"><pre class="language-text"><code>A secret manager for the command-line
+import{_ as n,r as s,o as a,c as l,a as e,b as r,w as i,d as c,e as t}from"./app.256a5158.js";const d={},h=c(`<h1 id="global" tabindex="-1"><a class="header-anchor" href="#global" aria-hidden="true">#</a> Global</h1><p>Use <code>scrt --help</code> to output a full help message.</p><div class="language-text ext-text"><pre class="language-text"><code>A secret manager for the command-line
 
 Usage:
   scrt [command]
