@@ -254,6 +254,7 @@ export default defineUserConfig({
       hostname: 'scrt.run',
       canonical: 'https://scrt.run',
       fallBackImage: 'https://scrt.run/images/social.png',
+      twitterID: '@loderunnr',
       ogp: (ogp, page): SeoContent => {
         return {
           ...ogp,
