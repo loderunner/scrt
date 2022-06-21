@@ -1,8 +1,11 @@
 {
   "compilerOptions": {
+    "target": "ESNext",
     "esModuleInterop": true,
     "types": ["@vuepress/client/types"],
-    "jsx": "preserve"
+    "jsx": "preserve",
+    "skipLibCheck": true,
+    "moduleResolution": "node"
   },
   "include": [".vuepress/**/*.ts", ".vuepress/**/*.vue"],
   "exclude": [
