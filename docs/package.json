@@ -4,7 +4,8 @@
   "scripts": {
     "dev": "vuepress-cli dev",
     "build": "vuepress-cli build",
-    "lint": "eslint --max-warnings=0 --ext .js,.json,.ts,.vue ."
+    "lint": "eslint --max-warnings=0 --ext .js,.json,.ts,.vue .",
+    "tsc": "tsc --noEmit"
   },
   "dependencies": {
     "@typescript-eslint/eslint-plugin": "5.29.0",

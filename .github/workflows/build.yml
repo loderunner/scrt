@@ -217,15 +217,28 @@ jobs:
         uses: actions/checkout@v3
       - name: Setup node
         uses: ./.github/actions/setup-node
-      - name: Build static website
+      - name: Lint documentation
         working-directory: docs
         run: npm run lint
+
+  tsc-check-docs:
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup node
+        uses: ./.github/actions/setup-node
+      - name: Run Typescript compiler
+        working-directory: docs
+        run: npm run tsc
 
   build-docs:
     runs-on: ubuntu-latest
     permissions: {}
     needs:
       - 'lint-docs'
+      - 'tsc-check-docs'
     steps:
       - name: Checkout
         uses: actions/checkout@v3
