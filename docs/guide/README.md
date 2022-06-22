@@ -8,6 +8,10 @@ description: scrt is a secret manager for the command line. You can encrypt and 
 
 The purpose of scrt is to provide developers, sysadmins and devops with a reliable and secure tool to manage secrets in projects, while avoiding GUI-centered tools, expensive cloud-based services and complex self-hosted solutions.
 
+::: warning
+This project is currently under development and not production ready. Use at your own risk.
+:::
+
 ## How it works
 
 scrt keeps a collection of secrets inside a _store_, a single encrypted file, stored locally on your computer, or remotely over the network.
