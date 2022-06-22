@@ -14,4 +14,16 @@ html.dark {
     font-weight: 500;
     color: var(--c-text-lightest);
   }
+
+  .home div[class*='language-'] {
+    margin: 5% 10%;
+    box-shadow: rgba(0, 0, 0, 0.55) 0px 20px 68px 0px;
+  }
+
+  @media (max-width: 719px) {
+    .home div[class*='language-'] {
+      margin: 0;
+      box-shadow: rgba(0, 0, 0, 0.55) 0px 20px 68px 0px;
+    }
+  }
 }

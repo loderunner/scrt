@@ -33,3 +33,17 @@ features:
     details: 'NIST-approved, industry-grade cryptography standards: AES-256 encryption and Argon2id key derivation'
 footer: Copyright © Charles Francoise 2021
 ---
+
+### Secure secret management from the command line
+
+```sh
+# Set store password in environment
+$ export SCRT_PASSWORD=*******
+
+# Add a secret to the store
+$ scrt set greeting 'Good news, everyone!'
+
+# Retrieve the secret from the store
+$ scrt get greeting
+Good news, everyone!
+```
