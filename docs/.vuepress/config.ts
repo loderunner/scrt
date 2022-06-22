@@ -181,6 +181,10 @@ const navbar: NavbarConfig = [
       },
     ],
   },
+  {
+    text: 'GitHub',
+    link: '//github.com/loderunner/scrt',
+  },
 ]
 
 const sidebar: SidebarConfig = {
