@@ -5,6 +5,7 @@
 `scrt` is a command-line secret manager for developers, sysadmins and devops. `scrt` aims to provide command-line users with a secure way of storing and retrieving secrets, while retaining control of the storage.
 
 > **Warning**
+> 
 > This project is currently under development and not production ready. Use at your own risk.
 
 # Documentation
