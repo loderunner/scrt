@@ -11,6 +11,20 @@ on:
       - '**'
 
 jobs:
+  test-scrt-action:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: scrt get version
+        id: scrt
+        uses: ./.github/actions/scrt
+        with:
+          password: ${{ secrets.SCRT_PASSWORD }}
+          key: toto
+      - name: echo scrt version
+        run: echo "${{ steps.scrt.outputs.secret }}"
+
   build_docker_e2e_image:
     runs-on: ubuntu-latest
     permissions:
