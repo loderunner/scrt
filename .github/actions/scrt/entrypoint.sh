@@ -1,6 +1,6 @@
 #!/bin/sh -l
 
-key=$0
+key=$1
 
 echo "Retrieving secret for $key"
 secret="$(/scrt get $key)"
