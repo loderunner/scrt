@@ -1,4 +1,5 @@
 #!/bin/sh -l
+set -e
 
 key=$1
 
