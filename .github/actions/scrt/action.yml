@@ -16,5 +16,4 @@ runs:
   env:
     SCRT_PASSWORD: ${{ inputs.password }}
   args:
-    - get
     - ${{ inputs.key }}
