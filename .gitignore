@@ -1,7 +1,6 @@
 .DS_Store
 
 dist/
-.scrt*
 key.gpg
 /scrt
 

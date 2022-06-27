@@ -1,0 +1,19 @@
+name: Get secret
+description: Retrieve secret stored with scrt
+inputs:
+  password:
+    description: The password to the scrt store
+    required: true
+  key:
+    description: The key identifier of the secret to retrieve
+    required: true
+outputs:
+  secret:
+    description: The secret retrieved from the store
+runs:
+  using: docker
+  image: Dockerfile
+  env:
+    SCRT_PASSWORD: ${{ inputs.password }}
+  args:
+    - ${{ inputs.key }}
