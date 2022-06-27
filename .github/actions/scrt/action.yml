@@ -12,7 +12,7 @@ outputs:
     description: The secret retrieved from the store
 runs:
   using: docker
-  image: 'loderunner/scrt:0.3.3'
+  image: Dockerfile
   env:
     SCRT_PASSWORD: ${{ inputs.password }}
   args:
