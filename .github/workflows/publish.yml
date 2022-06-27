@@ -10,6 +10,36 @@ jobs:
     runs-on: ubuntu-latest
     permissions: {}
     steps:
+      - name: scrt get DOCKERHUB_USERNAME
+        id: scrt-dockerhub-username
+        uses: ./.github/actions/scrt
+        with:
+          password: ${{ secrets.SCRT_PASSWORD }}
+          key: DOCKERHUB_USERNAME
+      - name: scrt get DOCKERHUB_TOKEN
+        id: scrt-dockerhub-token
+        uses: ./.github/actions/scrt
+        with:
+          password: ${{ secrets.SCRT_PASSWORD }}
+          key: DOCKERHUB_TOKEN
+      - name: scrt get GPG_KEY
+        id: scrt-gpg-key
+        uses: ./.github/actions/scrt
+        with:
+          password: ${{ secrets.SCRT_PASSWORD }}
+          key: GPG_KEY
+      - name: scrt get PUBLISH_GITHUB_TOKEN
+        id: scrt-publish-github-token
+        uses: ./.github/actions/scrt
+        with:
+          password: ${{ secrets.SCRT_PASSWORD }}
+          key: PUBLISH_GITHUB_TOKEN
+      - name: scrt get NFPM_LINUX_PACKAGES_PASSPHRASE
+        id: scrt-nfpm-linux-packages-passphrase
+        uses: ./.github/actions/scrt
+        with:
+          password: ${{ secrets.SCRT_PASSWORD }}
+          key: NFPM_LINUX_PACKAGES_PASSPHRASE
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
@@ -17,8 +47,8 @@ jobs:
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          username: ${{ steps.scrt-dockerhub-username.outputs.secret }}
+          password: ${{ steps.scrt-dockerhub-token.outputs.secret }}
       - name: Checkout
         uses: actions/checkout@v3
       - name: Cache Go modules
@@ -27,7 +57,7 @@ jobs:
           path: ~/go/pkg/mod
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
       - name: Create key file
-        run: 'echo "${{ secrets.GPG_KEY }}" > key.gpg'
+        run: 'echo "${{ steps.gpg-key.outputs.secret }}" > key.gpg'
       - name: Create release notes
         run: sed -n "/^## ${GITHUB_REF_NAME:1}/,/^##[^#]/p" CHANGELOG.md | sed '$d' > release_notes.md
       - name: Run GoReleaser
@@ -36,8 +66,8 @@ jobs:
           version: latest
           args: release --rm-dist --release-notes=release_notes.md
         env:
-          GITHUB_TOKEN: ${{ secrets.PUBLISH_GITHUB_TOKEN }}
-          NFPM_LINUX_PACKAGES_PASSPHRASE: ${{ secrets.NFPM_LINUX_PACKAGES_PASSPHRASE }}
+          GITHUB_TOKEN: ${{ steps.scrt-publish-github-token.outputs.secret }}
+          NFPM_LINUX_PACKAGES_PASSPHRASE: ${{ steps.scrt-nfpm-linux-packages-passphrase.outputs.secret }}
       - name: Upload release artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -50,6 +80,24 @@ jobs:
     needs:
       - release
     steps:
+      - name: scrt get GPG_KEY
+        id: scrt-gpg-key
+        uses: ./.github/actions/scrt
+        with:
+          password: ${{ secrets.SCRT_PASSWORD }}
+          key: GPG_KEY
+      - name: scrt get PUBLISH_GITHUB_TOKEN
+        id: scrt-publish-github-token
+        uses: ./.github/actions/scrt
+        with:
+          password: ${{ secrets.SCRT_PASSWORD }}
+          key: PUBLISH_GITHUB_TOKEN
+      - name: scrt get NFPM_LINUX_PACKAGES_PASSPHRASE
+        id: scrt-nfpm-linux-packages-passphrase
+        uses: ./.github/actions/scrt
+        with:
+          password: ${{ secrets.SCRT_PASSWORD }}
+          key: NFPM_LINUX_PACKAGES_PASSPHRASE
       - name: Checkout
         uses: actions/checkout@v3
       - name: Install tools
@@ -60,13 +108,13 @@ jobs:
           name: dist
           path: dist
       - name: Create key file
-        run: 'echo "${{ secrets.GPG_KEY }}" > key.gpg'
+        run: 'echo "${{ steps.gpg-key.outputs.secret }}" > key.gpg'
       - name: Publish to apt repository
         run: .scripts/publish_apt
         env:
           KEY_FILE: key.gpg
-          PASSPHRASE: ${{ secrets.NFPM_LINUX_PACKAGES_PASSPHRASE }}
-          GITHUB_TOKEN: ${{ secrets.PUBLISH_GITHUB_TOKEN }}
+          PASSPHRASE: ${{ steps.scrt-nfpm-linux-packages-passphrase.outputs.secret }}
+          GITHUB_TOKEN: ${{ steps.scrt-publish-github-token.outputs.secret }}
           APT_REPOSITORY: loderunner/scrt-apt
           DEST_DIR: ${{ runner.temp }}/scrt-apt
           SIG_EMAIL: scrt@scrt.run
@@ -81,6 +129,24 @@ jobs:
     needs:
       - release
     steps:
+      - name: scrt get GPG_KEY
+        id: scrt-gpg-key
+        uses: ./.github/actions/scrt
+        with:
+          password: ${{ secrets.SCRT_PASSWORD }}
+          key: GPG_KEY
+      - name: scrt get PUBLISH_GITHUB_TOKEN
+        id: scrt-publish-github-token
+        uses: ./.github/actions/scrt
+        with:
+          password: ${{ secrets.SCRT_PASSWORD }}
+          key: PUBLISH_GITHUB_TOKEN
+      - name: scrt get NFPM_LINUX_PACKAGES_PASSPHRASE
+        id: scrt-nfpm-linux-packages-passphrase
+        uses: ./.github/actions/scrt
+        with:
+          password: ${{ secrets.SCRT_PASSWORD }}
+          key: NFPM_LINUX_PACKAGES_PASSPHRASE
       - name: Checkout
         uses: actions/checkout@v3
       - name: Install tools
@@ -91,13 +157,13 @@ jobs:
           name: dist
           path: dist
       - name: Create key file
-        run: 'echo "${{ secrets.GPG_KEY }}" > key.gpg'
+        run: 'echo "${{ steps.gpg-key.outputs.secret }}" > key.gpg'
       - name: Publish to yum repository
         run: .scripts/publish_yum
         env:
           KEY_FILE: key.gpg
-          PASSPHRASE: ${{ secrets.NFPM_LINUX_PACKAGES_PASSPHRASE }}
-          GITHUB_TOKEN: ${{ secrets.PUBLISH_GITHUB_TOKEN }}
+          PASSPHRASE: ${{ steps.scrt-nfpm-linux-packages-passphrase.outputs.secret }}
+          GITHUB_TOKEN: ${{ steps.scrt-publish-github-token.outputs.secret }}
           YUM_REPOSITORY: loderunner/scrt-yum
           DEST_DIR: ${{ runner.temp }}/scrt-yum
           SIG_EMAIL: scrt@scrt.run
@@ -112,13 +178,25 @@ jobs:
     needs:
       - release
     steps:
+      - name: scrt get DOCKERHUB_USERNAME
+        id: scrt-dockerhub-username
+        uses: ./.github/actions/scrt
+        with:
+          password: ${{ secrets.SCRT_PASSWORD }}
+          key: DOCKERHUB_USERNAME
+      - name: scrt get DOCKERHUB_TOKEN
+        id: scrt-dockerhub-token
+        uses: ./.github/actions/scrt
+        with:
+          password: ${{ secrets.SCRT_PASSWORD }}
+          key: DOCKERHUB_TOKEN
       - name: Checkout
         uses: actions/checkout@v3
       - name: Push description to Docker Hub
         uses: peter-evans/dockerhub-description@v3
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          username: ${{ steps.scrt-dockerhub-username.outputs.secret }}
+          password: ${{ steps.scrt-dockerhub-password.outputs.secret }}
           repository: loderunner/scrt
           readme-filepath: ./DOCKER.md
 
