@@ -21,7 +21,7 @@ jobs:
         uses: ./.github/actions/scrt
         with:
           password: ${{ secrets.SCRT_PASSWORD }}
-          key: hello
+          key: toto
       - name: echo scrt version
         run: echo "Hello ${{ steps.scrt.outputs.secret }}!"
 

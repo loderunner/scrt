@@ -2,7 +2,7 @@
 
 key=$1
 
-echo "Retrieving secret for $key"
+echo "Retrieving secret for \"$key\""
 secret="$(/scrt get $key)"
 
 echo "::add-mask::$secret"
