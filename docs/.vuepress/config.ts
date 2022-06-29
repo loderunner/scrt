@@ -7,7 +7,7 @@ import { seoPlugin } from 'vuepress-plugin-seo2'
 import { sitemapPlugin } from 'vuepress-plugin-sitemap2'
 import { viteBundler } from 'vuepress-vite'
 
-import { analyticsPlugin } from './plugins/analytics/node/analytics'
+import analyticsPlugin from './plugins/analytics'
 
 import type { SeoContent } from 'vuepress-plugin-seo2'
 import type { HeadConfig, NavbarConfig, SidebarConfig } from 'vuepress-vite'
