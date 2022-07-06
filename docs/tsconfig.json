@@ -1,11 +1,15 @@
 {
   "compilerOptions": {
     "target": "ESNext",
+    "module": "ESNext",
     "esModuleInterop": true,
-    "types": ["@vuepress/client/types"],
+    "types": ["@vuepress/client/types", "webpack-env", "vite/client"],
     "jsx": "preserve",
     "skipLibCheck": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "paths": {
+      "@internal/blog-data": ["./.vuepress/plugins/blog/client/blog-data.d.ts"]
+    }
   },
   "include": [".vuepress/**/*.ts", ".vuepress/**/*.vue"],
   "exclude": [

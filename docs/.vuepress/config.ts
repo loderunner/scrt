@@ -8,6 +8,7 @@ import { sitemapPlugin } from 'vuepress-plugin-sitemap2'
 import { viteBundler } from 'vuepress-vite'
 
 import analyticsPlugin from './plugins/analytics'
+import blogPlugin from './plugins/blog'
 
 import type { SeoContent } from 'vuepress-plugin-seo2'
 import type { HeadConfig, NavbarConfig, SidebarConfig } from 'vuepress-vite'
@@ -273,6 +274,7 @@ export default defineUserConfig({
       dataDomain: 'scrt.run',
       src: 'https://analytics.scrt.run/js/plausible.js',
     }),
+    blogPlugin({}),
   ],
 
   alias: {
