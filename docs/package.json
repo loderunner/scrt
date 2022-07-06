@@ -10,7 +10,11 @@
   "dependencies": {
     "@typescript-eslint/eslint-plugin": "5.30.0",
     "@typescript-eslint/parser": "5.30.5",
+    "@types/webpack-env": "1.17.0",
     "@vuepress/plugin-docsearch": "2.0.0-beta.48",
+    "@vuepress/plugin-git": "2.0.0-beta.48",
+    "cheerio": "1.0.0-rc.12",
+    "chokidar": "3.5.3",
     "eslint": "8.18.0",
     "eslint-config-prettier": "8.5.0",
     "eslint-import-resolver-typescript": "3.2.4",
