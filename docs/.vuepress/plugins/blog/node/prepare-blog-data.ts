@@ -68,8 +68,6 @@ export const prepareBlogData = async (
       date: getPageDate(p),
     }))
 
-  console.log(pages.map((p) => p.title))
-
   const blogData: BlogData = { pages }
 
   let content = `export const blogData = ${JSON.stringify(blogData, replacer)}`

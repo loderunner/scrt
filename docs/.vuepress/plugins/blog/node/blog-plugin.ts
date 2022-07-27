@@ -24,12 +24,13 @@ export const blogPlugin =
       onInitialized: (app) => createBlogPage(app, options),
       onPrepared: (app) => prepareBlogData(app, options),
       onWatched: (app, watchers) => {
-        console.log(path.join(options.path, '*'))
-        const blogPageWatcher = chokidar.watch('blog/*', {
-          cwd: app.dir.source(),
-          ignoreInitial: true,
-        })
-        console.log(blogPageWatcher)
+        const blogPageWatcher = chokidar.watch(
+          path.join('pages', options.path, '*'),
+          {
+            cwd: app.dir.temp(),
+            ignoreInitial: true,
+          }
+        )
         blogPageWatcher.on('add', () => prepareBlogData(app, options))
         blogPageWatcher.on('change', () => prepareBlogData(app, options))
         blogPageWatcher.on('unlink', () => prepareBlogData(app, options))
