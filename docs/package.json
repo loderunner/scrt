@@ -2,8 +2,8 @@
   "name": "scrt-docs",
   "private": true,
   "scripts": {
-    "dev": "vuepress-cli dev",
-    "build": "vuepress-cli build",
+    "dev": "vuepress-cli dev --clean-temp --clean-cache",
+    "build": "vuepress-cli build --clean-temp --clean-cache",
     "lint": "eslint --max-warnings=0 --ext .js,.json,.ts,.vue .",
     "tsc": "tsc --noEmit"
   },
