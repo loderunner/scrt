@@ -10,14 +10,14 @@
   "dependencies": {
     "@typescript-eslint/eslint-plugin": "5.31.0",
     "@typescript-eslint/parser": "5.31.0",
-    "@vuepress/plugin-docsearch": "2.0.0-beta.48",
+    "@vuepress/plugin-docsearch": "2.0.0-beta.49",
     "eslint": "8.20.0",
     "eslint-config-prettier": "8.5.0",
     "eslint-import-resolver-typescript": "3.3.0",
     "eslint-plugin-import": "2.26.0",
     "eslint-plugin-vue": "9.3.0",
     "prettier": "2.7.1",
-    "vuepress": "2.0.0-beta.48",
+    "vuepress": "2.0.0-beta.49",
     "vuepress-plugin-seo2": "2.0.0-beta.87",
     "vuepress-plugin-sitemap2": "2.0.0-beta.87"
   }
