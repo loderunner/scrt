@@ -13,7 +13,7 @@
     "@vuepress/plugin-docsearch": "2.0.0-beta.49",
     "eslint": "8.25.0",
     "eslint-config-prettier": "8.5.0",
-    "eslint-import-resolver-typescript": "3.5.1",
+    "eslint-import-resolver-typescript": "3.5.2",
     "eslint-plugin-import": "2.26.0",
     "eslint-plugin-vue": "9.6.0",
     "prettier": "2.7.1",
