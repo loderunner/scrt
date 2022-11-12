@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "vuepress-cli dev",
     "build": "vuepress-cli build",
-    "lint": "eslint --max-warnings=0 --ext .js,.json,.ts,.vue .",
+    "lint": "prettier --check . && eslint --max-warnings=0 --ext .js,.json,.ts,.vue .",
     "tsc": "tsc --noEmit"
   },
   "dependencies": {
