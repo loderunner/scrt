@@ -4,21 +4,21 @@
   "scripts": {
     "dev": "vuepress-cli dev",
     "build": "vuepress-cli build",
-    "lint": "eslint --max-warnings=0 --ext .js,.json,.ts,.vue .",
+    "lint": "prettier --check . && eslint --max-warnings=0 --ext .js,.json,.ts,.vue .",
     "tsc": "tsc --noEmit"
   },
   "dependencies": {
     "@typescript-eslint/eslint-plugin": "5.42.1",
     "@typescript-eslint/parser": "5.42.1",
-    "@vuepress/plugin-docsearch": "2.0.0-beta.49",
+    "@vuepress/plugin-docsearch": "2.0.0-beta.53",
     "eslint": "8.27.0",
     "eslint-config-prettier": "8.5.0",
     "eslint-import-resolver-typescript": "3.5.2",
     "eslint-plugin-import": "2.26.0",
     "eslint-plugin-vue": "9.7.0",
     "prettier": "2.7.1",
-    "vuepress": "2.0.0-beta.49",
-    "vuepress-plugin-seo2": "2.0.0-beta.91",
-    "vuepress-plugin-sitemap2": "2.0.0-beta.91"
+    "vuepress": "2.0.0-beta.53",
+    "vuepress-plugin-seo2": "2.0.0-beta.99",
+    "vuepress-plugin-sitemap2": "2.0.0-beta.99"
   }
 }
