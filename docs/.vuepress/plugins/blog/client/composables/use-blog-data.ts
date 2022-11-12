@@ -1,6 +1,7 @@
 // eslint-disable-next-line import/no-unresolved
-import { blogData as blogDataRaw } from '@internal/blog-data'
 import { ref } from 'vue'
+
+import { blogData as blogDataRaw } from '@internal/blog-data'
 
 import type { BlogData } from '../../shared'
 import type { Ref } from 'vue'

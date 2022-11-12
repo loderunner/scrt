@@ -11,7 +11,7 @@ const blogData = useBlogData()
     <template #page-content-top>
       <div>
         <div v-for="page of blogData.pages" :key="page.key">
-          {{ page.title }}
+          <router-link :to="{ name: page.key }">{{ page.title }}</router-link>
         </div>
       </div>
     </template>
