@@ -7,3 +7,6 @@ key.gpg
 node_modules
 .temp
 .cache
+
+# Codespaces
+.oryxBuildBinary 
