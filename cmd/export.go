@@ -28,13 +28,24 @@ import (
 var OutFile string
 
 var exportCmd = &cobra.Command{
-	Use:   "export [file = .env]",
+	Use:   "export [--file|-f <file>]",
 	Short: "Export all the keys in a store to an environment file",
 	Args: func(cmd *cobra.Command, args []string) error {
-		err := cobra.ExactArgs(0)(cmd, args)
-		if err != nil {
-			return err
+		errIsEmpty := cobra.ExactArgs(0)(cmd, args)
+		errIsTwo := cobra.ExactArgs(2)(cmd, args)
+
+		if errIsEmpty != nil && errIsTwo != nil {
+			return fmt.Errorf("export requires 0 or 2 arguments")
 		}
+
+		if len(args) == 2 {
+			if args[0] != "-f" && args[0] != "--file" {
+				return fmt.Errorf("export requires -f or --file as the first argument")
+			}
+
+			OutFile = args[1]
+		}
+
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -44,6 +55,8 @@ var exportCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
+
+		// print(OutFile)
 
 		exists, err := b.ExistsContext(cmdContext)
 		if err != nil {
