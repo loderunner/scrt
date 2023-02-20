@@ -25,38 +25,40 @@ import (
 	"github.com/spf13/viper"
 )
 
-var OutFile string
-
 var exportCmd = &cobra.Command{
-	Use:   "export [--file|-f <file>]",
-	Short: "Export all the keys in a store to an environment file",
-	Args: func(cmd *cobra.Command, args []string) error {
-		errIsEmpty := cobra.ExactArgs(0)(cmd, args)
-		errIsTwo := cobra.ExactArgs(2)(cmd, args)
-
-		if errIsEmpty != nil && errIsTwo != nil {
-			return fmt.Errorf("export requires 0 or 2 arguments")
-		}
-
-		if len(args) == 2 {
-			if args[0] != "-f" && args[0] != "--file" {
-				return fmt.Errorf("export requires -f or --file as the first argument")
-			}
-
-			OutFile = args[1]
-		}
-
-		return nil
-	},
+	Use:   "export [flags]",
+	Short: "Export all the keys in a store",
 	RunE: func(cmd *cobra.Command, args []string) error {
+		var err error
+		var out string
+		var format string
+
+		out, err = cmd.Flags().GetString("out")
+
+		if err != nil {
+			return fmt.Errorf("could not get out flag: %w", err)
+		}
+
+		format, err = cmd.Flags().GetString("format")
+
+		if err != nil {
+			return fmt.Errorf("could not get format flag: %w", err)
+		}
+
+		if out == "" {
+			out = "STD_OUT"
+		}
+
+		if format != "dotenv" && format != "json" && format != "yaml" {
+			return fmt.Errorf("invalid format %s", format)
+		}
+
 		storage := viper.GetString(configKeyStorage)
 
 		b, err := backend.Backends[storage].NewContext(cmdContext, viper.AllSettings())
 		if err != nil {
 			return err
 		}
-
-		// print(OutFile)
 
 		exists, err := b.ExistsContext(cmdContext)
 		if err != nil {
@@ -81,24 +83,69 @@ var exportCmd = &cobra.Command{
 
 		var sb strings.Builder
 
-		for _, key := range keys {
-			sb.WriteString(key)
-			sb.WriteString("=")
+		if format == "json" {
+			sb.WriteString("{\n")
 
-			val, err := s.GetContext(cmdContext, key)
+			for i, key := range keys {
+				if i > 0 {
+					sb.WriteString(",\n")
+				}
 
-			if err != nil {
-				return fmt.Errorf("could not get value for key %s: %w", key, err)
+				sb.WriteString(`"` + key + `": `)
+
+				val, err := s.GetContext(cmdContext, key)
+
+				if err != nil {
+					return fmt.Errorf("could not get value for key %s: %w", key, err)
+				}
+
+				sb.WriteString(`"` + string(val) + `"`)
 			}
 
-			sb.WriteString(string(val))
-			sb.WriteString("\n")
+			sb.WriteString("\n}")
+		} else if format == "yaml" {
+
+			sb.WriteString("---\n")
+
+			for _, key := range keys {
+				sb.WriteString(key)
+				sb.WriteString(": ")
+
+				val, err := s.GetContext(cmdContext, key)
+
+				if err != nil {
+					return fmt.Errorf("could not get value for key %s: %w", key, err)
+				}
+
+				sb.WriteString(string(val))
+				sb.WriteString("\n")
+			}
+
+		} else if format == "dotenv" {
+			for _, key := range keys {
+				sb.WriteString(key)
+				sb.WriteString("=")
+
+				val, err := s.GetContext(cmdContext, key)
+
+				if err != nil {
+					return fmt.Errorf("could not get value for key %s: %w", key, err)
+				}
+
+				sb.WriteString(string(val))
+				sb.WriteString("\n")
+			}
 		}
 
-		err = os.WriteFile(OutFile, []byte(sb.String()), 0644)
+		if out == "STD_OUT" {
+			fmt.Println(sb.String())
+			return nil
+		}
+
+		err = os.WriteFile(out, []byte(sb.String()), 0644)
 
 		if err != nil {
-			return fmt.Errorf("could not write file %s: %w", OutFile, err)
+			return fmt.Errorf("could not write file %s: %w", out, err)
 		}
 
 		return nil
@@ -106,5 +153,8 @@ var exportCmd = &cobra.Command{
 }
 
 func init() {
-	exportCmd.Flags().StringVarP(&OutFile, "file", "f", ".env", "file to write to")
+	exportCmd.Flags().StringP("out", "o", "STD_OUT", "export to file (defaults to stdout)")
+
+	exportCmd.Flags().StringP("format", "f", "dotenv", "export file format (json,yaml,dotenv)")
+
 }
