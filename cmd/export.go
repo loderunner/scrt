@@ -49,6 +49,10 @@ var exportCmd = &cobra.Command{
 			out = "STD_OUT"
 		}
 
+		if format == "" {
+			return fmt.Errorf("format is required")
+		}
+
 		if format != "dotenv" && format != "json" && format != "yaml" {
 			return fmt.Errorf("invalid format %s", format)
 		}
@@ -155,6 +159,6 @@ var exportCmd = &cobra.Command{
 func init() {
 	exportCmd.Flags().StringP("out", "o", "STD_OUT", "export to file (defaults to stdout)")
 
-	exportCmd.Flags().StringP("format", "f", "dotenv", "export file format (json,yaml,dotenv)")
+	exportCmd.Flags().StringP("format", "f", "", "export file format (json,yaml,dotenv)")
 
 }
