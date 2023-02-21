@@ -100,7 +100,6 @@ func TestExportCmdEnvFile(t *testing.T) {
 		t.Fatalf("expected '%s', got '%s'", expected, string(content))
 	}
 
-	// cleanup
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -176,7 +175,6 @@ func TestExportCmdJsonFile(t *testing.T) {
 		t.Fatalf("expected '%s', got '%s'", expected, string(content))
 	}
 
-	// cleanup
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -252,7 +250,6 @@ func TestExportCmdYamlFile(t *testing.T) {
 		t.Fatalf("expected '%s', got '%s'", expected, string(content))
 	}
 
-	// cleanup
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -296,7 +293,7 @@ func TestExportCmdDefault(t *testing.T) {
 	mockBackend.EXPECT().ExistsContext(ctxMatcher).Return(true, nil)
 	mockBackend.EXPECT().LoadContext(ctxMatcher).Return(data, nil)
 
-	// defaults
+	// default
 	exportCmd.Flags().Set("out", "STD_OUT")
 	exportCmd.Flags().Set("format", "dotenv")
 
@@ -322,6 +319,52 @@ func TestExportCmdDefault(t *testing.T) {
 	// cleanup
 	if err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestExportCmdInvalidFormat(t *testing.T) {
+	hijack()
+	defer restore()
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockBackend := NewMockBackend(ctrl)
+	backend.Backends["mock"] = newMockFactory(mockBackend)
+
+	password := "toto"
+
+	viper.Reset()
+	viper.Set(configKeyPassword, password)
+	viper.Set(configKeyStorage, "mock")
+
+	exportCmd.Flags().Set("format", "fake_format")
+
+	err := exportCmd.RunE(exportCmd, []string{})
+	if err == nil {
+		t.Fatal("expected error")
+	}
+}
+
+func TestExportCmdMissingFormat(t *testing.T) {
+	hijack()
+	defer restore()
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockBackend := NewMockBackend(ctrl)
+	backend.Backends["mock"] = newMockFactory(mockBackend)
+
+	password := "toto"
+
+	viper.Reset()
+	viper.Set(configKeyPassword, password)
+	viper.Set(configKeyStorage, "mock")
+
+	err := exportCmd.RunE(exportCmd, []string{})
+	if err == nil {
+		t.Fatal("expected error")
 	}
 }
 
