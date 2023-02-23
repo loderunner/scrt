@@ -61,7 +61,7 @@ jobs:
       - name: Create release notes
         run: sed -n "/^## ${GITHUB_REF_NAME:1}/,/^##[^#]/p" CHANGELOG.md | sed '$d' > release_notes.md
       - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v3
+        uses: goreleaser/goreleaser-action@v4
         with:
           version: latest
           args: release --rm-dist --release-notes=release_notes.md
