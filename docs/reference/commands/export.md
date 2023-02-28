@@ -8,7 +8,7 @@ sidebarDepth: 0
 scrt export [flags]
 ```
 
-Exports the keys and values of the store to a file.
+Exports the keys and values of the store to a file. Please note non-string values are not supported and are considered undefined behavior.
 
 ### Options
 
