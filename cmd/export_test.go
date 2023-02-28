@@ -69,10 +69,20 @@ func TestExportCmdEnvFile(t *testing.T) {
 	mockBackend.EXPECT().ExistsContext(ctxMatcher).Return(true, nil)
 	mockBackend.EXPECT().LoadContext(ctxMatcher).Return(data, nil)
 
-	exportCmd.Flags().Set("output", outputFile)
-	exportCmd.Flags().Set("format", "dotenv")
+	err = exportCmd.Flags().Set("output", outputFile)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = exportCmd.Flags().Set("format", "dotenv")
+
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	err = exportCmd.RunE(exportCmd, []string{})
+
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -141,8 +151,17 @@ func TestExportCmdJsonFile(t *testing.T) {
 	mockBackend.EXPECT().ExistsContext(ctxMatcher).Return(true, nil)
 	mockBackend.EXPECT().LoadContext(ctxMatcher).Return(data, nil)
 
-	exportCmd.Flags().Set("output", outputFile)
-	exportCmd.Flags().Set("format", "json")
+	err = exportCmd.Flags().Set("output", outputFile)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = exportCmd.Flags().Set("format", "json")
+
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	err = exportCmd.RunE(exportCmd, []string{})
 	if err != nil {
@@ -213,8 +232,17 @@ func TestExportCmdYamlFile(t *testing.T) {
 	mockBackend.EXPECT().ExistsContext(ctxMatcher).Return(true, nil)
 	mockBackend.EXPECT().LoadContext(ctxMatcher).Return(data, nil)
 
-	exportCmd.Flags().Set("output", outputFile)
-	exportCmd.Flags().Set("format", "yaml")
+	err = exportCmd.Flags().Set("output", outputFile)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = exportCmd.Flags().Set("format", "yaml")
+
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	err = exportCmd.RunE(exportCmd, []string{})
 	if err != nil {
@@ -284,8 +312,11 @@ func TestExportCmdDefault(t *testing.T) {
 	mockBackend.EXPECT().ExistsContext(ctxMatcher).Return(true, nil)
 	mockBackend.EXPECT().LoadContext(ctxMatcher).Return(data, nil)
 
-	// default
-	exportCmd.Flags().Set("format", "dotenv")
+	err = exportCmd.Flags().Set("format", "dotenv")
+
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	err = exportCmd.RunE(exportCmd, []string{})
 	if err != nil {
@@ -328,9 +359,13 @@ func TestExportCmdInvalidFormat(t *testing.T) {
 	viper.Set(configKeyPassword, password)
 	viper.Set(configKeyStorage, "mock")
 
-	exportCmd.Flags().Set("format", "fake_format")
+	err := exportCmd.Flags().Set("format", "fake_format")
 
-	err := exportCmd.RunE(exportCmd, []string{})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = exportCmd.RunE(exportCmd, []string{})
 	if err == nil {
 		t.Fatal("expected error")
 	}
