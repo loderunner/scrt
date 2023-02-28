@@ -35,13 +35,13 @@ var exportCmd = &cobra.Command{
 		var out string
 		var format string
 
-		out, err = cmd.Flags().GetString("output")
+		out = viper.GetString("output")
 
 		if err != nil {
 			return fmt.Errorf("could not read options: %w", err)
 		}
 
-		format, err = cmd.Flags().GetString("format")
+		format = viper.GetString("format")
 
 		if err != nil {
 			return fmt.Errorf("could not read options: %w", err)
@@ -121,7 +121,16 @@ var exportCmd = &cobra.Command{
 
 func init() {
 	exportCmd.Flags().StringP("output", "o", "", "export to file (defaults to stdout)")
+	err := viper.BindPFlag(configKeyExportOutput, exportCmd.Flags().Lookup("output"))
+
+	if err != nil {
+		panic(err)
+	}
 
 	exportCmd.Flags().StringP("format", "f", "", "export file format (json,yaml,dotenv)")
+	err = viper.BindPFlag(configKeyExportFormat, exportCmd.Flags().Lookup("format"))
 
+	if err != nil {
+		panic(err)
+	}
 }

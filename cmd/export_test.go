@@ -367,6 +367,80 @@ func TestExportCmdMissingFormat(t *testing.T) {
 	}
 }
 
+func TestExportCmdViperSet(t *testing.T) {
+	hijack()
+	defer restore()
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockBackend := NewMockBackend(ctrl)
+	backend.Backends["mock"] = newMockFactory(mockBackend)
+
+	password := "toto"
+
+	viper.Reset()
+	viper.Set(configKeyPassword, password)
+	viper.Set(configKeyStorage, "mock")
+	viper.Set(configKeyExportFormat, "yaml")
+	viper.Set(configKeyExportOutput, "test.yaml")
+
+	s := store.NewStore()
+	outputFile := "test.yaml"
+
+	testVal := []byte("world")
+	err := s.Set("hello", testVal)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	testVal = []byte("world2")
+	err = s.Set("hello2", testVal)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	data, err := store.WriteStore([]byte(password), s)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	mockBackend.EXPECT().ExistsContext(ctxMatcher).Return(true, nil)
+	mockBackend.EXPECT().LoadContext(ctxMatcher).Return(data, nil)
+
+	err = exportCmd.RunE(exportCmd, []string{})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// check that the file was created
+	_, err = os.Stat(outputFile)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// check that the file contains the expected content
+	content, err := ioutil.ReadFile(outputFile)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	expected := "hello: world\nhello2: world2\n"
+
+	err = os.Remove(outputFile)
+
+	if !isSimilar(string(content), expected) {
+		if err != nil {
+			t.Fatalf("expected '%s', got '%s'. Also, failed to delete out file '%s'", expected, string(content), outputFile)
+		}
+		t.Fatalf("expected '%s', got '%s'", expected, string(content))
+	}
+
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
 func isSimilar(a, b string) bool {
 	aLines := strings.Split(a, "\n")
 	bLines := strings.Split(b, "\n")
