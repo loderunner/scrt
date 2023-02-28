@@ -93,15 +93,12 @@ func TestExportCmdEnvFile(t *testing.T) {
 
 	err = os.Remove(outputFile)
 
-	if !isSimilar(string(content), expected) {
-		if err != nil {
-			t.Fatalf("expected '%s', got '%s'. Also, failed to delete out file '%s'", expected, string(content), outputFile)
-		}
-		t.Fatalf("expected '%s', got '%s'", expected, string(content))
-	}
-
 	if err != nil {
 		t.Fatal(err)
+	}
+
+	if !isSimilar(string(content), expected) {
+		t.Fatalf("expected '%s', got '%s'", expected, string(content))
 	}
 }
 
@@ -168,15 +165,12 @@ func TestExportCmdJsonFile(t *testing.T) {
 
 	err = os.Remove(outputFile)
 
-	if !isSimilar(string(content), expected) {
-		if err != nil {
-			t.Fatalf("expected '%s', got '%s'. Also, failed to delete out file '%s'", expected, string(content), outputFile)
-		}
-		t.Fatalf("expected '%s', got '%s'", expected, string(content))
-	}
-
 	if err != nil {
 		t.Fatal(err)
+	}
+
+	if !isSimilar(string(content), expected) {
+		t.Fatalf("expected '%s', got '%s'", expected, string(content))
 	}
 }
 
@@ -243,15 +237,12 @@ func TestExportCmdYamlFile(t *testing.T) {
 
 	err = os.Remove(outputFile)
 
-	if !isSimilar(string(content), expected) {
-		if err != nil {
-			t.Fatalf("expected '%s', got '%s'. Also, failed to delete out file '%s'", expected, string(content), outputFile)
-		}
-		t.Fatalf("expected '%s', got '%s'", expected, string(content))
-	}
-
 	if err != nil {
 		t.Fatal(err)
+	}
+
+	if !isSimilar(string(content), expected) {
+		t.Fatalf("expected '%s', got '%s'", expected, string(content))
 	}
 }
 
@@ -429,15 +420,12 @@ func TestExportCmdViperSet(t *testing.T) {
 
 	err = os.Remove(outputFile)
 
-	if !isSimilar(string(content), expected) {
-		if err != nil {
-			t.Fatalf("expected '%s', got '%s'. Also, failed to delete out file '%s'", expected, string(content), outputFile)
-		}
-		t.Fatalf("expected '%s', got '%s'", expected, string(content))
-	}
-
 	if err != nil {
 		t.Fatal(err)
+	}
+
+	if !isSimilar(string(content), expected) {
+		t.Fatalf("expected '%s', got '%s'", expected, string(content))
 	}
 }
 
