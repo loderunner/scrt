@@ -15,14 +15,16 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
-	"strings"
 
+	"github.com/joho/godotenv"
 	"github.com/loderunner/scrt/backend"
 	"github.com/loderunner/scrt/store"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"gopkg.in/yaml.v3"
 )
 
 var exportCmd = &cobra.Command{
@@ -79,70 +81,35 @@ var exportCmd = &cobra.Command{
 			return fmt.Errorf("could not read store from data: %w", err)
 		}
 
-		keys := s.ListContext(cmdContext)
+		exportData := s.Export()
 
-		var sb strings.Builder
+		var marshalBytes []byte
+		var marshalErr error
 
 		if format == "json" {
-			sb.WriteString("{\n")
-
-			for i, key := range keys {
-				if i > 0 {
-					sb.WriteString(",\n")
-				}
-
-				sb.WriteString(`"` + key + `": `)
-
-				val, err := s.GetContext(cmdContext, key)
-
-				if err != nil {
-					return fmt.Errorf("could not get value for key %s: %w", key, err)
-				}
-
-				sb.WriteString(`"` + string(val) + `"`)
-			}
-
-			sb.WriteString("\n}")
+			marshalBytes, marshalErr = json.Marshal(exportData)
 		} else if format == "yaml" {
-
-			sb.WriteString("---\n")
-
-			for _, key := range keys {
-				sb.WriteString(key)
-				sb.WriteString(": ")
-
-				val, err := s.GetContext(cmdContext, key)
-
-				if err != nil {
-					return fmt.Errorf("could not get value for key %s: %w", key, err)
-				}
-
-				sb.WriteString(string(val))
-				sb.WriteString("\n")
-			}
-
+			marshalBytes, marshalErr = yaml.Marshal(exportData)
 		} else if format == "dotenv" {
-			for _, key := range keys {
-				sb.WriteString(key)
-				sb.WriteString("=")
+			bytes, err := godotenv.Marshal(exportData)
 
-				val, err := s.GetContext(cmdContext, key)
-
-				if err != nil {
-					return fmt.Errorf("could not get value for key %s: %w", key, err)
-				}
-
-				sb.WriteString(string(val))
-				sb.WriteString("\n")
+			if err != nil {
+				marshalErr = err
+			} else {
+				marshalBytes = []byte(bytes)
 			}
+		}
+
+		if marshalErr != nil {
+			return fmt.Errorf("could not marshal data: %w", marshalErr)
 		}
 
 		if out == "" {
-			fmt.Println(sb.String())
+			fmt.Println(string(marshalBytes))
 			return nil
 		}
 
-		err = os.WriteFile(out, []byte(sb.String()), 0644)
+		err = os.WriteFile(out, marshalBytes, 0644)
 
 		if err != nil {
 			return fmt.Errorf("could not write file %s: %w", out, err)

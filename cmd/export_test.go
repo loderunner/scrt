@@ -89,7 +89,7 @@ func TestExportCmdEnvFile(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	expected := "hello=world\nhello2=world2\n"
+	expected := "hello=\"world\"\nhello2=\"world2\""
 
 	err = os.Remove(outputFile)
 
@@ -164,7 +164,7 @@ func TestExportCmdJsonFile(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	expected := "{\n  \"hello\": \"world\",\n  \"hello2\": \"world2\"\n}\n"
+	expected := "{\"hello\":\"world\",\"hello2\":\"world2\"}"
 
 	err = os.Remove(outputFile)
 
@@ -239,7 +239,7 @@ func TestExportCmdYamlFile(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	expected := "---\nhello: world\nhello2: world2"
+	expected := "hello: world\nhello2: world2\n"
 
 	err = os.Remove(outputFile)
 
@@ -309,7 +309,7 @@ func TestExportCmdDefault(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	expected := "hello=world\nhello2=world2"
+	expected := "hello=\"world\"\nhello2=\"world2\""
 
 	if !isSimilar(string(content), expected) {
 		t.Fatalf("expected '%s', got '%s'", expected, string(content))
