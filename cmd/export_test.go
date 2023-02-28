@@ -69,7 +69,7 @@ func TestExportCmdEnvFile(t *testing.T) {
 	mockBackend.EXPECT().ExistsContext(ctxMatcher).Return(true, nil)
 	mockBackend.EXPECT().LoadContext(ctxMatcher).Return(data, nil)
 
-	exportCmd.Flags().Set("out", outputFile)
+	exportCmd.Flags().Set("output", outputFile)
 	exportCmd.Flags().Set("format", "dotenv")
 
 	err = exportCmd.RunE(exportCmd, []string{})
@@ -144,7 +144,7 @@ func TestExportCmdJsonFile(t *testing.T) {
 	mockBackend.EXPECT().ExistsContext(ctxMatcher).Return(true, nil)
 	mockBackend.EXPECT().LoadContext(ctxMatcher).Return(data, nil)
 
-	exportCmd.Flags().Set("out", outputFile)
+	exportCmd.Flags().Set("output", outputFile)
 	exportCmd.Flags().Set("format", "json")
 
 	err = exportCmd.RunE(exportCmd, []string{})
@@ -219,7 +219,7 @@ func TestExportCmdYamlFile(t *testing.T) {
 	mockBackend.EXPECT().ExistsContext(ctxMatcher).Return(true, nil)
 	mockBackend.EXPECT().LoadContext(ctxMatcher).Return(data, nil)
 
-	exportCmd.Flags().Set("out", outputFile)
+	exportCmd.Flags().Set("output", outputFile)
 	exportCmd.Flags().Set("format", "yaml")
 
 	err = exportCmd.RunE(exportCmd, []string{})
@@ -294,7 +294,6 @@ func TestExportCmdDefault(t *testing.T) {
 	mockBackend.EXPECT().LoadContext(ctxMatcher).Return(data, nil)
 
 	// default
-	exportCmd.Flags().Set("out", "STD_OUT")
 	exportCmd.Flags().Set("format", "dotenv")
 
 	err = exportCmd.RunE(exportCmd, []string{})

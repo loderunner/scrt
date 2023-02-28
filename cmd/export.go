@@ -33,28 +33,24 @@ var exportCmd = &cobra.Command{
 		var out string
 		var format string
 
-		out, err = cmd.Flags().GetString("out")
+		out, err = cmd.Flags().GetString("output")
 
 		if err != nil {
-			return fmt.Errorf("could not get out flag: %w", err)
+			return fmt.Errorf("could not read options: %w", err)
 		}
 
 		format, err = cmd.Flags().GetString("format")
 
 		if err != nil {
-			return fmt.Errorf("could not get format flag: %w", err)
-		}
-
-		if out == "" {
-			out = "STD_OUT"
+			return fmt.Errorf("could not read options: %w", err)
 		}
 
 		if format == "" {
-			return fmt.Errorf("format is required")
+			return fmt.Errorf("missing export format")
 		}
 
 		if format != "dotenv" && format != "json" && format != "yaml" {
-			return fmt.Errorf("invalid format %s", format)
+			return fmt.Errorf("invalid export format")
 		}
 
 		storage := viper.GetString(configKeyStorage)
@@ -141,7 +137,7 @@ var exportCmd = &cobra.Command{
 			}
 		}
 
-		if out == "STD_OUT" {
+		if out == "" {
 			fmt.Println(sb.String())
 			return nil
 		}
@@ -157,7 +153,7 @@ var exportCmd = &cobra.Command{
 }
 
 func init() {
-	exportCmd.Flags().StringP("out", "o", "STD_OUT", "export to file (defaults to stdout)")
+	exportCmd.Flags().StringP("output", "o", "", "export to file (defaults to stdout)")
 
 	exportCmd.Flags().StringP("format", "f", "", "export file format (json,yaml,dotenv)")
 
