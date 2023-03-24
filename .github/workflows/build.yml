@@ -57,7 +57,7 @@ jobs:
     permissions: {}
     steps:
       - name: Set up Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v4
         with:
           go-version: 1.18
       - name: Checkout
@@ -74,7 +74,7 @@ jobs:
       - lint
     steps:
       - name: Set up Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v4
         with:
           go-version: 1.18
       - name: Checkout
@@ -115,7 +115,7 @@ jobs:
     steps:
       # Setup Go and checkout
       - name: Set up Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v4
         with:
           go-version: 1.18
       - name: Checkout
@@ -196,7 +196,7 @@ jobs:
       - lint
     steps:
       - name: Set up Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v4
         with:
           go-version: 1.18
       - name: Checkout
