@@ -8,7 +8,7 @@
     "tsc": "tsc --noEmit"
   },
   "dependencies": {
-    "@typescript-eslint/eslint-plugin": "5.53.0",
+    "@typescript-eslint/eslint-plugin": "5.57.1",
     "@typescript-eslint/parser": "5.53.0",
     "@vuepress/plugin-docsearch": "2.0.0-beta.61",
     "eslint": "8.36.0",
