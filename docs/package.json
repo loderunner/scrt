@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@typescript-eslint/eslint-plugin": "5.60.0",
-    "@typescript-eslint/parser": "5.60.0",
+    "@typescript-eslint/parser": "5.60.1",
     "@vuepress/plugin-docsearch": "2.0.0-beta.63",
     "eslint": "8.43.0",
     "eslint-config-prettier": "8.8.0",
