@@ -15,7 +15,7 @@
     "eslint-config-prettier": "8.10.0",
     "eslint-import-resolver-typescript": "3.5.5",
     "eslint-plugin-import": "2.28.0",
-    "eslint-plugin-vue": "9.16.1",
+    "eslint-plugin-vue": "9.17.0",
     "prettier": "2.8.8",
     "vuepress": "2.0.0-beta.66",
     "vuepress-plugin-seo2": "2.0.0-beta.209",
