@@ -50,7 +50,7 @@ jobs:
           username: ${{ steps.scrt-dockerhub-username.outputs.secret }}
           password: ${{ steps.scrt-dockerhub-token.outputs.secret }}
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Cache Go modules
         uses: actions/cache@v3
         with:
@@ -99,7 +99,7 @@ jobs:
           password: ${{ secrets.SCRT_PASSWORD }}
           key: NFPM_LINUX_PACKAGES_PASSPHRASE
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Install tools
         run: sudo apt update && sudo apt install -y git gnupg apt-utils dpkg-dev
       - name: Download release artifacts
@@ -148,7 +148,7 @@ jobs:
           password: ${{ secrets.SCRT_PASSWORD }}
           key: NFPM_LINUX_PACKAGES_PASSPHRASE
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Install tools
         run: sudo apt update && sudo apt install -y git gnupg createrepo
       - name: Download release artifacts
@@ -191,7 +191,7 @@ jobs:
           password: ${{ secrets.SCRT_PASSWORD }}
           key: DOCKERHUB_TOKEN
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Push description to Docker Hub
         uses: peter-evans/dockerhub-description@v3
         with:
@@ -208,14 +208,14 @@ jobs:
       - release
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Setup node
         uses: ./.github/actions/setup
       - name: Build static website
         working-directory: docs
         run: npm run build
       - name: Checkout gh-pages branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: 'gh-pages'
           path: 'gh-pages'
