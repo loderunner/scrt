@@ -169,6 +169,7 @@ func init() {
 	addCommand(listCmd)
 	addCommand(unsetCmd)
 	addCommand(storageCmd)
+	addCommand(exportCmd)
 
 	RootCmd.PersistentFlags().StringVarP(&configFile, "config", "c", "", "configuration file")
 	RootCmd.PersistentFlags().StringP("password", "p", "", "master password to unlock the store")

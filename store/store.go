@@ -115,3 +115,16 @@ func (s Store) UnsetContext(ctx context.Context, key string) {
 	logger.WithField("key", key).Info("unsetting value for key")
 	delete(s.data, key)
 }
+
+// Export returns a map of all the keys and values in the Store.
+func (s Store) Export() map[string]string {
+	return s.ExportContext(context.Background())
+}
+
+func (s Store) ExportContext(ctx context.Context) map[string]string {
+	var newMap = make(map[string]string)
+	for k, v := range s.data {
+		newMap[k] = string(v)
+	}
+	return newMap
+}

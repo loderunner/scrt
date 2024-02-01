@@ -21,8 +21,10 @@ import (
 )
 
 const (
-	configKeyPassword = "password"
-	configKeyStorage  = "storage"
+	configKeyPassword     = "password"
+	configKeyStorage      = "storage"
+	configKeyExportFormat = "format"
+	configKeyExportOutput = "output"
 )
 
 var cmdContext = context.Background()
