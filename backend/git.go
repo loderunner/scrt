@@ -22,6 +22,8 @@ import (
 	"os"
 	"time"
 
+	homedir "github.com/mitchellh/go-homedir"
+
 	"github.com/go-git/go-billy/v5"
 	"github.com/go-git/go-billy/v5/memfs"
 	"github.com/go-git/go-git/v5"
@@ -409,6 +411,10 @@ func buildAuths(ctx context.Context, url string) ([]ssh.AuthMethod, error) {
 
 	idFiles := sshConfig.GetAll(e.Host, "IdentityFile")
 	for _, idFile := range idFiles {
+		idFile, err := homedir.Expand(idFile)
+		if err != nil {
+			continue
+		}
 		logger := logger.WithField("identity_file", idFile)
 		publicKeyAuth, err := ssh.NewPublicKeysFromFile(e.User, idFile, "")
 		if err == nil {
