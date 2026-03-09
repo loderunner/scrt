@@ -57,9 +57,7 @@ jobs:
     permissions: {}
     steps:
       - name: Set up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: 1.18
+        uses: actions/setup-go@v6
       - name: Checkout
         uses: actions/checkout@v5
       - name: golangci-lint
@@ -72,9 +70,7 @@ jobs:
       - lint
     steps:
       - name: Set up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: 1.18
+        uses: actions/setup-go@v6
       - name: Checkout
         uses: actions/checkout@v5
       - name: Cache Go modules
@@ -104,9 +100,7 @@ jobs:
     steps:
       # Setup Go and checkout
       - name: Set up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: 1.18
+        uses: actions/setup-go@v6
       - name: Checkout
         uses: actions/checkout@v5
       - name: Cache Go modules
@@ -206,9 +200,7 @@ jobs:
       - lint
     steps:
       - name: Set up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: 1.18
+        uses: actions/setup-go@v6
       - name: Checkout
         uses: actions/checkout@v5
       - name: Cache Go modules
