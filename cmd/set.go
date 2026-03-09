@@ -29,8 +29,9 @@ import (
 var setCmd = &cobra.Command{
 	Use:   "set [flags] key [value]",
 	Short: "Associate a key to a value in a store",
-	Long: `Associate a key to a value in a store. If value is omitted from the command
-line, it will be read from standard input.`,
+	Long: "Associate a key to a value in a store." +
+		" If value is omitted from the command\n" +
+		"line, it will be read from standard input.",
 	Args: func(cmd *cobra.Command, args []string) error {
 		err := cobra.MinimumNArgs(1)(cmd, args)
 		if err != nil {

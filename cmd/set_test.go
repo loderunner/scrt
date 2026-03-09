@@ -92,7 +92,7 @@ func TestSetCmdStdin(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	hijackStdin.Close()
+	_ = hijackStdin.Close()
 
 	args := []string{"hello"}
 	err = setCmd.Args(setCmd, args)

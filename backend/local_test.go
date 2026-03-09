@@ -31,7 +31,9 @@ func TestLocalExists(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	f.Close()
+	if err = f.Close(); err != nil {
+		t.Fatal(err)
+	}
 
 	b := local{path: "/tmp/nonexistent.scrt", fs: fs}
 	exists, err := b.Exists()

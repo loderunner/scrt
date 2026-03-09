@@ -54,8 +54,8 @@ func hijack() {
 func restore() {
 	os.Stdin = osStdin
 	os.Stdout = osStdout
-	hijackStdin.Close()
-	hijackStdout.Close()
+	_ = hijackStdin.Close()
+	_ = hijackStdout.Close()
 }
 
 var ctxMatcher = gomock.AssignableToTypeOf(

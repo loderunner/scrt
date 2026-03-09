@@ -32,8 +32,9 @@ var envReplacer = strings.NewReplacer("-", "_", ".", "_")
 
 func TestE2e(t *testing.T) {
 	if os.Getenv("SCRT_TEST_E2E") != "y" {
-		t.Log(
-			"Skipping e2e tests. Set environment variable SCRT_TEST_E2E=y to run e2e tests.",
+		t.Skipf("Skipping e2e tests." +
+			" Set environment variable SCRT_TEST_E2E=y" +
+			" to run e2e tests.",
 		)
 		return
 	}
@@ -55,7 +56,7 @@ var _ = BeforeSuite(func() {
 
 var _ = AfterSuite(func() {
 	gexec.CleanupBuildArtifacts()
-	os.RemoveAll(tmpLocalDir)
+	Expect(os.RemoveAll(tmpLocalDir)).To(Succeed())
 })
 
 var _ = Describe("scrt", func() {
@@ -215,7 +216,7 @@ func runTestsForStorage(
 			Expect(err).NotTo(HaveOccurred())
 		})
 		AfterEach(func() {
-			os.Remove(".scrt.yml")
+			_ = os.Remove(".scrt.yml")
 		})
 		runTests([]string{}, []string{})
 	})
@@ -245,7 +246,7 @@ func runTestsForStorage(
 			Expect(err).NotTo(HaveOccurred())
 		})
 		AfterEach(func() {
-			os.Remove("scrt.yml")
+			_ = os.Remove("scrt.yml")
 		})
 		runTests([]string{"--config=scrt.yml"}, []string{})
 	})

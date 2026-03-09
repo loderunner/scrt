@@ -129,7 +129,7 @@ var RootCmd = &cobra.Command{
 	},
 }
 
-func readConfig(cmd *cobra.Command) error {
+func readConfig(_ *cobra.Command) error {
 	if configFile != "" {
 		viper.SetConfigFile(configFile)
 	} else {
@@ -142,7 +142,11 @@ func readConfig(cmd *cobra.Command) error {
 			return err
 		}
 		viper.AddConfigPath(dir)
-		for parentDir := filepath.Dir(dir); dir != parentDir; parentDir = filepath.Dir(dir) {
+		for {
+			parentDir := filepath.Dir(dir)
+			if dir == parentDir {
+				break
+			}
 			dir = parentDir
 			viper.AddConfigPath(dir)
 		}
