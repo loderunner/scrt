@@ -4,10 +4,10 @@
   "eslint.workingDirectories": ["docs"],
   "go.testEnvVars": {
     "SCRT_TEST_E2E": "y",
-    "SCRT_TEST_E2E_S3_ENDPOINT_URL": "http://127.0.0.1:9000",
+    "SCRT_TEST_E2E_S3_ENDPOINT_URL": "http://127.0.0.1:8333",
     "SCRT_TEST_E2E_S3_REGION": "us-east-1",
-    "AWS_ACCESS_KEY_ID": "minio",
-    "AWS_SECRET_ACCESS_KEY": "miniosecret"
+    "AWS_ACCESS_KEY_ID": "admin",
+    "AWS_SECRET_ACCESS_KEY": "admin"
   },
   "yaml.schemas": {
     "https://json.schemastore.org/github-workflow.json": ".github/workflows/build.yml"
