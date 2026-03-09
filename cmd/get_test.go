@@ -114,7 +114,9 @@ func TestGetCmdFailedLoad(t *testing.T) {
 	viper.Set(configKeyStorage, "mock")
 
 	mockBackend.EXPECT().ExistsContext(ctxMatcher).Return(true, nil)
-	mockBackend.EXPECT().LoadContext(ctxMatcher).Return(nil, fmt.Errorf("error"))
+	mockBackend.EXPECT().
+		LoadContext(ctxMatcher).
+		Return(nil, fmt.Errorf("error"))
 
 	args := []string{"hello"}
 	err := getCmd.Args(getCmd, args)

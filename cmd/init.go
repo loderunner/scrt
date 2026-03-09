@@ -30,7 +30,10 @@ var initCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		storage := viper.GetString(configKeyStorage)
 
-		b, err := backend.Backends[storage].NewContext(cmdContext, viper.AllSettings())
+		b, err := backend.Backends[storage].NewContext(
+			cmdContext,
+			viper.AllSettings(),
+		)
 		if err != nil {
 			return err
 		}
@@ -45,7 +48,9 @@ var initCmd = &cobra.Command{
 				return fmt.Errorf("could not read options: %w", err)
 			}
 			if !overwrite {
-				return fmt.Errorf("store already exists, use --overwrite to force init")
+				return fmt.Errorf(
+					"store already exists, use --overwrite to force init",
+				)
 			}
 			logger.Info("overwriting existing store")
 		}

@@ -48,7 +48,10 @@ type Backend interface {
 type Factory interface {
 	// New returns an initialized backend from the given configuration
 	New(conf map[string]interface{}) (Backend, error)
-	NewContext(ctx context.Context, conf map[string]interface{}) (Backend, error)
+	NewContext(
+		ctx context.Context,
+		conf map[string]interface{},
+	) (Backend, error)
 
 	// Name returns a human-readable name for the backend
 	Name() string

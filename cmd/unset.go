@@ -17,10 +17,11 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/loderunner/scrt/backend"
-	"github.com/loderunner/scrt/store"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+
+	"github.com/loderunner/scrt/backend"
+	"github.com/loderunner/scrt/store"
 )
 
 var unsetCmd = &cobra.Command{
@@ -37,7 +38,10 @@ var unsetCmd = &cobra.Command{
 		storage := viper.GetString(configKeyStorage)
 		key := args[0]
 
-		b, err := backend.Backends[storage].NewContext(cmdContext, viper.AllSettings())
+		b, err := backend.Backends[storage].NewContext(
+			cmdContext,
+			viper.AllSettings(),
+		)
 		if err != nil {
 			return err
 		}

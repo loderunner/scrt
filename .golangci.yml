@@ -1,29 +1,31 @@
-run:
-  skip-dirs-use-default: false
+version: '2'
 
 linters:
+  settings:
+    lll:
+      line-length: 80
+      tab-width: 4
   enable:
-    - deadcode
     - errcheck
-    - gosimple
     - govet
-    - ineffassign
     - staticcheck
-    - structcheck
-    - typecheck
+    - ineffassign
     - unused
-    - varcheck
-    - errchkjson
-    - errorlint
-    - godot
-    - gofmt
-    - goimports
-    - misspell
-    - prealloc
-    - revive
-    - unconvert
-    - whitespace
+    - lll
 
-issues:
-  include:
-    - EXC0002
+formatters:
+  enable:
+    - gofumpt
+    - golines
+    - gci
+  settings:
+    golines:
+      max-len: 80
+      tab-len: 4
+      shorten-comments: true
+      reformat-tags: false
+    gci:
+      sections:
+        - standard
+        - default
+        - prefix(github.com/loderunner/scrt)

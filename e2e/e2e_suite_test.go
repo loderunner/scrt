@@ -21,27 +21,30 @@ import (
 	"strings"
 	"testing"
 
-	"gopkg.in/yaml.v2"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gbytes"
 	"github.com/onsi/gomega/gexec"
+	"gopkg.in/yaml.v2"
 )
 
 var envReplacer = strings.NewReplacer("-", "_", ".", "_")
 
 func TestE2e(t *testing.T) {
 	if os.Getenv("SCRT_TEST_E2E") != "y" {
-		t.Log("Skipping e2e tests. Set environment variable SCRT_TEST_E2E=y to run e2e tests.")
+		t.Log(
+			"Skipping e2e tests. Set environment variable SCRT_TEST_E2E=y to run e2e tests.",
+		)
 		return
 	}
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "End-to-end tests")
 }
 
-var executablePath string
-var tmpLocalDir string
+var (
+	executablePath string
+	tmpLocalDir    string
+)
 
 var _ = BeforeSuite(func() {
 	var err error
@@ -64,8 +67,18 @@ var _ = Describe("scrt", func() {
 		extraArgs := [4]map[string]string{
 			{"local.path": filepath.Join(tmpLocalDir, "store-args.scrt")},
 			{"local.path": filepath.Join(tmpLocalDir, "store-env.scrt")},
-			{"local.path": filepath.Join(tmpLocalDir, "store-implicit-conf.scrt")},
-			{"local.path": filepath.Join(tmpLocalDir, "store-explicit-conf.scrt")},
+			{
+				"local.path": filepath.Join(
+					tmpLocalDir,
+					"store-implicit-conf.scrt",
+				),
+			},
+			{
+				"local.path": filepath.Join(
+					tmpLocalDir,
+					"store-explicit-conf.scrt",
+				),
+			},
 		}
 
 		runTestsForStorage(
@@ -151,7 +164,10 @@ func execute(args []string, env []string) *gexec.Session {
 	return session
 }
 
-func runTestsForStorage(storage, password string, extraArgs [4]map[string]string) {
+func runTestsForStorage(
+	storage, password string,
+	extraArgs [4]map[string]string,
+) {
 	Context("with args", func() {
 		args := []string{
 			"--storage=" + storage,
@@ -195,7 +211,7 @@ func runTestsForStorage(storage, password string, extraArgs [4]map[string]string
 			}
 			yamlData, err := yaml.Marshal(conf)
 			Expect(err).NotTo(HaveOccurred())
-			err = os.WriteFile(".scrt.yml", yamlData, 0600)
+			err = os.WriteFile(".scrt.yml", yamlData, 0o600)
 			Expect(err).NotTo(HaveOccurred())
 		})
 		AfterEach(func() {
@@ -225,7 +241,7 @@ func runTestsForStorage(storage, password string, extraArgs [4]map[string]string
 			}
 			yamlData, err := yaml.Marshal(conf)
 			Expect(err).NotTo(HaveOccurred())
-			err = os.WriteFile("scrt.yml", yamlData, 0600)
+			err = os.WriteFile("scrt.yml", yamlData, 0o600)
 			Expect(err).NotTo(HaveOccurred())
 		})
 		AfterEach(func() {
@@ -281,7 +297,10 @@ func runTests(args []string, env []string) {
 	})
 
 	It("overwrites a value with --overwrite", func() {
-		session := execute(append(args, "set", "--overwrite", "hello", "world2"), env)
+		session := execute(
+			append(args, "set", "--overwrite", "hello", "world2"),
+			env,
+		)
 		Eventually(session).Should(gexec.Exit(0))
 		session.Wait()
 	})

@@ -34,7 +34,11 @@ func ReadStore(password []byte, data []byte) (Store, error) {
 }
 
 // ReadStoreContext performs ReadStore with a context.
-func ReadStoreContext(ctx context.Context, password []byte, data []byte) (Store, error) {
+func ReadStoreContext(
+	ctx context.Context,
+	password []byte,
+	data []byte,
+) (Store, error) {
 	logger := getLogger(ctx)
 
 	if len(data) < saltLength+aes.BlockSize {
@@ -87,7 +91,11 @@ func WriteStore(password []byte, store Store) ([]byte, error) {
 }
 
 // WriteStoreContext performs WriteStore with a context.
-func WriteStoreContext(ctx context.Context, password []byte, store Store) ([]byte, error) {
+func WriteStoreContext(
+	ctx context.Context,
+	password []byte,
+	store Store,
+) ([]byte, error) {
 	logger := getLogger(ctx)
 
 	if store.data == nil {

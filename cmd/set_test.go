@@ -141,7 +141,9 @@ func TestSetCmdFailedLoad(t *testing.T) {
 	viper.Set(configKeyStorage, "mock")
 
 	mockBackend.EXPECT().ExistsContext(ctxMatcher).Return(true, nil)
-	mockBackend.EXPECT().LoadContext(ctxMatcher).Return(nil, fmt.Errorf("error"))
+	mockBackend.EXPECT().
+		LoadContext(ctxMatcher).
+		Return(nil, fmt.Errorf("error"))
 
 	args := []string{"hello", "world"}
 	err := setCmd.Args(setCmd, args)
@@ -281,7 +283,9 @@ func TestSetCmdFailedSave(t *testing.T) {
 
 	mockBackend.EXPECT().ExistsContext(ctxMatcher).Return(true, nil)
 	mockBackend.EXPECT().LoadContext(ctxMatcher).Return(data, nil)
-	mockBackend.EXPECT().SaveContext(ctxMatcher, gomock.Any()).Return(fmt.Errorf("error"))
+	mockBackend.EXPECT().
+		SaveContext(ctxMatcher, gomock.Any()).
+		Return(fmt.Errorf("error"))
 
 	args := []string{"hello", "world"}
 	err = setCmd.Args(setCmd, args)

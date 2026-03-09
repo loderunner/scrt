@@ -22,11 +22,15 @@ import (
 	"testing"
 )
 
-const testKey = "hello"
-const testBadKey = "toto"
+const (
+	testKey    = "hello"
+	testBadKey = "toto"
+)
 
-var testVal = []byte("world")
-var testBinaryVal = make([]byte, 256)
+var (
+	testVal       = []byte("world")
+	testBinaryVal = make([]byte, 256)
+)
 
 func makePassword(t *testing.T) []byte {
 	passwordLength, err := rand.Int(rand.Reader, big.NewInt(256))

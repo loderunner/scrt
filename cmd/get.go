@@ -19,11 +19,11 @@ import (
 	"os"
 
 	isatty "github.com/mattn/go-isatty"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 
 	"github.com/loderunner/scrt/backend"
 	"github.com/loderunner/scrt/store"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var getCmd = &cobra.Command{
@@ -40,7 +40,10 @@ var getCmd = &cobra.Command{
 		storage := viper.GetString(configKeyStorage)
 		key := args[0]
 
-		b, err := backend.Backends[storage].NewContext(cmdContext, viper.AllSettings())
+		b, err := backend.Backends[storage].NewContext(
+			cmdContext,
+			viper.AllSettings(),
+		)
 		if err != nil {
 			return err
 		}
@@ -73,7 +76,8 @@ var getCmd = &cobra.Command{
 			return fmt.Errorf("could not get value: %w", err)
 		}
 
-		if isatty.IsTerminal(os.Stdout.Fd()) || isatty.IsCygwinTerminal(os.Stdout.Fd()) {
+		if isatty.IsTerminal(os.Stdout.Fd()) ||
+			isatty.IsCygwinTerminal(os.Stdout.Fd()) {
 			fmt.Println(string(val))
 		} else {
 			fmt.Print(string(val))

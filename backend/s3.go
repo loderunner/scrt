@@ -34,7 +34,11 @@ var s3FlagSet *pflag.FlagSet
 func init() {
 	s3FlagSet = pflag.NewFlagSet("s3", pflag.ContinueOnError)
 	s3FlagSet.String("s3-bucket-name", "", "name of the S3 bucket (required)")
-	s3FlagSet.String("s3-key", "", "path of the store object in the bucket (required)")
+	s3FlagSet.String(
+		"s3-key",
+		"",
+		"path of the store object in the bucket (required)",
+	)
 	s3FlagSet.String("s3-region", "", "region of the S3 storage")
 	s3FlagSet.String("s3-endpoint-url", "", "override default S3 endpoint URL")
 }
@@ -50,7 +54,10 @@ func (f s3Factory) New(conf map[string]interface{}) (Backend, error) {
 	return f.NewContext(context.Background(), conf)
 }
 
-func (f s3Factory) NewContext(ctx context.Context, conf map[string]interface{}) (Backend, error) {
+func (f s3Factory) NewContext(
+	ctx context.Context,
+	conf map[string]interface{},
+) (Backend, error) {
 	return newS3(ctx, conf)
 }
 
@@ -81,7 +88,11 @@ func newS3(ctx context.Context, conf map[string]interface{}) (Backend, error) {
 	}
 	bucket, ok := opt.(string)
 	if !ok {
-		return nil, fmt.Errorf("bucket name is not a string: (%T)%s", bucket, bucket)
+		return nil, fmt.Errorf(
+			"bucket name is not a string: (%T)%s",
+			bucket,
+			bucket,
+		)
 	}
 	logger = logger.WithField("bucket", bucket)
 

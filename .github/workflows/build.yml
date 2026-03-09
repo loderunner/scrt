@@ -63,7 +63,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v3
+        uses: golangci/golangci-lint-action@v9
         with:
           version: v1.45.2
 

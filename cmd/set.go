@@ -19,10 +19,11 @@ import (
 	"io"
 	"os"
 
-	"github.com/loderunner/scrt/backend"
-	"github.com/loderunner/scrt/store"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+
+	"github.com/loderunner/scrt/backend"
+	"github.com/loderunner/scrt/store"
 )
 
 var setCmd = &cobra.Command{
@@ -57,7 +58,10 @@ line, it will be read from standard input.`,
 			val = []byte(args[1])
 		}
 
-		b, err := backend.Backends[storage].NewContext(cmdContext, viper.AllSettings())
+		b, err := backend.Backends[storage].NewContext(
+			cmdContext,
+			viper.AllSettings(),
+		)
 		if err != nil {
 			return err
 		}
@@ -91,7 +95,10 @@ line, it will be read from standard input.`,
 
 		if s.HasContext(cmdContext, key) {
 			if !overwrite {
-				return fmt.Errorf("value exists for key \"%s\", use --overwrite to force", key)
+				return fmt.Errorf(
+					"value exists for key \"%s\", use --overwrite to force",
+					key,
+				)
 			}
 			logger.WithField("key", key).Info("overwriting existing value")
 		}
