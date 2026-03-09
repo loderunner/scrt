@@ -18,11 +18,11 @@ jobs:
       packages: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v4
       - name: Cache Docker layers
-        uses: actions/cache@v3
+        uses: actions/cache@v5
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-buildx-${{ github.sha }}
@@ -47,7 +47,7 @@ jobs:
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v6
         with:
           name: git-openssh-image
           path: /tmp/git-openssh-image.tar
@@ -61,7 +61,7 @@ jobs:
         with:
           go-version: 1.18
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
@@ -78,9 +78,9 @@ jobs:
         with:
           go-version: 1.18
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
       - name: Cache Go modules
-        uses: actions/cache@v3
+        uses: actions/cache@v5
         with:
           path: ~/go/pkg/mod
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
@@ -100,15 +100,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       packages: read
-    services:
-      minio:
-        # Use Bitnami image here because default minio image runs the executable
-        # and GitHub actions won't let us pass args to docker create so we can't
-        # change the entrypoint
-        image: bitnami/minio
-        options: --name=minio
-        ports:
-          - 9000:9000
     needs:
       - lint
       - build_docker_e2e_image
@@ -119,18 +110,39 @@ jobs:
         with:
           go-version: 1.18
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
       - name: Cache Go modules
-        uses: actions/cache@v3
+        uses: actions/cache@v5
         with:
           path: ~/go/pkg/mod
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-      # Prepare MinIO
+      # Prepare SeaweedFS (S3-compatible storage)
+      - name: Start SeaweedFS container
+        run: |
+          docker run -d \
+            --name seaweedfs \
+            -p 8333:8333 \
+            -v ${{ github.workspace }}/.github/seaweedfs/s3.json:/etc/seaweedfs/s3.json \
+            chrislusf/seaweedfs server -s3 -s3.config=/etc/seaweedfs/s3.json
+      - name: Wait for SeaweedFS to be ready
+        run: |
+          for i in {1..30}; do
+            if curl -s http://127.0.0.1:8333 > /dev/null 2>&1; then
+              echo "SeaweedFS is ready"
+              break
+            fi
+            echo "Waiting for SeaweedFS... ($i/30)"
+            sleep 1
+          done
       - name: Create test bucket
-        run: docker exec minio mkdir -p /data/test-bucket
+        env:
+          AWS_ACCESS_KEY_ID: admin
+          AWS_SECRET_ACCESS_KEY: admin
+        run: |
+          aws --endpoint-url http://127.0.0.1:8333 s3 mb s3://test-bucket
       # Prepare Git
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v8
         with:
           name: git-openssh-image
           path: /tmp
@@ -181,12 +193,12 @@ jobs:
       - name: Run tests
         env:
           SCRT_TEST_E2E: y
-          SCRT_TEST_E2E_S3_ENDPOINT_URL: http://127.0.0.1:9000
+          SCRT_TEST_E2E_S3_ENDPOINT_URL: http://127.0.0.1:8333
           SCRT_TEST_E2E_S3_REGION: us-east-1
           SCRT_TEST_E2E_GIT_REPOSITORY_URL: scrt@scrt-git-test:repos/scrt-test.git
           SCRT_TEST_E2E_GIT_BRANCH: main
-          AWS_ACCESS_KEY_ID: minio
-          AWS_SECRET_ACCESS_KEY: miniosecret
+          AWS_ACCESS_KEY_ID: admin
+          AWS_SECRET_ACCESS_KEY: admin
         run: go test ./e2e
 
   build:
@@ -200,9 +212,9 @@ jobs:
         with:
           go-version: 1.18
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
       - name: Cache Go modules
-        uses: actions/cache@v3
+        uses: actions/cache@v5
         with:
           path: ~/go/pkg/mod
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
@@ -214,7 +226,7 @@ jobs:
     permissions: {}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
       - name: Setup node
         uses: ./.github/actions/setup-node
       - name: Lint documentation
@@ -226,7 +238,7 @@ jobs:
     permissions: {}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
       - name: Setup node
         uses: ./.github/actions/setup-node
       - name: Run Typescript compiler
@@ -241,7 +253,7 @@ jobs:
       - 'tsc-check-docs'
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
       - name: Setup node
         uses: ./.github/actions/setup-node
       - name: Build static website
