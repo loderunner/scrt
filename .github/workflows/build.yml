@@ -117,31 +117,12 @@ jobs:
           path: ~/go/pkg/mod
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
       # Prepare SeaweedFS (S3-compatible storage)
-      - name: Create SeaweedFS S3 config
-        run: |
-          mkdir -p /tmp/seaweedfs
-          cat > /tmp/seaweedfs/s3.json << 'EOF'
-          {
-            "identities": [
-              {
-                "name": "admin",
-                "credentials": [
-                  {
-                    "accessKey": "admin",
-                    "secretKey": "admin"
-                  }
-                ],
-                "actions": ["Admin", "Read", "Write", "List", "Tagging"]
-              }
-            ]
-          }
-          EOF
       - name: Start SeaweedFS container
         run: |
           docker run -d \
             --name seaweedfs \
             -p 8333:8333 \
-            -v /tmp/seaweedfs/s3.json:/etc/seaweedfs/s3.json \
+            -v ${{ github.workspace }}/.github/seaweedfs/s3.json:/etc/seaweedfs/s3.json \
             chrislusf/seaweedfs server -s3 -s3.config=/etc/seaweedfs/s3.json
       - name: Wait for SeaweedFS to be ready
         run: |
