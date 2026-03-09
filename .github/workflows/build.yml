@@ -117,12 +117,32 @@ jobs:
           path: ~/go/pkg/mod
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
       # Prepare SeaweedFS (S3-compatible storage)
+      - name: Create SeaweedFS S3 config
+        run: |
+          mkdir -p /tmp/seaweedfs
+          cat > /tmp/seaweedfs/s3.json << 'EOF'
+          {
+            "identities": [
+              {
+                "name": "admin",
+                "credentials": [
+                  {
+                    "accessKey": "admin",
+                    "secretKey": "admin"
+                  }
+                ],
+                "actions": ["Admin", "Read", "Write", "List", "Tagging"]
+              }
+            ]
+          }
+          EOF
       - name: Start SeaweedFS container
         run: |
           docker run -d \
             --name seaweedfs \
             -p 8333:8333 \
-            chrislusf/seaweedfs server -s3
+            -v /tmp/seaweedfs/s3.json:/etc/seaweedfs/s3.json \
+            chrislusf/seaweedfs server -s3 -s3.config=/etc/seaweedfs/s3.json
       - name: Wait for SeaweedFS to be ready
         run: |
           for i in {1..30}; do
@@ -134,8 +154,11 @@ jobs:
             sleep 1
           done
       - name: Create test bucket
+        env:
+          AWS_ACCESS_KEY_ID: admin
+          AWS_SECRET_ACCESS_KEY: admin
         run: |
-          curl -X PUT http://127.0.0.1:8333/test-bucket
+          aws --endpoint-url http://127.0.0.1:8333 s3 mb s3://test-bucket
       # Prepare Git
       - name: Download artifact
         uses: actions/download-artifact@v8
