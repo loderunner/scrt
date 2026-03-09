@@ -19,17 +19,19 @@ import (
 	"io"
 	"os"
 
-	"github.com/loderunner/scrt/backend"
-	"github.com/loderunner/scrt/store"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+
+	"github.com/loderunner/scrt/backend"
+	"github.com/loderunner/scrt/store"
 )
 
 var setCmd = &cobra.Command{
 	Use:   "set [flags] key [value]",
 	Short: "Associate a key to a value in a store",
-	Long: `Associate a key to a value in a store. If value is omitted from the command
-line, it will be read from standard input.`,
+	Long: "Associate a key to a value in a store." +
+		" If value is omitted from the command\n" +
+		"line, it will be read from standard input.",
 	Args: func(cmd *cobra.Command, args []string) error {
 		err := cobra.MinimumNArgs(1)(cmd, args)
 		if err != nil {
@@ -57,7 +59,10 @@ line, it will be read from standard input.`,
 			val = []byte(args[1])
 		}
 
-		b, err := backend.Backends[storage].NewContext(cmdContext, viper.AllSettings())
+		b, err := backend.Backends[storage].NewContext(
+			cmdContext,
+			viper.AllSettings(),
+		)
 		if err != nil {
 			return err
 		}
@@ -91,7 +96,10 @@ line, it will be read from standard input.`,
 
 		if s.HasContext(cmdContext, key) {
 			if !overwrite {
-				return fmt.Errorf("value exists for key \"%s\", use --overwrite to force", key)
+				return fmt.Errorf(
+					"value exists for key \"%s\", use --overwrite to force",
+					key,
+				)
 			}
 			logger.WithField("key", key).Info("overwriting existing value")
 		}

@@ -18,7 +18,7 @@ package cmd
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 	"reflect"
 	"testing"
@@ -60,8 +60,8 @@ func TestListCmdEmpty(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	os.Stdout.Close()
-	data, err = ioutil.ReadAll(hijackStdout)
+	_ = os.Stdout.Close()
+	data, err = io.ReadAll(hijackStdout)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -111,8 +111,8 @@ func TestListCmd(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	os.Stdout.Close()
-	data, err = ioutil.ReadAll(hijackStdout)
+	_ = os.Stdout.Close()
+	data, err = io.ReadAll(hijackStdout)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -132,7 +132,9 @@ func TestListCmdFailedLoad(t *testing.T) {
 	viper.Set(configKeyStorage, "mock")
 
 	mockBackend.EXPECT().ExistsContext(ctxMatcher).Return(true, nil)
-	mockBackend.EXPECT().LoadContext(ctxMatcher).Return(nil, fmt.Errorf("error"))
+	mockBackend.EXPECT().
+		LoadContext(ctxMatcher).
+		Return(nil, fmt.Errorf("error"))
 
 	err := listCmd.RunE(listCmd, []string{})
 	if err == nil {

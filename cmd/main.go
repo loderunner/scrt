@@ -25,5 +25,7 @@ const (
 	configKeyStorage  = "storage"
 )
 
-var cmdContext = context.Background()
-var logger log.Interface
+var (
+	cmdContext = context.Background()
+	logger     log.Interface
+)

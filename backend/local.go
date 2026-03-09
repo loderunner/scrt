@@ -29,7 +29,11 @@ var localFlagSet *pflag.FlagSet
 
 func init() {
 	localFlagSet = pflag.NewFlagSet("local", pflag.ContinueOnError)
-	localFlagSet.String("local-path", "", "path to the store in the local filesystem (required)")
+	localFlagSet.String(
+		"local-path",
+		"",
+		"path to the store in the local filesystem (required)",
+	)
 }
 
 type local struct {
@@ -42,7 +46,11 @@ type localFactory struct{}
 func (f localFactory) New(conf map[string]interface{}) (Backend, error) {
 	return f.NewContext(context.Background(), conf)
 }
-func (f localFactory) NewContext(ctx context.Context, conf map[string]interface{}) (Backend, error) {
+
+func (f localFactory) NewContext(
+	ctx context.Context,
+	conf map[string]interface{},
+) (Backend, error) {
 	return newLocal(ctx, conf)
 }
 
@@ -62,7 +70,10 @@ func init() {
 	Backends["local"] = localFactory{}
 }
 
-func newLocal(ctx context.Context, conf map[string]interface{}) (Backend, error) {
+func newLocal(
+	ctx context.Context,
+	conf map[string]interface{},
+) (Backend, error) {
 	logger := getLogger(ctx)
 
 	opt := readOpt("local", "path", conf)
@@ -114,8 +125,9 @@ func (l local) Save(data []byte) error {
 
 func (l local) SaveContext(ctx context.Context, data []byte) error {
 	logger := getLogger(ctx)
-	logger.WithField("path", l.path).Info("writing encrypted data to local storage")
-	return afero.WriteFile(l.fs, l.path, data, 0600)
+	logger.WithField("path", l.path).
+		Info("writing encrypted data to local storage")
+	return afero.WriteFile(l.fs, l.path, data, 0o600)
 }
 
 func (l local) Load() ([]byte, error) {
@@ -124,6 +136,7 @@ func (l local) Load() ([]byte, error) {
 
 func (l local) LoadContext(ctx context.Context) ([]byte, error) {
 	logger := getLogger(ctx)
-	logger.WithField("path", l.path).Info("reading encrypted data from local storage")
+	logger.WithField("path", l.path).
+		Info("reading encrypted data from local storage")
 	return afero.ReadFile(l.fs, l.path)
 }
