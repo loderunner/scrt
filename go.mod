@@ -1,6 +1,6 @@
 module github.com/loderunner/scrt
 
-go 1.18
+go 1.26
 
 require (
 	github.com/apex/log v1.9.0
