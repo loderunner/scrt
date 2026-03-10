@@ -16,34 +16,41 @@ package backend
 
 import (
 	"bytes"
-	"io/ioutil"
+	"context"
+	"io"
 	"reflect"
 	"testing"
 
-	"github.com/aws/aws-sdk-go/aws/awserr"
-	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/aws/aws-sdk-go/service/s3/s3iface"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
+	s3types "github.com/aws/aws-sdk-go-v2/service/s3/types"
 
 	"github.com/loderunner/scrt/store"
 )
 
 type mockS3Client struct {
-	s3iface.S3API
 	data []byte
 }
 
-func (m *mockS3Client) GetObject(input *s3.GetObjectInput) (*s3.GetObjectOutput, error) {
-	if *input.Key != "/store.scrt" || m.data == nil {
-		return nil, awserr.New(s3.ErrCodeNoSuchKey, "no such key", nil)
+func (m *mockS3Client) GetObject(
+	_ context.Context,
+	params *s3.GetObjectInput,
+	_ ...func(*s3.Options),
+) (*s3.GetObjectOutput, error) {
+	if *params.Key != "/store.scrt" || m.data == nil {
+		return nil, &s3types.NoSuchKey{}
 	}
 	return &s3.GetObjectOutput{
-		Body: ioutil.NopCloser(bytes.NewReader(m.data)),
+		Body: io.NopCloser(bytes.NewReader(m.data)),
 	}, nil
 }
 
-func (m *mockS3Client) PutObject(input *s3.PutObjectInput) (*s3.PutObjectOutput, error) {
+func (m *mockS3Client) PutObject(
+	_ context.Context,
+	params *s3.PutObjectInput,
+	_ ...func(*s3.Options),
+) (*s3.PutObjectOutput, error) {
 	var err error
-	m.data, err = ioutil.ReadAll(input.Body)
+	m.data, err = io.ReadAll(params.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +58,11 @@ func (m *mockS3Client) PutObject(input *s3.PutObjectInput) (*s3.PutObjectOutput,
 }
 
 func TestS3Exists(t *testing.T) {
-	b := s3Backend{bucket: "test-bucket", key: "/nonexistent.scrt", client: &mockS3Client{}}
+	b := s3Backend{
+		bucket: "test-bucket",
+		key:    "/nonexistent.scrt",
+		client: &mockS3Client{},
+	}
 
 	s := store.NewStore()
 	data, _ := store.WriteStore([]byte("password"), s)
@@ -83,7 +94,11 @@ func TestS3SaveLoad(t *testing.T) {
 	s := store.NewStore()
 	data, _ := store.WriteStore([]byte("password"), s)
 
-	b := s3Backend{bucket: "test-bucket", key: "/store.scrt", client: &mockS3Client{}}
+	b := s3Backend{
+		bucket: "test-bucket",
+		key:    "/store.scrt",
+		client: &mockS3Client{},
+	}
 	err := b.Save(data)
 	if err != nil {
 		t.Fatal(err)

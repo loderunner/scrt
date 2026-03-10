@@ -15,7 +15,7 @@
 package cmd
 
 import (
-	"io/ioutil"
+	"io"
 	"os"
 	"testing"
 )
@@ -35,8 +35,8 @@ func TestStorageCmd(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	os.Stdout.Close()
-	data, err := ioutil.ReadAll(hijackStdout)
+	_ = os.Stdout.Close()
+	data, err := io.ReadAll(hijackStdout)
 	if err != nil {
 		t.Fatal(err)
 	}

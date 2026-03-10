@@ -19,18 +19,21 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/loderunner/scrt/store"
 	"github.com/spf13/afero"
+
+	"github.com/loderunner/scrt/store"
 )
 
 func TestLocalExists(t *testing.T) {
 	path := "/tmp/store.scrt"
 	fs := afero.NewMemMapFs()
-	f, err := fs.OpenFile(path, os.O_CREATE, 0600)
+	f, err := fs.OpenFile(path, os.O_CREATE, 0o600)
 	if err != nil {
 		t.Fatal(err)
 	}
-	f.Close()
+	if err = f.Close(); err != nil {
+		t.Fatal(err)
+	}
 
 	b := local{path: "/tmp/nonexistent.scrt", fs: fs}
 	exists, err := b.Exists()

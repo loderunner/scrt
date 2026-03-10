@@ -18,7 +18,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 	"time"
 
@@ -44,10 +44,26 @@ const defaultCommitMessage = "update secrets"
 func init() {
 	gitFlagSet = pflag.NewFlagSet("git", pflag.ContinueOnError)
 	gitFlagSet.String("git-url", "", "URL of the git repository (required)")
-	gitFlagSet.String("git-path", "", "path of the store in the repository (required)")
-	gitFlagSet.String("git-branch", "", "branch to checkout, commit and push to on updates")
-	gitFlagSet.String("git-checkout", "", "tree-ish revision to checkout, e.g. commit or tag")
-	gitFlagSet.String("git-message", "", "commit message when updating the store")
+	gitFlagSet.String(
+		"git-path",
+		"",
+		"path of the store in the repository (required)",
+	)
+	gitFlagSet.String(
+		"git-branch",
+		"",
+		"branch to checkout, commit and push to on updates",
+	)
+	gitFlagSet.String(
+		"git-checkout",
+		"",
+		"tree-ish revision to checkout, e.g. commit or tag",
+	)
+	gitFlagSet.String(
+		"git-message",
+		"",
+		"commit message when updating the store",
+	)
 }
 
 type gitBackend struct {
@@ -63,7 +79,10 @@ func (f gitFactory) New(conf map[string]interface{}) (Backend, error) {
 	return f.NewContext(context.Background(), conf)
 }
 
-func (f gitFactory) NewContext(ctx context.Context, conf map[string]interface{}) (Backend, error) {
+func (f gitFactory) NewContext(
+	ctx context.Context,
+	conf map[string]interface{},
+) (Backend, error) {
 	return newGit(ctx, conf)
 }
 
@@ -92,7 +111,11 @@ func newGit(ctx context.Context, conf map[string]interface{}) (Backend, error) {
 	}
 	url, ok := opt.(string)
 	if !ok {
-		return nil, fmt.Errorf("repository URL is not a string: (%T)%s", opt, opt)
+		return nil, fmt.Errorf(
+			"repository URL is not a string: (%T)%s",
+			opt,
+			opt,
+		)
 	}
 	logger = logger.WithField("url", url)
 
@@ -165,6 +188,7 @@ func newGit(ctx context.Context, conf map[string]interface{}) (Backend, error) {
 func (g gitBackend) Exists() (bool, error) {
 	return g.ExistsContext(context.Background())
 }
+
 func (g gitBackend) ExistsContext(ctx context.Context) (bool, error) {
 	logger := getLogger(ctx)
 
@@ -185,17 +209,18 @@ func (g gitBackend) ExistsContext(ctx context.Context) (bool, error) {
 func (g gitBackend) Save(data []byte) error {
 	return g.SaveContext(context.Background(), data)
 }
+
 func (g gitBackend) SaveContext(ctx context.Context, data []byte) error {
 	logger := getLogger(ctx)
 
 	logger = logger.WithField("path", g.path)
 
 	logger.Info("opening file in git repository")
-	f, err := g.fs.OpenFile(g.path, os.O_CREATE|os.O_TRUNC|os.O_RDWR, 0700)
+	f, err := g.fs.OpenFile(g.path, os.O_CREATE|os.O_TRUNC|os.O_RDWR, 0o700)
 	if err != nil {
 		return err
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	logger.Info("writing encrypted data to git repository")
 	n, err := f.Write(data)
@@ -234,7 +259,10 @@ func (g gitBackend) SaveContext(ctx context.Context, data []byte) error {
 	}
 
 	logger.
-		WithField("committer", fmt.Sprintf("%s <%s>", authorCommitter.Name, authorCommitter.Email)).
+		WithField(
+			"committer",
+			fmt.Sprintf("%s <%s>", authorCommitter.Name, authorCommitter.Email),
+		).
 		Infof("committing changes to git repository: \"%s\"", g.message)
 	_, err = w.Commit(
 		g.message,
@@ -261,6 +289,7 @@ func (g gitBackend) SaveContext(ctx context.Context, data []byte) error {
 func (g gitBackend) Load() ([]byte, error) {
 	return g.LoadContext(context.Background())
 }
+
 func (g gitBackend) LoadContext(ctx context.Context) ([]byte, error) {
 	logger := getLogger(ctx)
 
@@ -272,9 +301,9 @@ func (g gitBackend) LoadContext(ctx context.Context) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
-	data, err := ioutil.ReadAll(f)
+	data, err := io.ReadAll(f)
 	if err != nil {
 		return nil, err
 	}

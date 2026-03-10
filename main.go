@@ -23,9 +23,7 @@ import (
 	"github.com/loderunner/scrt/cmd"
 )
 
-var (
-	version = "dev"
-)
+var version = "dev"
 
 func main() {
 	defer func() {

@@ -57,15 +57,13 @@ jobs:
     permissions: {}
     steps:
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v6
         with:
-          go-version: 1.18
+          go-version: '1.26'
       - name: Checkout
         uses: actions/checkout@v5
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v3
-        with:
-          version: v1.45.2
+        uses: golangci/golangci-lint-action@v9
 
   test:
     runs-on: ubuntu-latest
@@ -74,9 +72,9 @@ jobs:
       - lint
     steps:
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v6
         with:
-          go-version: 1.18
+          go-version: '1.26'
       - name: Checkout
         uses: actions/checkout@v5
       - name: Cache Go modules
@@ -91,7 +89,7 @@ jobs:
       - name: Convert coverage.out to coverage.lcov
         run: gcov2lcov -infile coverage.out -outfile coverage.lcov
       - name: Coveralls
-        uses: coverallsapp/github-action@v2.2.1
+        uses: coverallsapp/github-action@v2.3.6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path-to-lcov: coverage.lcov
@@ -106,9 +104,9 @@ jobs:
     steps:
       # Setup Go and checkout
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v6
         with:
-          go-version: 1.18
+          go-version: '1.26'
       - name: Checkout
         uses: actions/checkout@v5
       - name: Cache Go modules
@@ -208,9 +206,9 @@ jobs:
       - lint
     steps:
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v6
         with:
-          go-version: 1.18
+          go-version: '1.26'
       - name: Checkout
         uses: actions/checkout@v5
       - name: Cache Go modules

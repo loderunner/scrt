@@ -25,13 +25,16 @@ import (
 	"github.com/apex/log"
 	"github.com/apex/log/handlers/cli"
 	"github.com/apex/log/handlers/discard"
-	"github.com/loderunner/scrt/backend"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+
+	"github.com/loderunner/scrt/backend"
 )
 
-var configFile string
-var verbose bool
+var (
+	configFile string
+	verbose    bool
+)
 
 type fielder struct {
 	fields map[string]interface{}
@@ -126,7 +129,7 @@ var RootCmd = &cobra.Command{
 	},
 }
 
-func readConfig(cmd *cobra.Command) error {
+func readConfig(_ *cobra.Command) error {
 	if configFile != "" {
 		viper.SetConfigFile(configFile)
 	} else {
@@ -139,7 +142,11 @@ func readConfig(cmd *cobra.Command) error {
 			return err
 		}
 		viper.AddConfigPath(dir)
-		for parentDir := filepath.Dir(dir); dir != parentDir; parentDir = filepath.Dir(dir) {
+		for {
+			parentDir := filepath.Dir(dir)
+			if dir == parentDir {
+				break
+			}
 			dir = parentDir
 			viper.AddConfigPath(dir)
 		}
@@ -170,18 +177,27 @@ func init() {
 	addCommand(unsetCmd)
 	addCommand(storageCmd)
 
-	RootCmd.PersistentFlags().StringVarP(&configFile, "config", "c", "", "configuration file")
-	RootCmd.PersistentFlags().StringP("password", "p", "", "master password to unlock the store")
-	err := viper.BindPFlag(configKeyPassword, RootCmd.PersistentFlags().Lookup("password"))
+	RootCmd.PersistentFlags().
+		StringVarP(&configFile, "config", "c", "", "configuration file")
+	RootCmd.PersistentFlags().
+		StringP("password", "p", "", "master password to unlock the store")
+	err := viper.BindPFlag(
+		configKeyPassword,
+		RootCmd.PersistentFlags().Lookup("password"),
+	)
 	if err != nil {
 		panic(err)
 	}
 	RootCmd.PersistentFlags().String("storage", "", "storage type")
-	err = viper.BindPFlag(configKeyStorage, RootCmd.PersistentFlags().Lookup("storage"))
+	err = viper.BindPFlag(
+		configKeyStorage,
+		RootCmd.PersistentFlags().Lookup("storage"),
+	)
 	if err != nil {
 		panic(err)
 	}
-	RootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
+	RootCmd.PersistentFlags().
+		BoolVarP(&verbose, "verbose", "v", false, "verbose output")
 
 	viper.SetEnvPrefix("scrt")
 	viper.AutomaticEnv()

@@ -25,12 +25,15 @@ import (
 	"github.com/apex/log"
 	"github.com/apex/log/handlers/memory"
 	"github.com/golang/mock/gomock"
-	"github.com/loderunner/scrt/backend"
 	"github.com/spf13/pflag"
+
+	"github.com/loderunner/scrt/backend"
 )
 
-var osStdin, osStdout *os.File
-var hijackStdin, hijackStdout *os.File
+var (
+	osStdin, osStdout         *os.File
+	hijackStdin, hijackStdout *os.File
+)
 
 // hijack stdin and stdout for testing.
 func hijack() {
@@ -51,11 +54,13 @@ func hijack() {
 func restore() {
 	os.Stdin = osStdin
 	os.Stdout = osStdout
-	hijackStdin.Close()
-	hijackStdout.Close()
+	_ = hijackStdin.Close()
+	_ = hijackStdout.Close()
 }
 
-var ctxMatcher = gomock.AssignableToTypeOf(reflect.TypeOf((*context.Context)(nil)).Elem())
+var ctxMatcher = gomock.AssignableToTypeOf(
+	reflect.TypeOf((*context.Context)(nil)).Elem(),
+)
 
 func TestMain(m *testing.M) {
 	logger = &log.Logger{Handler: memory.New()}
@@ -70,7 +75,10 @@ func (f mockFactory) New(conf map[string]interface{}) (backend.Backend, error) {
 	return f.NewContext(context.Background(), conf)
 }
 
-func (f mockFactory) NewContext(ctx context.Context, conf map[string]interface{}) (backend.Backend, error) {
+func (f mockFactory) NewContext(
+	ctx context.Context,
+	conf map[string]interface{},
+) (backend.Backend, error) {
 	return f.b, nil
 }
 

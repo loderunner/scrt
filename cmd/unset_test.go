@@ -135,7 +135,9 @@ func TestUnsetCmdFailedLoad(t *testing.T) {
 	viper.Set(configKeyStorage, "mock")
 
 	mockBackend.EXPECT().ExistsContext(ctxMatcher).Return(true, nil)
-	mockBackend.EXPECT().LoadContext(ctxMatcher).Return(nil, fmt.Errorf("error"))
+	mockBackend.EXPECT().
+		LoadContext(ctxMatcher).
+		Return(nil, fmt.Errorf("error"))
 
 	args := []string{"hello"}
 	err := unsetCmd.Args(unsetCmd, args)
@@ -169,7 +171,9 @@ func TestUnsetCmdFailedSave(t *testing.T) {
 
 	mockBackend.EXPECT().ExistsContext(ctxMatcher).Return(true, nil)
 	mockBackend.EXPECT().LoadContext(ctxMatcher).Return(data, nil)
-	mockBackend.EXPECT().SaveContext(ctxMatcher, gomock.Any()).Return(fmt.Errorf("error"))
+	mockBackend.EXPECT().
+		SaveContext(ctxMatcher, gomock.Any()).
+		Return(fmt.Errorf("error"))
 
 	args := []string{"hello"}
 	err = unsetCmd.Args(unsetCmd, args)
