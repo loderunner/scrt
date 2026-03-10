@@ -20,8 +20,7 @@ description: Contributing to scrt — how to build from source, run tests, and v
 ## Clone a fork of the Repository
 
 ```bash
-git clone https://github.com/<your_username>/scrt.git
-```
+git clone https://github.com/loderunner/scrt.git
 
 ```bash
 cd scrt
