@@ -9,6 +9,7 @@ description: Contributing to scrt — how to build from source, run tests, and v
 - [Build](#build)
 - [Run Tests](#run-tests)
 - [Install Locally](#install-locally)
+- [Lint Docs](#lint-docs)
 - [Verify Your Changes](#verify-your-changes)
 
 ## Prerequisites
@@ -21,6 +22,7 @@ description: Contributing to scrt — how to build from source, run tests, and v
 
 ```bash
 git clone https://github.com/loderunner/scrt.git
+```
 
 ```bash
 cd scrt
@@ -63,6 +65,20 @@ go install .
 ```
 
 Make sure `$GOPATH/bin` is in your `$PATH`.
+
+## Lint Docs
+
+CI runs prettier and eslint on the `docs/` directory. Run the linter locally before pushing:
+
+```bash
+cd docs && npm run lint
+```
+
+**Auto-fix formatting issues:**
+
+```bash
+cd docs && npx prettier --write .
+```
 
 ## Verify Your Changes
 
