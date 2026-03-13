@@ -32,6 +32,7 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/transport/ssh"
 	"github.com/go-git/go-git/v5/storage/memory"
 	"github.com/kevinburke/ssh_config"
+	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/pflag"
 )
 
@@ -438,6 +439,10 @@ func buildAuths(ctx context.Context, url string) ([]ssh.AuthMethod, error) {
 
 	idFiles := sshConfig.GetAll(e.Host, "IdentityFile")
 	for _, idFile := range idFiles {
+		idFile, err := homedir.Expand(idFile)
+		if err != nil {
+			continue
+		}
 		logger := logger.WithField("identity_file", idFile)
 		publicKeyAuth, err := ssh.NewPublicKeysFromFile(e.User, idFile, "")
 		if err == nil {
