@@ -22,8 +22,6 @@ import (
 	"os"
 	"time"
 
-	homedir "github.com/mitchellh/go-homedir"
-
 	"github.com/go-git/go-billy/v5"
 	"github.com/go-git/go-billy/v5/memfs"
 	"github.com/go-git/go-git/v5"
@@ -34,6 +32,7 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/transport/ssh"
 	"github.com/go-git/go-git/v5/storage/memory"
 	"github.com/kevinburke/ssh_config"
+	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/pflag"
 )
 
