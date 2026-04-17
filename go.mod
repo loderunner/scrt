@@ -8,7 +8,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.32.14
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.99.0
 	github.com/go-git/go-billy/v5 v5.8.0
-	github.com/go-git/go-git/v5 v5.17.2
+	github.com/go-git/go-git/v5 v5.18.0
 	github.com/golang/mock v1.6.0
 	github.com/kevinburke/ssh_config v1.6.0
 	github.com/mattn/go-isatty v0.0.21
