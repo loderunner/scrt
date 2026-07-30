@@ -4,7 +4,7 @@ go 1.26
 
 require (
 	github.com/apex/log v1.9.0
-	github.com/aws/aws-sdk-go-v2 v1.43.1
+	github.com/aws/aws-sdk-go-v2 v1.43.2
 	github.com/aws/aws-sdk-go-v2/config v1.32.32
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.106.1
 	github.com/go-git/go-billy/v5 v5.9.1
