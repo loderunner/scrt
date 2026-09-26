@@ -54,6 +54,15 @@ var RootCmd = &cobra.Command{
 			return nil
 		}
 
+		// Short circuit for the generated completion command and its
+		// subcommands (bash, zsh, fish, powershell). Generating shell
+		// completion must not require a configured storage or password.
+		for c := cmd; c != nil; c = c.Parent() {
+			if c.Name() == "completion" {
+				return nil
+			}
+		}
+
 		err := readConfig(cmd)
 		if err != nil {
 			return err
