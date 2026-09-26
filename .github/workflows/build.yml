@@ -18,7 +18,7 @@ jobs:
       packages: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
       - name: Cache Docker layers
@@ -61,7 +61,7 @@ jobs:
         with:
           go-version: '1.26'
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v9
 
@@ -76,7 +76,7 @@ jobs:
         with:
           go-version: '1.26'
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Cache Go modules
         uses: actions/cache@v5
         with:
@@ -108,7 +108,7 @@ jobs:
         with:
           go-version: '1.26'
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Cache Go modules
         uses: actions/cache@v5
         with:
@@ -210,7 +210,7 @@ jobs:
         with:
           go-version: '1.26'
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Cache Go modules
         uses: actions/cache@v5
         with:
@@ -224,7 +224,7 @@ jobs:
     permissions: {}
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Setup node
         uses: ./.github/actions/setup-node
       - name: Lint documentation
@@ -236,7 +236,7 @@ jobs:
     permissions: {}
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Setup node
         uses: ./.github/actions/setup-node
       - name: Run Typescript compiler
@@ -251,7 +251,7 @@ jobs:
       - 'tsc-check-docs'
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Setup node
         uses: ./.github/actions/setup-node
       - name: Build static website
